@@ -36,6 +36,14 @@ public class User {
         this.etatCompte = etatCompte;
         this.profil = profil;
     }
+    // Constructeur sans id
+    public User(String nom, String email, String motDePasse, Role role, EtatCompte etatCompte) {
+        this.nom = nom;
+        this.email = email;
+        this.motDePasse = motDePasse;
+        this.role = role;
+        this.etatCompte = etatCompte;
+    }
 
     // Getters et Setters
     public int getId() {
