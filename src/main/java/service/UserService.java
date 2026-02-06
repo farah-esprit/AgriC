@@ -4,12 +4,10 @@ import entities.User;
 import utils.DataBase;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserService implements IService<User> {
 
-    Connection connection;
+    private Connection connection;
 
     public UserService() {
         try {
@@ -19,14 +17,16 @@ public class UserService implements IService<User> {
         }
     }
 
-    // Ajouter
+    // ================= AJOUT =================
     @Override
     public void ajouter(User user) {
 
-        String sql = "INSERT INTO user(nom,email,motDePasse,role,etatCompte) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO user(nom, email, motDePasse, role, etatCompte) VALUES (?, ?, ?, ?, ?)";
 
         try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(
+                    sql, Statement.RETURN_GENERATED_KEYS
+            );
 
             ps.setString(1, user.getNom());
             ps.setString(2, user.getEmail());
@@ -35,18 +35,30 @@ public class UserService implements IService<User> {
             ps.setString(5, user.getEtatCompte().name());
 
             ps.executeUpdate();
-            System.out.println("User ajouté");
+
+            // 🔥 récupérer l'id auto-généré
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                user.setId(rs.getInt(1));
+            }
+
+            System.out.println("User ajouté avec ID = " + user.getId());
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    // Modifier
+    // ================= MODIFIER =================
     @Override
     public void modifier(User user) {
 
-        String sql = "UPDATE user SET nom=?, email=?, motDePasse=?, role=?, etatCompte=? WHERE id=?";
+        if (user.getId() <= 0) {
+            System.out.println("ID User invalide !");
+            return;
+        }
+
+        String sql = "UPDATE user SET nom=?, email=?, motDePasse=?, role=?, etatCompte=? WHERE user_id=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -66,17 +78,17 @@ public class UserService implements IService<User> {
         }
     }
 
-    // Supprimer
+    // ================= SUPPRIMER =================
     @Override
     public void supprimer(int id) {
 
-        String sql = "DELETE FROM user WHERE id=?";
+        String sql = "DELETE FROM user WHERE user_id=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, id);
-
             ps.executeUpdate();
+
             System.out.println("User supprimé");
 
         } catch (SQLException e) {
@@ -84,7 +96,7 @@ public class UserService implements IService<User> {
         }
     }
 
-    // Afficher
+    // ================= AFFICHER =================
     @Override
     public void afficher() {
 
@@ -95,9 +107,8 @@ public class UserService implements IService<User> {
             ResultSet rs = st.executeQuery(sql);
 
             while (rs.next()) {
-
                 System.out.println(
-                        rs.getInt("id") + " | " +
+                        rs.getInt("user_id") + " | " +
                                 rs.getString("nom") + " | " +
                                 rs.getString("email") + " | " +
                                 rs.getString("role") + " | " +

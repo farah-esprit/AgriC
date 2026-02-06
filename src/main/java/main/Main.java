@@ -1,47 +1,65 @@
 package main;
 
-import utils.DataBase;
-import entities.User;
-import entities.Role;
-import entities.EtatCompte;
-import service.UserService;
+import entities.*;
+import service.*;
+
 public class Main {
+
     public static void main(String[] args) {
 
-        UserService us = new UserService();
+        UserService userService = new UserService();
+        ProfilService profilService = new ProfilService();
 
-        // 🔹 Ajouter
+        System.out.println("========= TEST CRUD USER =========");
+
         User u1 = new User(
                 "Fatma",
-                "fatma@gmail.com",
+                "fatma_test@gmail.com",
                 "123456",
-                Role.AGRICULTEUR,
-                EtatCompte.ACTIF
-        );
-
-        us.ajouter(u1);
-
-
-        // 🔹 Afficher
-        System.out.println("----- Liste Users -----");
-        us.afficher();
-
-
-        // 🔹 Modifier (exemple id = 1)
-        User u2 = new User(
-                1,
-                "Fatma Souei",
-                "fatma@gmail.com",
-                "111111",
                 Role.ADMIN,
                 EtatCompte.ACTIF
         );
 
-        us.modifier(u2);
+        // 🔥 OBLIGATOIRE : ajouter avant modifier
+        userService.ajouter(u1);
 
+        userService.afficher();
 
-        // 🔹 Supprimer
-        // us.supprimer(1);
+        // Modifier User
+        u1.setNom("Fatma Souei");
+        userService.modifier(u1);
 
+        System.out.println("\n--- Users après modification ---");
+        userService.afficher();
+
+        System.out.println("\n========= TEST CRUD PROFIL =========");
+
+        Profil profil = new Profil(
+                "Bio Fatma",
+                "22222222",
+                "Fatma",
+                "Souei",
+                "image.png",
+                u1
+        );
+
+        profilService.ajouter(profil);
+        profilService.afficher();
+
+        // Modifier Profil
+        Profil p2 = new Profil(
+                1, // ⚠️ ID existant en BD
+                "Nouvelle Bio",
+                "99999999",
+                "Fatma",
+                "Souei",
+                "new.png",
+                u1
+        );
+
+        profilService.modifier(p2);
+
+        System.out.println("\n--- Profils après modification ---");
+        profilService.afficher();
     }
 }
