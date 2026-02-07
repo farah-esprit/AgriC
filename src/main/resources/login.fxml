@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+    <children>
+        <!-- Panneau gauche vert -->
+        <AnchorPane layoutX="0.0" layoutY="0.0" prefHeight="675.0" prefWidth="450.0" style="-fx-background-color: #28a745;">
+            <children>
+                <VBox alignment="CENTER" layoutX="79.0" layoutY="390.0" prefWidth="300.0" spacing="20.0">
+                    <children>
+                        <Label textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="32.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+            <ImageView fitHeight="367.0" fitWidth="329.0" layoutX="49.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/logo.png" />
+               </image>
+            </ImageView>
+                  <Label layoutX="125.0" layoutY="582.0" text="Connecter. Cultiver. Réussir." textFill="WHITE">
+                      <font>
+                          <Font name="System Bold" size="16.0" />
+                      </font>
+                  </Label>
+            </children>
+        </AnchorPane>
+
+        <!-- Panneau droit - Formulaire -->
+        <AnchorPane layoutX="450.0" layoutY="0.0" prefHeight="600.0" prefWidth="450.0">
+            <children>
+                <VBox alignment="CENTER" layoutX="75.0" layoutY="96.0" prefHeight="576.0" prefWidth="319.0" spacing="25.0">
+                    <children>
+                        <!-- Icône utilisateur (emoji) -->
+                        <Label text="👤" textFill="#28a745">
+                            <font>
+                                <Font size="80.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Titre -->
+                        <Label text="Connexion" textFill="#28a745">
+                            <font>
+                                <Font name="System Bold" size="28.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Champ Email -->
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Email" textFill="#333333">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                    <children>
+                                        <Label text="📧" textFill="#28a745">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="emailField" promptText="Entrez votre email" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </TextField>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Champ Password -->
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Mot de passe" textFill="#333333">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                    <children>
+                                        <Label text="🔒" textFill="#28a745">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </PasswordField>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Bouton Login -->
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #28a745; -fx-background-radius: 25;" text="Se connecter" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </Button>
+
+                        <!-- Label erreur -->
+                        <Label fx:id="errorLabel" alignment="CENTER" prefWidth="300.0" textAlignment="CENTER" textFill="RED" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Lien mot de passe oublié -->
+                        <Hyperlink text="Mot de passe oublié ?" textFill="#1d9e39">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </Hyperlink>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

@@ -1,6 +1,8 @@
 package service;
 
 import entities.User;
+import entities.EtatCompte;
+import entities.Role;
 import utils.DataBase;
 
 import java.sql.*;
@@ -119,5 +121,33 @@ public class UserService implements IService<User> {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+    public User authenticate(String email, String motDePasse) {
+        String sql = "SELECT * FROM user WHERE email=? AND motDePasse=?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setString(2, motDePasse);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // L'utilisateur existe et le mot de passe est correct
+                return new User(
+                        rs.getInt("user_id"),
+                        rs.getString("nom"),
+                        rs.getString("email"),
+                        rs.getString("motDePasse"),
+                        Role.valueOf(rs.getString("role")),
+                        EtatCompte.valueOf(rs.getString("etatCompte"))
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erreur d'authentification : " + e.getMessage());
+        }
+
+        return null; // Authentification échouée
     }
 }
