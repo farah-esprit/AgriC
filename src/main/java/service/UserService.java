@@ -38,7 +38,6 @@ public class UserService implements IService<User> {
 
             ps.executeUpdate();
 
-            // 🔥 récupérer l'id auto-généré
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 user.setId(rs.getInt(1));
@@ -51,14 +50,59 @@ public class UserService implements IService<User> {
         }
     }
 
+    // ================= EMAIL EXISTE =================
+    public boolean emailExiste(String email) {
+
+        String sql = "SELECT * FROM user WHERE email = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
+    // ================= AUTHENTIFICATION =================
+    public User authenticate(String email, String motDePasse) {
+
+        String sql = "SELECT * FROM user WHERE email=? AND motDePasse=?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setString(2, motDePasse);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                return new User(
+                        rs.getInt("user_id"),
+                        rs.getString("nom"),
+                        rs.getString("email"),
+                        rs.getString("motDePasse"),
+                        Role.valueOf(rs.getString("role")),
+                        EtatCompte.valueOf(rs.getString("etatCompte"))
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erreur authentification : " + e.getMessage());
+        }
+
+        return null;
+    }
+
     // ================= MODIFIER =================
     @Override
     public void modifier(User user) {
-
-        if (user.getId() <= 0) {
-            System.out.println("ID User invalide !");
-            return;
-        }
 
         String sql = "UPDATE user SET nom=?, email=?, motDePasse=?, role=?, etatCompte=? WHERE user_id=?";
 
@@ -73,7 +117,6 @@ public class UserService implements IService<User> {
             ps.setInt(6, user.getId());
 
             ps.executeUpdate();
-            System.out.println("User modifié");
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -90,8 +133,6 @@ public class UserService implements IService<User> {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, id);
             ps.executeUpdate();
-
-            System.out.println("User supprimé");
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -113,41 +154,12 @@ public class UserService implements IService<User> {
                         rs.getInt("user_id") + " | " +
                                 rs.getString("nom") + " | " +
                                 rs.getString("email") + " | " +
-                                rs.getString("role") + " | " +
-                                rs.getString("etatCompte")
+                                rs.getString("role")
                 );
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-    public User authenticate(String email, String motDePasse) {
-        String sql = "SELECT * FROM user WHERE email=? AND motDePasse=?";
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, email);
-            ps.setString(2, motDePasse);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                // L'utilisateur existe et le mot de passe est correct
-                return new User(
-                        rs.getInt("user_id"),
-                        rs.getString("nom"),
-                        rs.getString("email"),
-                        rs.getString("motDePasse"),
-                        Role.valueOf(rs.getString("role")),
-                        EtatCompte.valueOf(rs.getString("etatCompte"))
-                );
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Erreur d'authentification : " + e.getMessage());
-        }
-
-        return null; // Authentification échouée
     }
 }
