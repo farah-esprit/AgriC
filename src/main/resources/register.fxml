@@ -36,18 +36,18 @@
         <!-- Panneau droit - Formulaire -->
         <AnchorPane layoutX="450.0" layoutY="3.0" prefHeight="600.0" prefWidth="450.0">
             <children>
-                <VBox alignment="CENTER" layoutX="17.0" layoutY="5.0" prefHeight="823.0" prefWidth="402.0" spacing="25.0">
+                <VBox alignment="CENTER" layoutX="17.0" layoutY="5.0" prefHeight="823.0" prefWidth="402.0" spacing="20.0">
                     <children>
 
-                        <!-- Icône utilisateur -->
+                                                <!-- Icône utilisateur -->
                         <Label prefHeight="85.0" prefWidth="82.0" text="👤" textFill="#28a745">
                             <font>
                                 <Font size="80.0" />
                             </font>
                         </Label>
 
-                        <!-- Titre -->
-                        <Label text="Inscription" textFill="#28a745">
+                                                            <!-- Titre -->
+                        <Label text="Inscription">
                             <font>
                                 <Font name="System Bold" size="28.0" />
                             </font>
@@ -61,7 +61,7 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="402.0" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                            <children>
-                              <Label text="✍" textFill="#28a745">
+                              <Label text="✍">
                                  <font>
                                     <Font size="20.0" />
                                  </font>
@@ -83,7 +83,7 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="402.0" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
-                                        <Label text="📧" textFill="#28a745">
+                                        <Label text="📧">
                                             <font>
                                                 <Font name="System Bold" size="20.0" />
                                             </font>
@@ -108,7 +108,7 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
-                                        <Label text="🔒" textFill="#28a745">
+                                        <Label text="🔒">
                                             <font>
                                                 <Font size="18.0" />
                                             </font>
@@ -133,7 +133,7 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
-                                        <Label text="🔒" textFill="#28a745">
+                                        <Label text="🔒">
                                             <font>
                                                 <Font size="18.0" />
                                             </font>
@@ -185,7 +185,7 @@
                                         <Font size="13.0" />
                                     </font>
                                 </Label>
-                                <Hyperlink onAction="#handleBackToLogin" text="Se connecter" textFill="#28a745">
+                                <Hyperlink onAction="#handleBackToLogin" text="Se connecter" textFill="#395936">
                                     <font>
                                         <Font size="13.0" />
                                     </font>

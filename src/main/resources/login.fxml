@@ -43,7 +43,7 @@
         <!-- Panneau droit - Formulaire -->
         <AnchorPane layoutX="450.0" layoutY="0.0" prefHeight="600.0" prefWidth="450.0">
             <children>
-                <VBox alignment="CENTER" layoutX="71.0" prefHeight="652.0" prefWidth="319.0" spacing="25.0">
+                <VBox alignment="CENTER" layoutX="71.0" prefHeight="652.0" prefWidth="319.0" spacing="20.0">
                     <children>
                         <!-- Icône utilisateur (emoji) -->
                         <Label text="👤" textFill="#28a745">
@@ -53,7 +53,7 @@
                         </Label>
 
                         <!-- Titre -->
-                        <Label text="Connexion" textFill="#28a745">
+                        <Label text="Connexion">
                             <font>
                                 <Font name="System Bold" size="28.0" />
                             </font>
@@ -69,7 +69,7 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
-                                        <Label text="📧" textFill="#28a745">
+                                        <Label text="📧">
                                             <font>
                                                 <Font size="18.0" />
                                             </font>
@@ -94,7 +94,7 @@
                                 </Label>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
-                                        <Label text="🔒" textFill="#28a745">
+                                        <Label text="🔒">
                                             <font>
                                                 <Font size="18.0" />
                                             </font>
@@ -133,7 +133,7 @@
                                         <Font size="13.0" />
                                     </font>
                                 </Label>
-                                <Hyperlink onAction="#handleRegister" text="Créer un compte" textFill="#28a745">
+                                <Hyperlink onAction="#handleRegister" text="Créer un compte" textFill="#395936">
                                     <font>
                                         <Font size="13.0" />
                                     </font>
@@ -141,7 +141,7 @@
                             </children>
                         </HBox>
                         <!-- Lien mot de passe oublié -->
-                        <Hyperlink text="Mot de passe oublié ?" textFill="#1d9e39">
+                        <Hyperlink text="Mot de passe oublié ?" textFill="#395936">
                             <font>
                                 <Font size="13.0" />
                             </font>

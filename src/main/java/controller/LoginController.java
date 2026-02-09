@@ -109,27 +109,41 @@ public class LoginController {
 
     // ================= REDIRECTION =================
     private void redirectToDashboard(User user) {
+        try {
+            String fxmlFile = "";
 
-        System.out.println("Utilisateur : " + user.getNom());
-        System.out.println("Rôle : " + user.getRole());
+            // Choisir le dashboard selon le rôle
+            switch (user.getRole()) {
+                case ADMIN:
+                    fxmlFile = "/adminDashboard.fxml";
+                    break;
+                case AGRICULTEUR:
+                    fxmlFile = "/agriculteurDashboard.fxml";
+                    break;
+                case EXPERT:
+                    fxmlFile = "/expertDashboard.fxml";
+                    break;
+                case FOURNISSEUR:
+                    fxmlFile = "/fournisseurDashboard.fxml";
+                    break;
+            }
 
-        switch (user.getRole()) {
+            // Charger le FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
 
-            case ADMIN:
-                System.out.println("Dashboard Admin");
-                break;
+            // Récupérer le controller du dashboard
+            DashboardAgriculteurController controller = loader.getController();
+            controller.setUser(user);
 
-            case AGRICULTEUR:
-                System.out.println("Dashboard Agriculteur");
-                break;
+            // Changer la scène
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Dashboard");
 
-            case EXPERT:
-                System.out.println("Dashboard Expert");
-                break;
-
-            case FOURNISSEUR:
-                System.out.println("Dashboard Fournisseur");
-                break;
+        } catch (Exception e) {
+            System.out.println("Erreur lors de la redirection");
+            e.printStackTrace();
         }
     }
 }
