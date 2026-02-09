@@ -19,13 +19,11 @@ public class DashboardAgriculteurController {
 
     private User currentUser;
 
-    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
         welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
     }
 
-    // ================= DÉCONNEXION =================
     @FXML
     private void handleLogout(MouseEvent event) {
         try {
@@ -37,4 +35,22 @@ public class DashboardAgriculteurController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void handleGoToProfil(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+            Parent root = loader.load();
+
+            ProfilController controller = loader.getController();
+            controller.setUser(currentUser);
+
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Mon Profil");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

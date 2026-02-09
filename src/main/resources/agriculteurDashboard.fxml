@@ -38,8 +38,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <HBox prefHeight="33.0" prefWidth="186.0" spacing="8.0">
-                     <children>
+                   <HBox onMouseClicked="#handleGoToProfil" prefHeight="33.0" prefWidth="186.0" spacing="8.0" style="-fx-cursor: hand;">                     <children>
                         <Label text="👤" textFill="WHITE">
                            <font>
                               <Font size="20.0" />

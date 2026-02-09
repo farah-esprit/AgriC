@@ -29,7 +29,6 @@ public class LoginController {
 
     private UserService userService;
 
-    // Initialisation automatique appelée après le chargement du FXML
     @FXML
     public void initialize() {
         userService = new UserService();
@@ -39,11 +38,9 @@ public class LoginController {
         }
     }
 
-    // ================= REGISTER =================
     @FXML
     private void handleRegister() {
         try {
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
             Parent root = loader.load();
 
@@ -54,10 +51,11 @@ public class LoginController {
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement de l'inscription");
             e.printStackTrace();
+            showError("Erreur lors du chargement de la page d'inscription");
         }
     }
 
-    // ================= LOGIN =================
+    //LOGIN
     @FXML
     private void handleLogin() {
 
@@ -74,6 +72,7 @@ public class LoginController {
             return;
         }
 
+        // Authentification
         User user = userService.authenticate(email, password);
 
         if (user == null) {
@@ -81,17 +80,20 @@ public class LoginController {
             return;
         }
 
+        // Vérification de l'état du compte
         if (user.getEtatCompte() == EtatCompte.BLOQUE) {
-            showError("Votre compte est bloqué");
+            showError("Votre compte est bloqué. Contactez l'administrateur.");
             return;
         }
 
+        // Connexion réussie
         showSuccess("Connexion réussie ! Bienvenue " + user.getNom());
 
+        // Redirection selon le rôle
         redirectToDashboard(user);
     }
 
-    // ================= MESSAGES =================
+    //MESSAGES
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
@@ -102,17 +104,15 @@ public class LoginController {
         errorLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
     }
 
-    // ================= VALIDATION EMAIL =================
+    //VALIDATION EMAIL
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
-    // ================= REDIRECTION =================
     private void redirectToDashboard(User user) {
         try {
             String fxmlFile = "";
 
-            // Choisir le dashboard selon le rôle
             switch (user.getRole()) {
                 case ADMIN:
                     fxmlFile = "/adminDashboard.fxml";
@@ -132,17 +132,24 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
-            // Récupérer le controller du dashboard
-            DashboardAgriculteurController controller = loader.getController();
-            controller.setUser(user);
+            // Passer l'utilisateur au controller approprié
+            Object controller = loader.getController();
+
+            if (controller instanceof DashboardAdminController) {
+                ((DashboardAdminController) controller).setUser(user);
+            } else if (controller instanceof DashboardAgriculteurController) {
+                ((DashboardAgriculteurController) controller).setUser(user);
+            }
 
             // Changer la scène
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Dashboard");
 
+            System.out.println("Redirection vers " + fxmlFile + " réussie");
+
         } catch (Exception e) {
-            System.out.println("Erreur lors de la redirection");
+            System.out.println(" Erreur lors de la redirection");
             e.printStackTrace();
         }
     }

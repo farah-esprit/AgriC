@@ -19,7 +19,7 @@ public class UserService implements IService<User> {
         }
     }
 
-    // ================= AJOUT =================
+    //AJOUT
     @Override
     public void ajouter(User user) {
 
@@ -50,7 +50,6 @@ public class UserService implements IService<User> {
         }
     }
 
-    // ================= EMAIL EXISTE =================
     public boolean emailExiste(String email) {
 
         String sql = "SELECT * FROM user WHERE email = ?";
@@ -69,7 +68,6 @@ public class UserService implements IService<User> {
         return false;
     }
 
-    // ================= AUTHENTIFICATION =================
     public User authenticate(String email, String motDePasse) {
 
         String sql = "SELECT * FROM user WHERE email=? AND motDePasse=?";
@@ -100,7 +98,7 @@ public class UserService implements IService<User> {
         return null;
     }
 
-    // ================= MODIFIER =================
+    //MODIFIER
     @Override
     public void modifier(User user) {
 
@@ -123,7 +121,7 @@ public class UserService implements IService<User> {
         }
     }
 
-    // ================= SUPPRIMER =================
+    //SUPPRIMER
     @Override
     public void supprimer(int id) {
 
@@ -139,7 +137,7 @@ public class UserService implements IService<User> {
         }
     }
 
-    // ================= AFFICHER =================
+    //AFFICHER
     @Override
     public void afficher() {
 

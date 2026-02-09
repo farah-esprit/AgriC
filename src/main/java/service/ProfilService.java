@@ -17,7 +17,7 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
-    // ================= AJOUT =================
+    //AJOUT
     @Override
     public void ajouter(Profil profil) {
 
@@ -46,7 +46,7 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
-    // ================= MODIFIER =================
+    //MODIFIER
     @Override
     public void modifier(Profil profil) {
 
@@ -75,7 +75,7 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
-    // ================= SUPPRIMER =================
+    //SUPPRIMER
     @Override
     public void supprimer(int id) {
 
@@ -93,7 +93,7 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
-    // ================= AFFICHER =================
+    //AFFICHER
     @Override
     public void afficher() {
 

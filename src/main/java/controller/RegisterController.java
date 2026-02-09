@@ -41,7 +41,6 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
         Role role = roleChoice.getValue();
 
-        // ✔ Correction ici (tu avais "confirm" au lieu de confirmPassword)
         if (nom.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             showError("Veuillez remplir tous les champs");
             return;
@@ -57,7 +56,6 @@ public class RegisterController {
             return;
         }
 
-        // ✔ Correction principale : ajouter nom
         User newUser = new User(nom, email, password, role, EtatCompte.ACTIF);
 
         userService.ajouter(newUser);

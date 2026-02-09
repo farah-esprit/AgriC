@@ -6,11 +6,24 @@ import java.sql.SQLException;
 
 public class DataBase {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/agriconnect_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static Connection connection;
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+
+        if (connection == null || connection.isClosed()) {
+            try {
+                connection = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/agriconnect_db",
+                        "root",
+                        ""
+                );
+                System.out.println("Connexion MySQL réussie");
+            } catch (SQLException e) {
+                System.err.println("MySQL indisponible !");
+                throw e;
+            }
+        }
+        return connection;
     }
 }
+
