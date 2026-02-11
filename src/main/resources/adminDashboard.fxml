@@ -354,11 +354,7 @@
                         </Label>
                         <HBox spacing="15.0">
                             <children>
-                                <Button onAction="#openManageUsers" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="👥 Gérer les utilisateurs">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Button>
+
 
                                 <Button onAction="#handleRefresh" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔄 Actualiser données">
                                     <font>
@@ -366,11 +362,7 @@
                                     </font>
                                 </Button>
 
-                                <Button onAction="#handleGoToProfil" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #9c27b0; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="👤 Mon profil">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Button>
+
                             </children>
                         </HBox>
                     </children>

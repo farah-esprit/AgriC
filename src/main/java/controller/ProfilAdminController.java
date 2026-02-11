@@ -4,6 +4,7 @@ import entities.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -113,6 +114,31 @@ public class ProfilAdminController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    @FXML
+    private void openManageUsers(MouseEvent event)
+    {
+        try {
+            System.out.println("📂 Chargement de manageUsers.fxml...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
+            Parent root = loader.load();
+
+            controller.ManageUsersController controller = loader.getController();
+            controller.setUser(currentUser);
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Utilisateurs");
+
+            System.out.println("✅ liste des utilisateurs  chargée !");
+
+        } catch (Exception e) {
+            System.err.println("❌ ERREUR : " + e.getMessage());
+            e.printStackTrace();
+            showError("Impossible de charger les utilisateurs");
         }
     }
 

@@ -53,8 +53,8 @@ public class DashboardAdminController {
     @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
     @FXML private TableColumn<User, String> colEmail;
-    @FXML private TableColumn<User, String> colRole;
-    @FXML private TableColumn<User, String> colEtat;
+    @FXML private TableColumn<User, Role> colRole;
+    @FXML private TableColumn<User, EtatCompte> colEtat;
     @FXML private TableColumn<User, Void> colActions;
 
     // ================= FILTRES =================
@@ -110,15 +110,16 @@ public class DashboardAdminController {
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etatCompte"));
 
         // Style pour l'état
-        colEtat.setCellFactory(column -> new TableCell<User, String>() {
-            @Override
-            protected void updateItem(String etat, boolean empty) {
+        colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
+
+            protected void updateItem(EtatCompte etat, boolean empty)
+            {
                 super.updateItem(etat, empty);
                 if (empty || etat == null) {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(etat);
+                    setText(etat.toString());
                     if (etat.equals("ACTIF")) {
                         setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
                     } else {
@@ -396,11 +397,12 @@ public class DashboardAdminController {
 
     // ================= NAVIGATION - BUTTONS (ActionEvent) =================
     @FXML
-    private void openManageUsers(ActionEvent event) {
+    private void openManageUsers(MouseEvent event)
+    {
         try {
             System.out.println("📂 Chargement de manageUsers.fxml...");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/manageUsers.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
             Parent root = loader.load();
 
             ManageUsersController controller = loader.getController();
@@ -420,7 +422,8 @@ public class DashboardAdminController {
     }
 
     @FXML
-    private void handleGoToProfil(ActionEvent event) {
+    private void handleGoToProfil(MouseEvent event)
+    {
         try {
             System.out.println("📂 Chargement de profilAdmin.fxml...");
 

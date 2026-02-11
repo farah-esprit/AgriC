@@ -8,11 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import service.UserService;
@@ -29,19 +31,25 @@ public class ManageUsersController {
     @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
     @FXML private TableColumn<User, String> colEmail;
-    @FXML private TableColumn<User, String> colRole;
-    @FXML private TableColumn<User, String> colEtat;
+    @FXML private TableColumn<User, Role> colRole;
+    @FXML private TableColumn<User, EtatCompte> colEtat;
     @FXML private TableColumn<User, Void> colActions;
 
     @FXML private TextField searchField;
     @FXML private ComboBox<String> roleFilter;
     @FXML private Label messageLabel;
+    @FXML private AnchorPane dashboardPane;
 
     private User currentUser;
     private UserService userService;
     private ObservableList<User> usersList;
     private ObservableList<User> filteredList;
+    @FXML private HBox dashboardMenu;
+    @FXML private HBox usersMenu;
+    @FXML private HBox profilMenu;
 
+    // ================= PANES =================
+    @FXML private AnchorPane usersPane;
     // ================= INITIALISATION =================
     @FXML
     public void initialize() {
@@ -78,10 +86,9 @@ public class ManageUsersController {
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etatCompte"));
 
         // Style pour l'état
-        colEtat.setCellFactory(column -> new TableCell<User, String>() {
-            @Override
+        colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
             protected void updateItem(String etat, boolean empty) {
-                super.updateItem(etat, empty);
+                super.updateItem(EtatCompte.valueOf(etat), empty);
                 if (empty || etat == null) {
                     setText(null);
                     setStyle("");
@@ -291,7 +298,7 @@ public class ManageUsersController {
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard-admin.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
             Parent root = loader.load();
 
             DashboardAdminController controller = loader.getController();
@@ -307,23 +314,41 @@ public class ManageUsersController {
     }
 
     @FXML
-    private void handleGoToProfil(MouseEvent event) {
+    private void handleGoToProfil(MouseEvent event)
+    {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+            System.out.println("📂 Chargement de profilAdmin.fxml...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
             Parent root = loader.load();
 
-            ProfilController controller = loader.getController();
+            ProfilAdminController controller = loader.getController();
             controller.setUser(currentUser);
 
-            Stage stage = (Stage) usersTable.getScene().getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mon Profil");
 
+            System.out.println("✅ Profil Admin chargé !");
+
         } catch (Exception e) {
+            System.err.println("❌ ERREUR : " + e.getMessage());
             e.printStackTrace();
+            showError("Impossible de charger le profil");
         }
     }
+    @FXML
+    private void handleShowDashboard(MouseEvent event) {
+        showPane(dashboardPane);
+        setActiveMenu(dashboardMenu);
+    }
 
+    @FXML
+    private void handleShowUsers(MouseEvent event) {
+        showPane(usersPane);
+        setActiveMenu(usersMenu);
+    }
     @FXML
     private void handleLogout(MouseEvent event) {
         try {
@@ -335,6 +360,26 @@ public class ManageUsersController {
             e.printStackTrace();
         }
     }
+    private void showPane(AnchorPane pane) {
+        if (dashboardPane != null) dashboardPane.setVisible(false);
+        if (usersPane != null) usersPane.setVisible(false);
+        if (pane != null) pane.setVisible(true);
+    }
+
+    private void setActiveMenu(HBox menu) {
+        if (dashboardMenu != null) {
+            dashboardMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
+        }
+        if (usersMenu != null) {
+            usersMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
+        }
+        if (profilMenu != null) {
+            profilMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
+        }
+        if (menu != null) {
+            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;");
+        }
+    }
 
     // ================= MESSAGES =================
     private void showError(String message) {
@@ -342,6 +387,7 @@ public class ManageUsersController {
             messageLabel.setText(message);
             messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
         }
+        System.err.println("ERROR: " + message);
     }
 
     public void showSuccess(String message) {
@@ -349,5 +395,8 @@ public class ManageUsersController {
             messageLabel.setText(message);
             messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
         }
+        System.out.println("SUCCESS: " + message);
     }
+
+
 }

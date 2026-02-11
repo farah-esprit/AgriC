@@ -28,7 +28,23 @@
                             </children>
                             <padding><Insets left="10.0" /></padding>
                         </HBox>
-
+                        <HBox onMouseClicked="#openManageUsers" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="👥" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Utilisateurs" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
                         <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;">
                             <children>
                                 <Label text="👤" textFill="WHITE"><font><Font size="20.0" /></font></Label>
@@ -36,6 +52,7 @@
                             </children>
                             <padding><Insets left="10.0" /></padding>
                         </HBox>
+
                     </children>
                 </VBox>
 
@@ -61,67 +78,90 @@
                     <font><Font name="System Bold" size="14.0" /></font>
                 </Label>
 
-                <!-- INFORMATIONS -->
-                <VBox layoutX="30.0" layoutY="130.0" prefHeight="200.0" prefWidth="920.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <!-- CARTE PROFIL -->
+                <VBox layoutX="30.0" layoutY="130.0" prefHeight="400.0" prefWidth="920.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <children>
                         <Label text="📋 Informations générales" textFill="#1a237e">
-                            <font><Font name="System Bold" size="18.0" /></font>
+                            <font><Font name="System Bold" size="20.0" /></font>
                         </Label>
-                        <HBox spacing="30.0">
+
+                        <!-- INFORMATIONS AFFICHÉES -->
+                        <GridPane hgap="40.0" vgap="20.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="250.0" prefWidth="250.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="250.0" prefWidth="250.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="250.0" prefWidth="250.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+
+                            <!-- NOM -->
+                            <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Nom complet" textFill="#666666">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
+                                <Label fx:id="nomLabel" text="Admin Principal" textFill="#1a237e">
+                                    <font><Font name="System Bold" size="18.0" /></font>
+                                </Label>
+                            </VBox>
+
+                            <!-- EMAIL -->
+                            <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Adresse email" textFill="#666666">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
+                                <Label fx:id="emailLabel" text="admin@test.com" textFill="#1a237e">
+                                    <font><Font name="System Bold" size="18.0" /></font>
+                                </Label>
+                            </VBox>
+
+                            <!-- RÔLE -->
+                            <VBox spacing="8.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label text="Rôle" textFill="#666666">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
+                                <Label fx:id="roleLabel" text="ADMINISTRATEUR" textFill="#1a237e">
+                                    <font><Font name="System Bold" size="18.0" /></font>
+                                </Label>
+                            </VBox>
+
+                            <!-- ÉTAT DU COMPTE -->
+                            <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label text="État du compte" textFill="#666666">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
+                                <Label fx:id="etatLabel" text="ACTIF" textFill="#4caf50">
+                                    <font><Font name="System Bold" size="18.0" /></font>
+                                </Label>
+                            </VBox>
+
+                            <!-- DATE DE CRÉATION -->
+                            <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <Label text="Membre depuis" textFill="#666666">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
+                                <Label fx:id="dateCreationLabel" text="09 Février 2026" textFill="#1a237e">
+                                    <font><Font name="System Bold" size="18.0" /></font>
+                                </Label>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- BOUTONS D'ACTION -->
+                        <HBox spacing="20.0" alignment="CENTER_LEFT">
                             <children>
-                                <VBox spacing="5.0">
-                                    <Label text="Nom complet :" textFill="#666"><font><Font size="13.0" /></font></Label>
-                                    <Label fx:id="nomLabel" text="Admin Principal" textFill="#1a237e">
-                                        <font><Font name="System Bold" size="16.0" /></font>
-                                    </Label>
-                                </VBox>
-                                <VBox spacing="5.0">
-                                    <Label text="Email :" textFill="#666"><font><Font size="13.0" /></font></Label>
-                                    <Label fx:id="emailLabel" text="admin@test.com" textFill="#1a237e">
-                                        <font><Font name="System Bold" size="16.0" /></font>
-                                    </Label>
-                                </VBox>
-                                <VBox spacing="5.0">
-                                    <Label text="Rôle :" textFill="#666"><font><Font size="13.0" /></font></Label>
-                                    <Label fx:id="roleLabel" text="ADMIN" textFill="#1a237e">
-                                        <font><Font name="System Bold" size="16.0" /></font>
-                                    </Label>
-                                </VBox>
+                                <Button onAction="#handleModifierProfil" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="✏️ Modifier le profil">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Button>
+
+                                <Button onAction="#handleSupprimerCompte" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🗑️ Supprimer le compte">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Button>
                             </children>
                         </HBox>
                     </children>
-                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
-                </VBox>
-
-                <!-- MODIFIER PROFIL -->
-                <VBox layoutX="30.0" layoutY="360.0" prefHeight="150.0" prefWidth="450.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <children>
-                        <Label text="✏️ Modifier le profil" textFill="#1a237e">
-                            <font><Font name="System Bold" size="16.0" /></font>
-                        </Label>
-                        <TextField fx:id="nomField" promptText="Nom complet" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-                        <TextField fx:id="emailField" promptText="Email" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-                        <Button onAction="#handleUpdateProfil" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;" text="💾 Enregistrer">
-                            <font><Font name="System Bold" size="13.0" /></font>
-                        </Button>
-                    </children>
-                    <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
-                </VBox>
-
-                <!-- CHANGER MOT DE PASSE -->
-                <VBox layoutX="500.0" layoutY="360.0" prefHeight="200.0" prefWidth="450.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <children>
-                        <Label text="🔒 Changer le mot de passe" textFill="#1a237e">
-                            <font><Font name="System Bold" size="16.0" /></font>
-                        </Label>
-                        <PasswordField fx:id="ancienMdpField" promptText="Ancien mot de passe" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-                        <PasswordField fx:id="nouveauMdpField" promptText="Nouveau mot de passe" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-                        <PasswordField fx:id="confirmMdpField" promptText="Confirmer le mot de passe" style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-                        <Button onAction="#handleChangePassword" prefHeight="35.0" prefWidth="250.0" style="-fx-background-color: #ff5722; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;" text="🔑 Changer le mot de passe">
-                            <font><Font name="System Bold" size="13.0" /></font>
-                        </Button>
-                    </children>
-                    <padding><Insets bottom="15.0" left="15.0" right="15.0" top="15.0" /></padding>
+                    <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0" /></padding>
                 </VBox>
             </children>
         </AnchorPane>

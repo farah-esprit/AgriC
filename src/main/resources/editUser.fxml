@@ -100,11 +100,7 @@
                                 <Font name="System Bold" size="13.0" />
                             </font>
                         </Label>
-                        <ComboBox fx:id="roleComboBox" prefHeight="35.0" prefWidth="390.0" promptText="Choisir un rôle" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;">
-                            <styleClass>
-                                <String fx:value="combo-box" />
-                            </styleClass>
-                        </ComboBox>
+                        <ComboBox fx:id="roleComboBox" prefHeight="35.0" prefWidth="390.0" promptText="Choisir un rôle" />
                     </children>
                 </VBox>
 
@@ -116,11 +112,7 @@
                                 <Font name="System Bold" size="13.0" />
                             </font>
                         </Label>
-                        <ComboBox fx:id="etatComboBox" prefHeight="35.0" prefWidth="390.0" promptText="Choisir l'état" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;">
-                            <styleClass>
-                                <String fx:value="combo-box" />
-                            </styleClass>
-                        </ComboBox>
+                        <ComboBox fx:id="etatComboBox" prefHeight="35.0" prefWidth="390.0" promptText="Choisir l'état" />
                     </children>
                 </VBox>
 
