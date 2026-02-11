@@ -145,6 +145,15 @@ public class LoginController {
                 ((DashboardAgriculteurController) controller).setUser(user);
                 System.out.println("✅ DashboardAgriculteurController initialisé");
             }
+            else if (controller instanceof DashboardFournisseurController) {
+                ((DashboardFournisseurController) controller).setUser(user);
+                System.out.println("✅ DashboardFournisseurrController initialisé");
+            }
+            else if (controller instanceof DashboardExpertController) {
+                ((DashboardExpertController) controller).setUser(user);
+                System.out.println("✅ DashboardExpertController initialisé");
+            }
+
 
             // Changer la scène
             Stage stage = (Stage) loginButton.getScene().getWindow();

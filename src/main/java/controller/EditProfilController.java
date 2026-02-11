@@ -114,12 +114,13 @@ public class EditProfilController {
     // ================= ENREGISTRER PROFIL =================
     @FXML
     private void handleSaveProfil() {
-        // Validation
+        // Récupérer les valeurs
         String nom = nomField.getText().trim();
         String prenom = prenomField.getText().trim();
         String telephone = telephoneField.getText().trim();
         String bio = bioField.getText().trim();
 
+        // Validation
         if (nom.isEmpty() || prenom.isEmpty() || telephone.isEmpty()) {
             showError("❌ Veuillez remplir tous les champs obligatoires (*)");
             return;
@@ -132,13 +133,21 @@ public class EditProfilController {
 
         try {
             if (!isEditMode || currentProfil == null) {
-                // CRÉATION
-                Profil newProfil = new Profil(bio, telephone, nom, prenom, selectedImagePath, currentUser);
+                // ✅ CRÉATION - ORDRE CORRECT DES PARAMÈTRES
+                Profil newProfil = new Profil(
+                        bio,              // 1. bio
+                        telephone,        // 2. telephone
+                        nom,              // 3. nom
+                        prenom,           // 4. prenom
+                        selectedImagePath,// 5. image
+                        currentUser       // 6. user
+                );
+
                 profilService.ajouter(newProfil);
                 showSuccess("✅ Profil créé avec succès !");
 
             } else {
-                // MODIFICATION
+                // ✅ MODIFICATION
                 currentProfil.setNom(nom);
                 currentProfil.setPrenom(prenom);
                 currentProfil.setTelephone(telephone);

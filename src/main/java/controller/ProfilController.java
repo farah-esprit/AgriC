@@ -52,12 +52,30 @@ public class ProfilController {
 
     // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
+        if (user == null) {
+            System.err.println("❌ ERREUR : User est null dans setUser()");
+            // NE PAS AFFICHER LE MESSAGE D'ERREUR À L'UTILISATEUR
+            return;
+        }
+
         this.currentUser = user;
+        System.out.println("✅ User défini dans ProfilController : " + user.getNom() + " (ID: " + user.getId() + ")");
+
+        // Effacer tout message d'erreur précédent
+        if (messageLabel != null) {
+            messageLabel.setText("");
+        }
+
         loadProfilData();
     }
 
     // ================= CHARGER LES DONNÉES DU PROFIL =================
     private void loadProfilData() {
+        if (currentUser == null) {
+            System.err.println("❌ ERREUR : currentUser est null dans loadProfilData()");
+            return;
+        }
+
         try {
             Connection conn = DataBase.getConnection();
             String sql = "SELECT * FROM profil WHERE user_id = ?";
@@ -66,7 +84,9 @@ public class ProfilController {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // Profil existe déjà
+                // ✅ PROFIL EXISTE - CRÉER L'OBJET PROFIL
+                System.out.println("✅ Profil existant trouvé");
+
                 currentProfil = new Profil(
                         rs.getInt("id"),
                         rs.getString("bio"),
@@ -77,31 +97,51 @@ public class ProfilController {
                         currentUser
                 );
 
-                // Afficher les données en lecture seule
+                // Afficher le profil
                 afficherProfil();
 
                 // Afficher boutons Modifier et Supprimer
-                if (modifierButton != null) modifierButton.setVisible(true);
-                if (supprimerButton != null) supprimerButton.setVisible(true);
-                if (createProfilButton != null) createProfilButton.setVisible(false);
+                if (modifierButton != null) {
+                    modifierButton.setVisible(true);
+                    System.out.println("✅ Bouton Modifier affiché");
+                }
+                if (supprimerButton != null) {
+                    supprimerButton.setVisible(true);
+                    System.out.println("✅ Bouton Supprimer affiché");
+                }
+                if (createProfilButton != null) {
+                    createProfilButton.setVisible(false);
+                    System.out.println("✅ Bouton Créer caché");
+                }
 
             } else {
-                // Pas de profil
+                // ❌ PAS DE PROFIL
+                System.out.println("ℹ️ Aucun profil - Affichage du bouton Créer");
                 currentProfil = null;
                 afficherMessagePasDeprofil();
 
                 // Afficher bouton Créer
-                if (modifierButton != null) modifierButton.setVisible(false);
-                if (supprimerButton != null) supprimerButton.setVisible(false);
-                if (createProfilButton != null) createProfilButton.setVisible(true);
+                if (modifierButton != null) {
+                    modifierButton.setVisible(false);
+                    System.out.println("✅ Bouton Modifier caché");
+                }
+                if (supprimerButton != null) {
+                    supprimerButton.setVisible(false);
+                    System.out.println("✅ Bouton Supprimer caché");
+                }
+                if (createProfilButton != null) {
+                    createProfilButton.setVisible(true);
+                    System.out.println("✅ Bouton Créer affiché");
+                } else {
+                    System.err.println("❌ createProfilButton est NULL !");
+                }
             }
 
         } catch (SQLException e) {
-            showError("Erreur de chargement : " + e.getMessage());
+            System.err.println("❌ Erreur SQL : " + e.getMessage());
             e.printStackTrace();
         }
     }
-
     // ================= AFFICHER LE PROFIL =================
     private void afficherProfil() {
         if (currentProfil == null) return;
@@ -126,7 +166,15 @@ public class ProfilController {
         if (prenomLabel != null) prenomLabel.setText("Non renseigné");
         if (telephoneLabel != null) telephoneLabel.setText("Non renseigné");
         if (bioLabel != null) bioLabel.setText("Vous n'avez pas encore créé votre profil");
-        if (emailLabel != null) emailLabel.setText(currentUser.getEmail());
+
+        // CORRECTION ICI : Vérifier que currentUser n'est pas null
+        if (emailLabel != null) {
+            if (currentUser != null && currentUser.getEmail() != null) {
+                emailLabel.setText(currentUser.getEmail());
+            } else {
+                emailLabel.setText("Email non disponible");
+            }
+        }
     }
 
     // ================= CHARGER L'IMAGE =================
@@ -201,6 +249,11 @@ public class ProfilController {
     // ================= SUPPRIMER PROFIL =================
     @FXML
     private void handleSupprimerProfil(ActionEvent event) {
+        if (currentProfil == null) {
+            showError("Aucun profil à supprimer");
+            return;
+        }
+
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation de suppression");
         confirmation.setHeaderText("Supprimer votre profil ?");
@@ -248,6 +301,11 @@ public class ProfilController {
     // ================= RETOUR DASHBOARD =================
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
+        if (currentUser == null) {
+            System.err.println("❌ ERREUR : currentUser est null dans handleBackToDashboard()");
+            return;
+        }
+
         try {
             String fxmlFile = "";
 
@@ -266,21 +324,31 @@ public class ProfilController {
                     break;
             }
 
+            System.out.println("📂 Retour vers : " + fxmlFile);
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
             Object controller = loader.getController();
+
             if (controller instanceof DashboardAdminController) {
                 ((DashboardAdminController) controller).setUser(currentUser);
             } else if (controller instanceof DashboardAgriculteurController) {
                 ((DashboardAgriculteurController) controller).setUser(currentUser);
+            } else if (controller instanceof DashboardExpertController) {
+                ((DashboardExpertController) controller).setUser(currentUser);
+            } else if (controller instanceof DashboardFournisseurController) {
+                ((DashboardFournisseurController) controller).setUser(currentUser);
             }
 
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Dashboard");
+
+            System.out.println("✅ Retour au dashboard réussi");
 
         } catch (Exception e) {
-            System.out.println("Erreur retour dashboard : " + e.getMessage());
+            System.err.println("❌ Erreur retour dashboard : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -293,7 +361,11 @@ public class ProfilController {
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
+
+            System.out.println("✅ Déconnexion réussie");
+
         } catch (Exception e) {
+            System.err.println("❌ Erreur déconnexion");
             e.printStackTrace();
         }
     }

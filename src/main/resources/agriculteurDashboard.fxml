@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -7,134 +9,240 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">
-   <children>
-      <AnchorPane prefHeight="400.0" prefWidth="186.0" style="-fx-background-color: #388e3c;">
-         <children>
-            <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
-               <font>
-                  <Font name="System Bold" size="22.0" />
-               </font>
-            </Label>
-            <Label layoutX="29.0" layoutY="46.0" text="Agriculteur" textFill="#202020">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Line endX="87.60000610351562" layoutX="107.0" layoutY="90.0" startX="-107.00001525878906" stroke="#666666" />
-            <VBox layoutX="9.0" layoutY="101.0" prefHeight="250.0" prefWidth="186.0">
-               <children>
-                  <HBox prefHeight="36.0" prefWidth="164.0" spacing="8.0">
-                     <children>
-                        <Label text="🏠" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Tableau de bord" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                   <HBox onMouseClicked="#handleGoToProfil" prefHeight="33.0" prefWidth="186.0" spacing="8.0" style="-fx-cursor: hand;">                     <children>
-                        <Label text="👤" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Mon profil" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="46.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
-                     <children>
-                        <Label text="🌱" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Ma culture" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="80.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
-                     <children>
-                        <Label text="⛔" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Problèmes" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="113.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
-                     <children>
-                        <Label text="💬" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Contacter expert" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <HBox layoutX="10.0" layoutY="147.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
-                     <children>
-                        <Label text="🛒" textFill="WHITE">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="31.0" prefWidth="122.0" text="Boutique" textFill="#f4f4f4">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-            <Line endX="84.79995727539062" layoutX="109.0" layoutY="352.0" startX="-109.00001525878906" stroke="#666666" />
-            <HBox layoutX="11.0" layoutY="364.0" prefHeight="36.0" prefWidth="164.0" spacing="8.0">
-               <children>
-                  <Label text="➜]">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <Label prefHeight="31.0" prefWidth="122.0" text="Déconnexion">
-                     <font>
-                        <Font size="15.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
-         </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="647.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">
+    <children>
+        <!-- SIDEBAR -->
+        <AnchorPane prefHeight="647.0" prefWidth="230.0" style="-fx-background-color: #388e3c;">
+            <children>
+                <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Label layoutX="29.0" layoutY="48.0" text="Agriculteur">
+                    <font>
+                        <Font name="System Bold" size="15.0" />
+                    </font>
+                </Label>
+                <Line endX="117.00001525878906" layoutX="115.0" layoutY="90.0" startX="-115.0" stroke="#666666" strokeWidth="2.0" />
 
-      </AnchorPane>
-      <AnchorPane layoutX="183.0" layoutY="1.0" prefHeight="400.0" prefWidth="418.0">
-         <children>
-             <Label fx:id="welcomeLabel" layoutX="156.0" layoutY="61.0" text="Bienvenue !" textFill="#395936">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-         </children></AnchorPane>
+                <!-- MENU NAVIGATION -->
+                <VBox layoutX="10.0" layoutY="110.0" prefHeight="400.0" prefWidth="220.0" spacing="5.0">
+                    <children>
+                        <!-- Accueil -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;">
+                            <children>
+                                <Label text="🏠" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Accueil" textFill="#ffffff">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
 
-   </children>
+                        <!-- Ma culture -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="🌾" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Ma culture" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
+
+                        <!-- Problèmes -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="⚠" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Problèmes" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
+
+                        <!-- Contacter expert -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="💬" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Contacter expert" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
+
+                        <!-- Boutique -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="🛒" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Boutique" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
+
+                        <!-- Mes commandes -->
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                            <children>
+                                <Label text="📦" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="31.0" prefWidth="150.0" text="Mes commandes" textFill="#ffffff">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- DÉCONNEXION -->
+                <Line endX="115.39997863769531" layoutX="115.0" layoutY="603.0" startX="-115.0" stroke="#666666" strokeWidth="2.0" />
+                <HBox layoutX="15.0" layoutY="604.0" onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                    <children>
+                        <Label text="➜]">
+                            <font>
+                                <Font size="18.0" />
+                            </font>
+                        </Label>
+                        <Label prefHeight="31.0" prefWidth="150.0" text="Déconnexion">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <padding>
+                        <Insets left="10.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </AnchorPane>
+
+        <!-- ZONE PRINCIPALE -->
+        <AnchorPane fx:id="contentPane" layoutX="238.0" layoutY="12.0" prefHeight="613.0" prefWidth="556.0" style="-fx-background-color: #f5f5f5;">
+            <children>
+                <!-- TITRE -->
+                <Label layoutX="30.0" layoutY="30.0" text="Tableau de bord Agriculteur" textFill="#388e3c">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
+
+                <!-- MESSAGE DE BIENVENUE -->
+                <VBox alignment="CENTER" layoutX="23.0" layoutY="78.0" prefHeight="487.0" prefWidth="520.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <children>
+                        <Label text="👨‍🌾">
+                            <font>
+                                <Font size="60.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="welcomeLabel" text="Bienvenue, Agriculteur !" textFill="#388e3c">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Votre espace de gestion agricole" textFill="#666666" wrapText="true">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+
+                        <!-- BOUTON MON PROFIL -->
+                        <Button onMouseClicked="#handleGoToProfil" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="👤 Mon Profil">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Button>
+
+                        <VBox alignment="CENTER" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #e8f5e9; -fx-background-radius: 10; -fx-padding: 20;">
+                            <children>
+                                <Label text="📌 Fonctionnalités à venir :" textFill="#388e3c">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label text="• Suivi de vos cultures et plantations" textFill="#333333">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <Label text="• Déclaration et suivi des problèmes" textFill="#333333">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <Label text="• Consultation d'experts agricoles" textFill="#333333">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <Label text="• Boutique de produits et équipements" textFill="#333333">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <Label text="• Gestion de vos commandes" textFill="#333333">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                    </padding>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </children>
 </AnchorPane>
