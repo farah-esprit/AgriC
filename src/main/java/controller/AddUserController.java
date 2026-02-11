@@ -22,7 +22,9 @@ public class AddUserController {
 
     private UserService userService;
     private DashboardAdminController adminController;
+    private ManageUsersController manageUsersController;
 
+    // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         userService = new UserService();
@@ -35,10 +37,16 @@ public class AddUserController {
         messageLabel.setText("");
     }
 
+    // ================= DÉFINIR LES CONTRÔLEURS =================
     public void setAdminController(DashboardAdminController controller) {
         this.adminController = controller;
     }
 
+    public void setManageUsersController(ManageUsersController controller) {
+        this.manageUsersController = controller;
+    }
+
+    // ================= ENREGISTRER =================
     @FXML
     private void handleSave() {
         String nom = nomField.getText().trim();
@@ -63,32 +71,54 @@ public class AddUserController {
             return;
         }
 
-        // Créer l'utilisateur
-        User user = new User(
-                0,
-                nom,
-                email,
-                password,
-                Role.valueOf(role),
-                EtatCompte.valueOf(etat)
-        );
+        if (password.length() < 4) {
+            showError("❌ Le mot de passe doit contenir au moins 4 caractères !");
+            return;
+        }
 
-        userService.ajouter(user);
-        adminController.showSuccess("✅ Utilisateur ajouté avec succès !");
-        adminController.handleRefresh();
-        handleCancel();
+        try {
+            // Créer l'utilisateur
+            User user = new User(
+                    0,
+                    nom,
+                    email,
+                    password,
+                    Role.valueOf(role),
+                    EtatCompte.valueOf(etat)
+            );
+
+            userService.ajouter(user);
+
+            // Informer le controller approprié
+            if (manageUsersController != null) {
+                manageUsersController.showSuccess("✅ Utilisateur ajouté avec succès !");
+                manageUsersController.handleRefresh();
+            } else if (adminController != null) {
+                adminController.showSuccess("✅ Utilisateur ajouté avec succès !");
+                adminController.handleRefresh();
+            }
+
+            handleCancel();
+
+        } catch (Exception e) {
+            showError("❌ Erreur lors de l'ajout : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
+    // ================= ANNULER =================
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
     }
 
+    // ================= VALIDATION EMAIL =================
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
+    // ================= MESSAGES =================
     private void showError(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");

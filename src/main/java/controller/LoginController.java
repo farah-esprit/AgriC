@@ -113,6 +113,7 @@ public class LoginController {
         try {
             String fxmlFile = "";
 
+            // Choisir le dashboard selon le rôle
             switch (user.getRole()) {
                 case ADMIN:
                     fxmlFile = "/adminDashboard.fxml";
@@ -128,6 +129,8 @@ public class LoginController {
                     break;
             }
 
+            System.out.println("📂 Chargement de : " + fxmlFile);
+
             // Charger le FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
@@ -137,20 +140,27 @@ public class LoginController {
 
             if (controller instanceof DashboardAdminController) {
                 ((DashboardAdminController) controller).setUser(user);
+                System.out.println("✅ DashboardAdminController initialisé");
             } else if (controller instanceof DashboardAgriculteurController) {
                 ((DashboardAgriculteurController) controller).setUser(user);
+                System.out.println("✅ DashboardAgriculteurController initialisé");
             }
 
             // Changer la scène
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Dashboard");
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("AgriConnect - Dashboard " + user.getRole());
 
-            System.out.println("Redirection vers " + fxmlFile + " réussie");
+            System.out.println("✅ Redirection réussie vers " + fxmlFile);
 
         } catch (Exception e) {
-            System.out.println(" Erreur lors de la redirection");
+            System.out.println("❌ ERREUR lors de la redirection :");
             e.printStackTrace();
+            showError("Erreur lors de la redirection : " + e.getMessage());
         }
     }
+
+
+
 }

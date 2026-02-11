@@ -2,11 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -23,7 +19,7 @@
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
-                <Label layoutX="29.0" layoutY="48.0" text="Administrateur" textFill="#202020">
+                <Label layoutX="29.0" layoutY="48.0" text="Administrateur" textFill="#f8f8f8">
                     <font>
                         <Font name="System Bold" size="15.0" />
                     </font>
@@ -32,7 +28,7 @@
 
                 <VBox layoutX="10.0" layoutY="110.0" prefHeight="300.0" prefWidth="220.0" spacing="5.0">
                     <children>
-                        <HBox fx:id="dashboardMenu" onMouseClicked="#handleShowDashboard" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;">
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;">
                             <children>
                                 <Label text="📊" textFill="WHITE">
                                     <font>
@@ -50,7 +46,7 @@
                             </padding>
                         </HBox>
 
-                        <HBox fx:id="usersMenu" onMouseClicked="#handleShowUsers" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                        <HBox onMouseClicked="#openManageUsers" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
                             <children>
                                 <Label text="👥" textFill="WHITE">
                                     <font>
@@ -68,7 +64,7 @@
                             </padding>
                         </HBox>
 
-                        <HBox fx:id="profilMenu" onMouseClicked="#handleGoToProfil" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                        <HBox onMouseClicked="#handleGoToProfil" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
                             <children>
                                 <Label text="👤" textFill="WHITE">
                                     <font>
@@ -76,42 +72,6 @@
                                     </font>
                                 </Label>
                                 <Label prefHeight="31.0" prefWidth="150.0" text="Mon profil" textFill="#ffffff">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                            <padding>
-                                <Insets left="10.0" />
-                            </padding>
-                        </HBox>
-
-                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
-                            <children>
-                                <Label text="📈" textFill="WHITE">
-                                    <font>
-                                        <Font size="20.0" />
-                                    </font>
-                                </Label>
-                                <Label prefHeight="31.0" prefWidth="150.0" text="Statistiques" textFill="#ffffff">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                            <padding>
-                                <Insets left="10.0" />
-                            </padding>
-                        </HBox>
-
-                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
-                            <children>
-                                <Label text="⚙️" textFill="WHITE">
-                                    <font>
-                                        <Font size="20.0" />
-                                    </font>
-                                </Label>
-                                <Label prefHeight="31.0" prefWidth="150.0" text="Paramètres" textFill="#ffffff">
                                     <font>
                                         <Font size="14.0" />
                                     </font>
@@ -145,199 +105,279 @@
             </children>
         </AnchorPane>
 
-        <!-- ZONE PRINCIPALE -->
-        <AnchorPane layoutX="220.0" prefHeight="700.0" prefWidth="980.0" style="-fx-background-color: #f5f5f5;">
+        <!-- CONTENU PRINCIPAL -->
+        <AnchorPane fx:id="dashboardPane" layoutX="220.0" prefHeight="700.0" prefWidth="980.0">
             <children>
-
-                <!-- PAGE DASHBOARD (STATISTIQUES) -->
-                <AnchorPane fx:id="dashboardPane" prefHeight="700.0" prefWidth="980.0" visible="true">
+                <!-- EN-TÊTE -->
+                <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="16.0" prefHeight="70.0" prefWidth="920.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <children>
-                        <Label layoutX="30.0" layoutY="30.0" text="📊 Tableau de bord" textFill="#395936">
+                        <Label text="📊">
                             <font>
-                                <Font name="System Bold" size="32.0" />
+                                <Font size="40.0" />
                             </font>
                         </Label>
-
-                        <Label fx:id="welcomeLabel" layoutX="30.0" layoutY="85.0" text="Bienvenue, Admin !" textFill="#555555">
-                            <font>
-                                <Font size="16.0" />
-                            </font>
-                        </Label>
-
-                        <!-- CARTES STATISTIQUES -->
-                        <HBox layoutX="30.0" layoutY="140.0" prefHeight="150.0" prefWidth="920.0" spacing="20.0">
+                        <VBox>
                             <children>
-                                <!-- Total utilisateurs -->
-                                <VBox alignment="CENTER" prefHeight="150.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                                    <children>
-                                        <Label text="👥">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="totalUsersLabel" text="0">
-                                            <font>
-                                                <Font name="System Bold" size="36.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Total utilisateurs" textFill="#666666">
-                                            <font>
-                                                <Font size="14.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                    </padding>
-                                </VBox>
-
-                                <!-- Agriculteurs -->
-                                <VBox alignment="CENTER" prefHeight="150.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                                    <children>
-                                        <Label text="🌱" textFill="#388e3c">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="agriculteursLabel" text="0" textFill="#388e3c">
-                                            <font>
-                                                <Font name="System Bold" size="36.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Agriculteurs" textFill="#666666">
-                                            <font>
-                                                <Font size="14.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                    </padding>
-                                </VBox>
-
-                                <!-- Experts -->
-                                <VBox alignment="CENTER" prefHeight="150.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                                    <children>
-                                        <Label text="🎓" textFill="#f57c00">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="expertsLabel" text="0" textFill="#f57c00">
-                                            <font>
-                                                <Font name="System Bold" size="36.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Experts" textFill="#666666">
-                                            <font>
-                                                <Font size="14.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                    </padding>
-                                </VBox>
-
-                                <!-- Fournisseurs -->
-                                <VBox alignment="CENTER" prefHeight="150.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                                    <children>
-                                        <Label text="🛒" textFill="#d32f2f">
-                                            <font>
-                                                <Font size="40.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="fournisseursLabel" text="0" textFill="#d32f2f">
-                                            <font>
-                                                <Font name="System Bold" size="36.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Fournisseurs" textFill="#666666">
-                                            <font>
-                                                <Font size="14.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                    </padding>
-                                </VBox>
-                            </children>
-                        </HBox>
-
-                        <!-- Comptes bloqués -->
-                        <VBox alignment="CENTER" layoutX="30.0" layoutY="393.0" prefHeight="120.0" prefWidth="920.0" spacing="10.0" style="-fx-background-color: #fff3e0; -fx-background-radius: 10; -fx-border-color: #ff9800; -fx-border-radius: 10; -fx-border-width: 2;">
-                            <children>
-                                <Label text="⚠️ Comptes bloqués" textFill="#e65100">
+                                <Label text="Tableau de bord Administrateur" textFill="#1a237e">
                                     <font>
-                                        <Font name="System Bold" size="18.0" />
+                                        <Font name="System Bold" size="24.0" />
                                     </font>
                                 </Label>
-                                <Label fx:id="comptesBloquesLabel" text="0" textFill="#e65100">
+                                <Label fx:id="welcomeLabel" text="Bienvenue, Admin !" textFill="#666666">
                                     <font>
-                                        <Font name="System Bold" size="32.0" />
+                                        <Font size="14.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
-
                     </children>
-                </AnchorPane>
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                </HBox>
 
-                <!-- PAGE GESTION UTILISATEURS -->
-                <AnchorPane fx:id="usersPane" prefHeight="700.0" prefWidth="980.0" visible="false">
+                <!-- CARTES STATISTIQUES - LIGNE 1 -->
+                <HBox layoutX="29.0" layoutY="113.0" prefHeight="164.0" prefWidth="920.0" spacing="20.0">
                     <children>
-                        <Label layoutX="30.0" layoutY="30.0" text="👥 Gestion des utilisateurs" textFill="#1a237e">
-                            <font>
-                                <Font name="System Bold" size="32.0" />
-                            </font>
-                        </Label>
-
-                        <Label fx:id="messageLabel" layoutX="30.0" layoutY="85.0" prefHeight="25.0" prefWidth="920.0" textFill="RED">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Label>
-
-                        <!-- BARRE DE RECHERCHE ET FILTRES -->
-                        <HBox layoutX="30.0" layoutY="120.0" prefHeight="50.0" prefWidth="920.0" spacing="15.0">
+                        <!-- CARTE 1 : Total Utilisateurs -->
+                        <VBox alignment="CENTER" prefHeight="160.0" prefWidth="220.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2); -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
                             <children>
-                                <TextField fx:id="searchField" onKeyReleased="#handleSearch" prefHeight="40.0" prefWidth="400.0" promptText="🔍 Rechercher par nom ou email..." style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label text="👥" textFill="WHITE">
+                                            <font>
+                                                <Font size="40.0" />
+                                            </font>
+                                        </Label>
+                                        <VBox>
+                                            <children>
+                                                <Label text="Total" textFill="rgba(255,255,255,0.8)">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label text="Utilisateurs" textFill="rgba(255,255,255,0.8)">
+                                                    <font>
+                                                        <Font size="11.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <Label fx:id="totalUsersLabel" text="0" textFill="WHITE">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font name="System Bold" size="48.0" />
                                     </font>
-                                </TextField>
-
-                                <ComboBox fx:id="roleFilter" onAction="#handleFilterByRole" prefHeight="40.0" prefWidth="200.0" promptText="Filtrer par rôle" style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;" />
-
-                                <Button onAction="#handleAddUser" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;" text="➕ Ajouter utilisateur">
+                                </Label>
+                                <Label text="Comptes enregistrés" textFill="rgba(255,255,255,0.7)">
                                     <font>
-                                        <Font name="System Bold" size="13.0" />
+                                        <Font size="11.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- CARTE 2 : Agriculteurs -->
+                        <VBox alignment="CENTER" prefHeight="160.0" prefWidth="220.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #56ab2f, #a8e063); -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label text="🌱" textFill="WHITE">
+                                            <font>
+                                                <Font size="40.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Agriculteurs" textFill="WHITE">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <Label fx:id="agriculteursLabel" text="0" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="48.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Producteurs actifs" textFill="rgba(255,255,255,0.7)">
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- CARTE 3 : Experts -->
+                        <VBox alignment="CENTER" prefHeight="160.0" prefWidth="220.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #f093fb, #f5576c); -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label text="🎓" textFill="WHITE">
+                                            <font>
+                                                <Font size="40.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Experts" textFill="WHITE">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <Label fx:id="expertsLabel" text="0" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="48.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Conseillers agricoles" textFill="rgba(255,255,255,0.7)">
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- CARTE 4 : Fournisseurs -->
+                        <VBox alignment="CENTER" prefHeight="160.0" prefWidth="220.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe); -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label text="🛒" textFill="WHITE">
+                                            <font>
+                                                <Font size="40.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Fournisseurs" textFill="WHITE">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <Label fx:id="fournisseursLabel" text="0" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="48.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Partenaires commerciaux" textFill="rgba(255,255,255,0.7)">
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- CARTES STATISTIQUES - LIGNE 2 -->
+                <HBox layoutX="29.0" layoutY="345.0" prefHeight="140.0" prefWidth="920.0" spacing="20.0">
+                    <children>
+                        <!-- Comptes actifs -->
+                        <VBox alignment="CENTER" prefHeight="140.0" prefWidth="295.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #4caf50; -fx-border-width: 2; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                            <children>
+                                <Label text="✅ Comptes Actifs" textFill="#4caf50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="comptesActifsLabel" text="0" textFill="#4caf50">
+                                    <font>
+                                        <Font name="System Bold" size="36.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- Comptes bloqués -->
+                        <VBox alignment="CENTER" prefHeight="140.0" prefWidth="295.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #ff5722; -fx-border-width: 2; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                            <children>
+                                <Label text="🔒 Comptes Bloqués" textFill="#ff5722">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="comptesBloquesLabel" text="0" textFill="#ff5722">
+                                    <font>
+                                        <Font name="System Bold" size="36.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+
+                        <!-- Nouveaux cette semaine -->
+                        <VBox alignment="CENTER" prefHeight="140.0" prefWidth="295.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #2196f3; -fx-border-width: 2; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                            <children>
+                                <Label text="🆕 Nouveaux (7j)" textFill="#2196f3">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="nouveauxLabel" text="0" textFill="#2196f3">
+                                    <font>
+                                        <Font name="System Bold" size="36.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- ACTIONS RAPIDES -->
+                <VBox layoutX="29.0" layoutY="498.0" prefHeight="180.0" prefWidth="920.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <children>
+                        <Label text="⚡ Actions rapides" textFill="#1a237e">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="15.0">
+                            <children>
+                                <Button onAction="#openManageUsers" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="👥 Gérer les utilisateurs">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
 
-                                <Button onAction="#handleRefresh" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;" text="🔄 Refresh">
+                                <Button onAction="#handleRefresh" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔄 Actualiser données">
                                     <font>
-                                        <Font name="System Bold" size="13.0" />
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Button>
+
+                                <Button onAction="#handleGoToProfil" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: #9c27b0; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="👤 Mon profil">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
                             </children>
                         </HBox>
-
-                        <!-- TABLEAU DES UTILISATEURS -->
-                        <TableView fx:id="usersTable" layoutX="30.0" layoutY="190.0" prefHeight="450.0" prefWidth="920.0" style="-fx-background-color: white; -fx-background-radius: 10;">
-                            <columns>
-                                <TableColumn fx:id="colId" prefWidth="60.0" text="ID" />
-                                <TableColumn fx:id="colNom" prefWidth="180.0" text="Nom" />
-                                <TableColumn fx:id="colEmail" prefWidth="220.0" text="Email" />
-                                <TableColumn fx:id="colRole" prefWidth="130.0" text="Rôle" />
-                                <TableColumn fx:id="colEtat" prefWidth="110.0" text="État" />
-                                <TableColumn fx:id="colActions" prefWidth="220.0" text="Actions" />
-                            </columns>
-                        </TableView>
-
                     </children>
-                </AnchorPane>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                </VBox>
 
             </children>
         </AnchorPane>

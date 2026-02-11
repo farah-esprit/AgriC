@@ -21,7 +21,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Line endX="75.99998474121094" layoutX="107.0" layoutY="90.0" startX="-107.00001525878906" stroke="#666666" />
+            <Line endX="87.60000610351562" layoutX="107.0" layoutY="90.0" startX="-107.00001525878906" stroke="#666666" />
             <VBox layoutX="9.0" layoutY="101.0" prefHeight="250.0" prefWidth="186.0">
                <children>
                   <HBox prefHeight="36.0" prefWidth="164.0" spacing="8.0">
@@ -80,6 +80,20 @@
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="113.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
+                     <children>
+                        <Label text="💬" textFill="WHITE">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Label prefHeight="31.0" prefWidth="122.0" text="Contacter expert" textFill="#f4f4f4">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox layoutX="10.0" layoutY="147.0" prefHeight="33.0" prefWidth="186.0" spacing="8.0">
                      <children>
                         <Label text="🛒" textFill="WHITE">
                            <font>

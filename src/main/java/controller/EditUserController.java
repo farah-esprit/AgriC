@@ -23,8 +23,9 @@ public class EditUserController {
 
     private UserService userService;
     private DashboardAdminController adminController;
+    private ManageUsersController manageUsersController;
     private User currentUser;
-    private String originalEmail; // Pour vérifier si l'email a changé
+    private String originalEmail;
 
     // ================= INITIALISATION =================
     @FXML
@@ -38,12 +39,12 @@ public class EditUserController {
         messageLabel.setText("");
     }
 
-    // ================= DÉFINIR L'UTILISATEUR À MODIFIER =================
+    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
         this.originalEmail = user.getEmail();
 
-        // Remplir les champs avec les données existantes
+        // Remplir les champs
         idField.setText(String.valueOf(user.getId()));
         nomField.setText(user.getNom());
         emailField.setText(user.getEmail());
@@ -52,22 +53,25 @@ public class EditUserController {
         etatComboBox.setValue(user.getEtatCompte().name());
     }
 
-    // ================= DÉFINIR LE CONTRÔLEUR ADMIN =================
+    // ================= DÉFINIR LES CONTRÔLEURS =================
     public void setAdminController(DashboardAdminController controller) {
         this.adminController = controller;
     }
 
-    // ================= ENREGISTRER LES MODIFICATIONS =================
+    public void setManageUsersController(ManageUsersController controller) {
+        this.manageUsersController = controller;
+    }
+
+    // ================= ENREGISTRER =================
     @FXML
     private void handleSave() {
-        // Récupérer les valeurs des champs
         String nom = nomField.getText().trim();
         String email = emailField.getText().trim();
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
         String etat = etatComboBox.getValue();
 
-        // ===== VALIDATION =====
+        // Validation
         if (nom.isEmpty() || email.isEmpty() || password.isEmpty()) {
             showError("❌ Tous les champs sont obligatoires !");
             return;
@@ -85,7 +89,7 @@ public class EditUserController {
 
         // Vérifier si l'email a changé et s'il existe déjà
         if (!email.equals(originalEmail) && userService.emailExiste(email)) {
-            showError("❌ Cet email est déjà utilisé par un autre utilisateur !");
+            showError("❌ Cet email est déjà utilisé !");
             return;
         }
 
@@ -94,24 +98,25 @@ public class EditUserController {
             return;
         }
 
-        // ===== MISE À JOUR DE L'UTILISATEUR =====
         try {
+            // Mettre à jour l'utilisateur
             currentUser.setNom(nom);
             currentUser.setEmail(email);
             currentUser.setMotDePasse(password);
             currentUser.setRole(Role.valueOf(role));
             currentUser.setEtatCompte(EtatCompte.valueOf(etat));
 
-            // Enregistrer dans la base de données
             userService.modifier(currentUser);
 
-            // Informer le dashboard admin
-            if (adminController != null) {
+            // Informer le controller approprié
+            if (manageUsersController != null) {
+                manageUsersController.showSuccess("✅ Utilisateur modifié avec succès !");
+                manageUsersController.handleRefresh();
+            } else if (adminController != null) {
                 adminController.showSuccess("✅ Utilisateur modifié avec succès !");
                 adminController.handleRefresh();
             }
 
-            // Fermer la fenêtre
             handleCancel();
 
         } catch (Exception e) {
@@ -120,7 +125,7 @@ public class EditUserController {
         }
     }
 
-    // ================= ANNULER ET FERMER =================
+    // ================= ANNULER =================
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nomField.getScene().getWindow();
@@ -132,15 +137,9 @@ public class EditUserController {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
-    // ================= AFFICHER MESSAGE D'ERREUR =================
+    // ================= MESSAGES =================
     private void showError(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
-    }
-
-    // ================= AFFICHER MESSAGE DE SUCCÈS =================
-    private void showSuccess(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
     }
 }

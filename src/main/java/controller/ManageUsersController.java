@@ -5,7 +5,6 @@ import entities.Role;
 import entities.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -14,41 +13,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.DataBase;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Optional;
 
-public class DashboardAdminController {
+public class ManageUsersController {
 
-    // ================= LABELS STATISTIQUES =================
-    @FXML private Label welcomeLabel;
-    @FXML private Label totalUsersLabel;
-    @FXML private Label agriculteursLabel;
-    @FXML private Label expertsLabel;
-    @FXML private Label fournisseursLabel;
-    @FXML private Label comptesBloquesLabel;
-    @FXML private Label comptesActifsLabel;
-    @FXML private Label nouveauxLabel;
-    @FXML private Label messageLabel;
-
-    // ================= MENUS =================
-    @FXML private HBox dashboardMenu;
-    @FXML private HBox usersMenu;
-    @FXML private HBox profilMenu;
-
-    // ================= PANES =================
-    @FXML private AnchorPane dashboardPane;
-    @FXML private AnchorPane usersPane;
-
-    // ================= TABLEAU UTILISATEURS =================
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
@@ -57,9 +33,9 @@ public class DashboardAdminController {
     @FXML private TableColumn<User, String> colEtat;
     @FXML private TableColumn<User, Void> colActions;
 
-    // ================= FILTRES =================
     @FXML private TextField searchField;
     @FXML private ComboBox<String> roleFilter;
+    @FXML private Label messageLabel;
 
     private User currentUser;
     private UserService userService;
@@ -75,7 +51,6 @@ public class DashboardAdminController {
 
         setupRoleFilter();
         setupTableColumns();
-        loadStatistics();
         loadUsers();
 
         if (messageLabel != null) {
@@ -86,23 +61,16 @@ public class DashboardAdminController {
     // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
-        if (welcomeLabel != null) {
-            welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
-        }
     }
 
     // ================= CONFIGURATION FILTRES =================
     private void setupRoleFilter() {
-        if (roleFilter != null) {
-            roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
-            roleFilter.setValue("Tous");
-        }
+        roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
+        roleFilter.setValue("Tous");
     }
 
     // ================= CONFIGURATION COLONNES TABLEAU =================
     private void setupTableColumns() {
-        if (usersTable == null) return;
-
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -178,60 +146,6 @@ public class DashboardAdminController {
         });
     }
 
-    // ================= CHARGER STATISTIQUES =================
-    private void loadStatistics() {
-        try {
-            Connection conn = DataBase.getConnection();
-            Statement st = conn.createStatement();
-
-            // Total utilisateurs
-            ResultSet rs = st.executeQuery("SELECT COUNT(*) as total FROM user");
-            if (rs.next() && totalUsersLabel != null) {
-                totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Agriculteurs
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='AGRICULTEUR'");
-            if (rs.next() && agriculteursLabel != null) {
-                agriculteursLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Experts
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='EXPERT'");
-            if (rs.next() && expertsLabel != null) {
-                expertsLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Fournisseurs
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='FOURNISSEUR'");
-            if (rs.next() && fournisseursLabel != null) {
-                fournisseursLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Comptes actifs
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='ACTIF'");
-            if (rs.next() && comptesActifsLabel != null) {
-                comptesActifsLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Comptes bloqués
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='BLOQUE'");
-            if (rs.next() && comptesBloquesLabel != null) {
-                comptesBloquesLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            // Nouveaux utilisateurs (7 derniers jours)
-            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE date_creation >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-            if (rs.next() && nouveauxLabel != null) {
-                nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-        } catch (Exception e) {
-            System.out.println("Erreur chargement stats : " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     // ================= CHARGER UTILISATEURS =================
     private void loadUsers() {
         usersList.clear();
@@ -253,9 +167,7 @@ public class DashboardAdminController {
             }
 
             filteredList.setAll(usersList);
-            if (usersTable != null) {
-                usersTable.setItems(filteredList);
-            }
+            usersTable.setItems(filteredList);
 
         } catch (Exception e) {
             showError("Erreur chargement utilisateurs : " + e.getMessage());
@@ -266,8 +178,6 @@ public class DashboardAdminController {
     // ================= RECHERCHE =================
     @FXML
     private void handleSearch() {
-        if (searchField == null) return;
-
         String searchText = searchField.getText().toLowerCase();
         filteredList.clear();
 
@@ -277,17 +187,12 @@ public class DashboardAdminController {
                 filteredList.add(user);
             }
         }
-
-        if (usersTable != null) {
-            usersTable.setItems(filteredList);
-        }
+        usersTable.setItems(filteredList);
     }
 
     // ================= FILTRE PAR RÔLE =================
     @FXML
     private void handleFilterByRole() {
-        if (roleFilter == null) return;
-
         String selectedRole = roleFilter.getValue();
         filteredList.clear();
 
@@ -300,10 +205,7 @@ public class DashboardAdminController {
                 }
             }
         }
-
-        if (usersTable != null) {
-            usersTable.setItems(filteredList);
-        }
+        usersTable.setItems(filteredList);
     }
 
     // ================= AJOUTER UTILISATEUR =================
@@ -314,7 +216,7 @@ public class DashboardAdminController {
             Parent root = loader.load();
 
             AddUserController controller = loader.getController();
-            controller.setAdminController(this);
+            controller.setManageUsersController(this);
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
@@ -335,7 +237,7 @@ public class DashboardAdminController {
 
             EditUserController controller = loader.getController();
             controller.setUser(user);
-            controller.setAdminController(this);
+            controller.setManageUsersController(this);
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
@@ -353,7 +255,7 @@ public class DashboardAdminController {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
         confirmation.setHeaderText("Supprimer l'utilisateur ?");
-        confirmation.setContentText("Voulez-vous vraiment supprimer " + user.getNom() + " ?\nCette action est irréversible.");
+        confirmation.setContentText("Voulez-vous vraiment supprimer " + user.getNom() + " ?");
 
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -378,117 +280,59 @@ public class DashboardAdminController {
 
     // ================= REFRESH =================
     @FXML
-    public void handleRefresh(ActionEvent event) {
-        handleRefresh();
-    }
-
     public void handleRefresh() {
         loadUsers();
-        loadStatistics();
-        if (searchField != null) {
-            searchField.clear();
-        }
-        if (roleFilter != null) {
-            roleFilter.setValue("Tous");
-        }
+        searchField.clear();
+        roleFilter.setValue("Tous");
         showSuccess("🔄 Données actualisées !");
     }
 
-    // ================= NAVIGATION - BUTTONS (ActionEvent) =================
+    // ================= NAVIGATION =================
     @FXML
-    private void openManageUsers(ActionEvent event) {
+    private void handleBackToDashboard(MouseEvent event) {
         try {
-            System.out.println("📂 Chargement de manageUsers.fxml...");
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/manageUsers.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard-admin.fxml"));
             Parent root = loader.load();
 
-            ManageUsersController controller = loader.getController();
+            DashboardAdminController controller = loader.getController();
             controller.setUser(currentUser);
 
-            Stage stage = (Stage) dashboardPane.getScene().getWindow();
+            Stage stage = (Stage) usersTable.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Gestion des utilisateurs");
-
-            System.out.println("✅ ManageUsers chargé !");
+            stage.setTitle("AgriConnect - Dashboard Admin");
 
         } catch (Exception e) {
-            System.err.println("❌ ERREUR : " + e.getMessage());
             e.printStackTrace();
-            showError("Impossible de charger la gestion des utilisateurs");
         }
     }
 
     @FXML
-    private void handleGoToProfil(ActionEvent event) {
+    private void handleGoToProfil(MouseEvent event) {
         try {
-            System.out.println("📂 Chargement de profilAdmin.fxml...");
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
             Parent root = loader.load();
 
-            ProfilAdminController controller = loader.getController();
+            ProfilController controller = loader.getController();
             controller.setUser(currentUser);
 
-            Stage stage = (Stage) dashboardPane.getScene().getWindow();
+            Stage stage = (Stage) usersTable.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mon Profil");
 
-            System.out.println("✅ Profil Admin chargé !");
-
         } catch (Exception e) {
-            System.err.println("❌ ERREUR : " + e.getMessage());
             e.printStackTrace();
-            showError("Impossible de charger le profil");
         }
-    }
-
-    // ================= NAVIGATION - HBOX (MouseEvent) =================
-    @FXML
-    private void handleShowDashboard(MouseEvent event) {
-        showPane(dashboardPane);
-        setActiveMenu(dashboardMenu);
-    }
-
-    @FXML
-    private void handleShowUsers(MouseEvent event) {
-        showPane(usersPane);
-        setActiveMenu(usersMenu);
     }
 
     @FXML
     private void handleLogout(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) usersTable.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
+            stage.setTitle("AgriConnect - Login");
+        } catch (Exception e) {
             e.printStackTrace();
-            showError("Erreur lors de la déconnexion");
-        }
-    }
-
-    // ================= AFFICHAGE DES PANES =================
-    private void showPane(AnchorPane pane) {
-        if (dashboardPane != null) dashboardPane.setVisible(false);
-        if (usersPane != null) usersPane.setVisible(false);
-        if (pane != null) pane.setVisible(true);
-    }
-
-    private void setActiveMenu(HBox menu) {
-        if (dashboardMenu != null) {
-            dashboardMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (usersMenu != null) {
-            usersMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (profilMenu != null) {
-            profilMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (menu != null) {
-            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;");
         }
     }
 
@@ -498,7 +342,6 @@ public class DashboardAdminController {
             messageLabel.setText(message);
             messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
         }
-        System.err.println("ERROR: " + message);
     }
 
     public void showSuccess(String message) {
@@ -506,6 +349,5 @@ public class DashboardAdminController {
             messageLabel.setText(message);
             messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
         }
-        System.out.println("SUCCESS: " + message);
     }
 }

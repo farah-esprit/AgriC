@@ -235,13 +235,12 @@ public class ProfilController {
             e.printStackTrace();
         }
     }
-    //RETOUR DASHBOARD
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
         try {
             String fxmlFile = "";
 
-            // Choisir le dashboard selon le rôle de l'utilisateur
+            // Choisir le dashboard selon le rôle
             switch (currentUser.getRole()) {
                 case ADMIN:
                     fxmlFile = "/adminDashboard.fxml";
@@ -278,4 +277,5 @@ public class ProfilController {
             e.printStackTrace();
         }
     }
+
 }
