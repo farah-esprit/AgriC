@@ -108,8 +108,6 @@
                                 </HBox>
                             </children>
                         </VBox>
-
-                        <!-- Bouton Login -->
                         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #28a745; -fx-background-radius: 25;" text="Se connecter" textFill="WHITE">
                             <font>
                                 <Font name="System Bold" size="16.0" />
@@ -140,12 +138,12 @@
                                 </Hyperlink>
                             </children>
                         </HBox>
-                        <!-- Lien mot de passe oublié -->
-                        <Hyperlink text="Mot de passe oublié ?" textFill="#395936">
-                            <font>
-                                <Font size="13.0" />
-                            </font>
-                        </Hyperlink>
+
+                        <!-- Bouton Login --><Button onAction="#handleForgotPassword" style="-fx-background-color: transparent; -fx-text-fill: #388e3c; -fx-cursor: hand; -fx-underline: true;" text="Mot de passe oublié ?">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Button>
                     </children>
                 </VBox>
             </children>

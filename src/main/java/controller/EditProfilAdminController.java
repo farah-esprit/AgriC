@@ -1,5 +1,4 @@
 package controller;
-
 import entities.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,9 +9,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import service.UserService;
-
+import utils.ValidationUtils;
 public class EditProfilAdminController {
-
     @FXML private TextField nomField;
     @FXML private TextField emailField;
     @FXML private PasswordField ancienMdpField;
@@ -26,6 +24,59 @@ public class EditProfilAdminController {
     @FXML
     public void initialize() {
         userService = new UserService();
+        ValidationUtils.clearMessage(messageLabel);
+        setupRealTimeValidation();
+    }
+
+    // ================= VALIDATION EN TEMPS RÉEL =================
+    private void setupRealTimeValidation() {
+        nomField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidName(newVal)) {
+                    ValidationUtils.setFieldSuccess(nomField);
+                } else {
+                    ValidationUtils.setFieldError(nomField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(nomField);
+            }
+        });
+
+        emailField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidEmail(newVal)) {
+                    ValidationUtils.setFieldSuccess(emailField);
+                } else {
+                    ValidationUtils.setFieldError(emailField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(emailField);
+            }
+        });
+
+        nouveauMdpField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.isEmpty()) {
+                if (ValidationUtils.hasMinLength(newVal, 6)) {
+                    ValidationUtils.setFieldSuccess(nouveauMdpField);
+                } else {
+                    ValidationUtils.setFieldError(nouveauMdpField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(nouveauMdpField);
+            }
+        });
+
+        confirmMdpField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.isEmpty()) {
+                if (newVal.equals(nouveauMdpField.getText())) {
+                    ValidationUtils.setFieldSuccess(confirmMdpField);
+                } else {
+                    ValidationUtils.setFieldError(confirmMdpField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(confirmMdpField);
+            }
+        });
     }
 
     public void setUser(User user) {
@@ -36,17 +87,26 @@ public class EditProfilAdminController {
 
     @FXML
     private void handleEnregistrer(ActionEvent event) {
-        String nouveauNom = nomField.getText().trim();
-        String nouvelEmail = emailField.getText().trim();
+        String nouveauNom = ValidationUtils.sanitize(nomField.getText());
+        String nouvelEmail = ValidationUtils.sanitize(emailField.getText());
 
-        if (nouveauNom.isEmpty() || nouvelEmail.isEmpty()) {
-            showError("❌ Veuillez remplir tous les champs obligatoires");
+        // Validation des champs obligatoires
+        if (!ValidationUtils.isNotEmpty(nouveauNom) || !ValidationUtils.isNotEmpty(nouvelEmail)) {
+            ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs obligatoires");
             return;
         }
 
-        // Vérifier l'email
-        if (!isValidEmail(nouvelEmail)) {
-            showError("❌ Format d'email invalide");
+        // Validation du nom
+        if (!ValidationUtils.isValidName(nouveauNom)) {
+            ValidationUtils.showError(messageLabel, "Format de nom invalide");
+            ValidationUtils.setFieldError(nomField);
+            return;
+        }
+
+        // Validation de l'email
+        if (!ValidationUtils.isValidEmail(nouvelEmail)) {
+            ValidationUtils.showError(messageLabel, "Format d'email invalide");
+            ValidationUtils.setFieldError(emailField);
             return;
         }
 
@@ -54,39 +114,42 @@ public class EditProfilAdminController {
         currentUser.setNom(nouveauNom);
         currentUser.setEmail(nouvelEmail);
 
-        // Changer le mot de passe si rempli
+        // Gestion du changement de mot de passe
         String ancien = ancienMdpField.getText();
         String nouveau = nouveauMdpField.getText();
         String confirm = confirmMdpField.getText();
 
         if (!ancien.isEmpty() || !nouveau.isEmpty() || !confirm.isEmpty()) {
-            if (ancien.isEmpty() || nouveau.isEmpty() || confirm.isEmpty()) {
-                showError("❌ Veuillez remplir tous les champs du mot de passe");
+            if (!ValidationUtils.isNotEmpty(ancien) || !ValidationUtils.isNotEmpty(nouveau) || !ValidationUtils.isNotEmpty(confirm)) {
+                ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs du mot de passe");
                 return;
             }
 
             if (!nouveau.equals(confirm)) {
-                showError("❌ Les mots de passe ne correspondent pas");
+                ValidationUtils.showError(messageLabel, "Les mots de passe ne correspondent pas");
+                ValidationUtils.setFieldError(confirmMdpField);
                 return;
             }
 
-            if (nouveau.length() < 6) {
-                showError("❌ Le mot de passe doit contenir au moins 6 caractères");
+            if (!ValidationUtils.hasMinLength(nouveau, 6)) {
+                ValidationUtils.showError(messageLabel, "Le mot de passe doit contenir au moins 6 caractères");
+                ValidationUtils.setFieldError(nouveauMdpField);
                 return;
             }
 
             boolean mdpChange = userService.changerMotDePasse(currentUser.getId(), ancien, nouveau);
             if (!mdpChange) {
-                showError("❌ Ancien mot de passe incorrect");
+                ValidationUtils.showError(messageLabel, "Ancien mot de passe incorrect");
+                ValidationUtils.setFieldError(ancienMdpField);
                 return;
             }
         }
 
         // Enregistrer les modifications
         userService.modifier(currentUser);
-        showSuccess("✅ Profil modifié avec succès !");
+        ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
 
-        // Rediriger vers la page de profil après 1 seconde
+        // Redirection après 1.5 secondes
         new Thread(() -> {
             try {
                 Thread.sleep(1500);
@@ -123,7 +186,6 @@ public class EditProfilAdminController {
 
             Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Mon Profil");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +203,6 @@ public class EditProfilAdminController {
 
             Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Dashboard Admin");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,24 +218,6 @@ public class EditProfilAdminController {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-
-    private void showError(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
-        }
-    }
-
-    private void showSuccess(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
         }
     }
 }

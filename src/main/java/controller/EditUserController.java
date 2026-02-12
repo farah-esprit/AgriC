@@ -1,5 +1,4 @@
 package controller;
-
 import entities.EtatCompte;
 import entities.Role;
 import entities.User;
@@ -10,9 +9,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import service.UserService;
-
+import utils.ValidationUtils;
 public class EditUserController {
-
     @FXML private TextField idField;
     @FXML private TextField nomField;
     @FXML private TextField emailField;
@@ -27,24 +25,61 @@ public class EditUserController {
     private User currentUser;
     private String originalEmail;
 
-    // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         userService = new UserService();
 
-        // Remplir les ComboBox
         roleComboBox.getItems().addAll("AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
         etatComboBox.getItems().addAll("ACTIF", "BLOQUE");
 
-        messageLabel.setText("");
+        ValidationUtils.clearMessage(messageLabel);
+
+        // Validation en temps réel
+        setupRealTimeValidation();
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
+    private void setupRealTimeValidation() {
+        nomField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidName(newVal)) {
+                    ValidationUtils.setFieldSuccess(nomField);
+                } else {
+                    ValidationUtils.setFieldError(nomField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(nomField);
+            }
+        });
+
+        emailField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidEmail(newVal)) {
+                    ValidationUtils.setFieldSuccess(emailField);
+                } else {
+                    ValidationUtils.setFieldError(emailField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(emailField);
+            }
+        });
+
+        passwordField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.isEmpty()) {
+                if (ValidationUtils.hasMinLength(newVal, 4)) {
+                    ValidationUtils.setFieldSuccess(passwordField);
+                } else {
+                    ValidationUtils.setFieldError(passwordField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(passwordField);
+            }
+        });
+    }
+
     public void setUser(User user) {
         this.currentUser = user;
         this.originalEmail = user.getEmail();
 
-        // Remplir les champs
         idField.setText(String.valueOf(user.getId()));
         nomField.setText(user.getNom());
         emailField.setText(user.getEmail());
@@ -53,7 +88,6 @@ public class EditUserController {
         etatComboBox.setValue(user.getEtatCompte().name());
     }
 
-    // ================= DÉFINIR LES CONTRÔLEURS =================
     public void setAdminController(DashboardAdminController controller) {
         this.adminController = controller;
     }
@@ -62,44 +96,50 @@ public class EditUserController {
         this.manageUsersController = controller;
     }
 
-    // ================= ENREGISTRER =================
     @FXML
     private void handleSave() {
-        String nom = nomField.getText().trim();
-        String email = emailField.getText().trim();
+        String nom = ValidationUtils.sanitize(nomField.getText());
+        String email = ValidationUtils.sanitize(emailField.getText());
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
         String etat = etatComboBox.getValue();
 
         // Validation
-        if (nom.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            showError("❌ Tous les champs sont obligatoires !");
+        if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(email) || !ValidationUtils.isNotEmpty(password)) {
+            ValidationUtils.showError(messageLabel, "Tous les champs sont obligatoires");
             return;
         }
 
         if (role == null || etat == null) {
-            showError("❌ Veuillez sélectionner un rôle et un état !");
+            ValidationUtils.showError(messageLabel, "Veuillez sélectionner un rôle et un état");
             return;
         }
 
-        if (!isValidEmail(email)) {
-            showError("❌ Format d'email invalide !");
+        if (!ValidationUtils.isValidName(nom)) {
+            ValidationUtils.showError(messageLabel, "Format de nom invalide");
+            ValidationUtils.setFieldError(nomField);
             return;
         }
 
-        // Vérifier si l'email a changé et s'il existe déjà
+        if (!ValidationUtils.isValidEmail(email)) {
+            ValidationUtils.showError(messageLabel, "Format d'email invalide");
+            ValidationUtils.setFieldError(emailField);
+            return;
+        }
+
         if (!email.equals(originalEmail) && userService.emailExiste(email)) {
-            showError("❌ Cet email est déjà utilisé !");
+            ValidationUtils.showError(messageLabel, "Cet email est déjà utilisé");
+            ValidationUtils.setFieldError(emailField);
             return;
         }
 
-        if (password.length() < 4) {
-            showError("❌ Le mot de passe doit contenir au moins 4 caractères !");
+        if (!ValidationUtils.hasMinLength(password, 4)) {
+            ValidationUtils.showError(messageLabel, "Le mot de passe doit contenir au moins 4 caractères");
+            ValidationUtils.setFieldError(passwordField);
             return;
         }
 
         try {
-            // Mettre à jour l'utilisateur
             currentUser.setNom(nom);
             currentUser.setEmail(email);
             currentUser.setMotDePasse(password);
@@ -108,38 +148,25 @@ public class EditUserController {
 
             userService.modifier(currentUser);
 
-            // Informer le controller approprié
             if (manageUsersController != null) {
-                manageUsersController.showSuccess("✅ Utilisateur modifié avec succès !");
+                manageUsersController.showSuccess("✅ Utilisateur modifié avec succès");
                 manageUsersController.handleRefresh();
             } else if (adminController != null) {
-                adminController.showSuccess("✅ Utilisateur modifié avec succès !");
+                adminController.showSuccess("✅ Utilisateur modifié avec succès");
                 adminController.handleRefresh();
             }
 
             handleCancel();
 
         } catch (Exception e) {
-            showError("❌ Erreur lors de la modification : " + e.getMessage());
+            ValidationUtils.showError(messageLabel, "Erreur lors de la modification");
             e.printStackTrace();
         }
     }
 
-    // ================= ANNULER =================
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
-    }
-
-    // ================= VALIDATION EMAIL =================
-    private boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-
-    // ================= MESSAGES =================
-    private void showError(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
     }
 }

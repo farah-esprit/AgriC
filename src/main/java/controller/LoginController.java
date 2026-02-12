@@ -15,17 +15,10 @@ import service.UserService;
 
 public class LoginController {
 
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private Label errorLabel;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button loginButton;
+    @FXML private Label errorLabel;
 
     private UserService userService;
 
@@ -55,10 +48,25 @@ public class LoginController {
         }
     }
 
-    //LOGIN
+    // ================= NOUVELLE MÉTHODE : MOT DE PASSE OUBLIÉ =================
+    @FXML
+    private void handleForgotPassword() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/forgotPassword.fxml"));
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Mot de passe oublié");
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur chargement forgotPassword");
+            e.printStackTrace();
+            showError("Erreur lors du chargement");
+        }
+    }
+
+    // ================= LOGIN =================
     @FXML
     private void handleLogin() {
-
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
@@ -93,7 +101,7 @@ public class LoginController {
         redirectToDashboard(user);
     }
 
-    //MESSAGES
+    // ================= MESSAGES =================
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
@@ -104,7 +112,7 @@ public class LoginController {
         errorLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
     }
 
-    //VALIDATION EMAIL
+    // ================= VALIDATION EMAIL =================
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
@@ -144,16 +152,13 @@ public class LoginController {
             } else if (controller instanceof DashboardAgriculteurController) {
                 ((DashboardAgriculteurController) controller).setUser(user);
                 System.out.println("✅ DashboardAgriculteurController initialisé");
-            }
-            else if (controller instanceof DashboardFournisseurController) {
+            } else if (controller instanceof DashboardFournisseurController) {
                 ((DashboardFournisseurController) controller).setUser(user);
-                System.out.println("✅ DashboardFournisseurrController initialisé");
-            }
-            else if (controller instanceof DashboardExpertController) {
+                System.out.println("✅ DashboardFournisseurController initialisé");
+            } else if (controller instanceof DashboardExpertController) {
                 ((DashboardExpertController) controller).setUser(user);
                 System.out.println("✅ DashboardExpertController initialisé");
             }
-
 
             // Changer la scène
             Stage stage = (Stage) loginButton.getScene().getWindow();
@@ -169,7 +174,4 @@ public class LoginController {
             showError("Erreur lors de la redirection : " + e.getMessage());
         }
     }
-
-
-
 }

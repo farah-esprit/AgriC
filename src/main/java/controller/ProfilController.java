@@ -5,11 +5,13 @@ import entities.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -31,6 +33,7 @@ public class ProfilController {
     @FXML private Label telephoneLabel;
     @FXML private Label bioLabel;
     @FXML private Label emailLabel;
+    @FXML private Label roleLabel;  // ← AJOUTÉ ICI
     @FXML private Button modifierButton;
     @FXML private Button supprimerButton;
     @FXML private Button createProfilButton;
@@ -54,14 +57,33 @@ public class ProfilController {
     public void setUser(User user) {
         if (user == null) {
             System.err.println("❌ ERREUR : User est null dans setUser()");
-            // NE PAS AFFICHER LE MESSAGE D'ERREUR À L'UTILISATEUR
             return;
         }
 
         this.currentUser = user;
         System.out.println("✅ User défini dans ProfilController : " + user.getNom() + " (ID: " + user.getId() + ")");
 
-        // Effacer tout message d'erreur précédent
+        // ✅ METTRE À JOUR LE RÔLE DANS LA SIDEBAR
+        if (roleLabel != null) {
+            String role = user.getRole().toString();
+            switch (role) {
+                case "AGRICULTEUR":
+                    roleLabel.setText("Agriculteur");
+                    break;
+                case "EXPERT":
+                    roleLabel.setText("Expert");
+                    break;
+                case "FOURNISSEUR":
+                    roleLabel.setText("Fournisseur");
+                    break;
+                case "ADMIN":
+                    roleLabel.setText("Administrateur");
+                    break;
+                default:
+                    roleLabel.setText("Utilisateur");
+            }
+        }
+
         if (messageLabel != null) {
             messageLabel.setText("");
         }
@@ -84,7 +106,7 @@ public class ProfilController {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // ✅ PROFIL EXISTE - CRÉER L'OBJET PROFIL
+                // ✅ PROFIL EXISTE
                 System.out.println("✅ Profil existant trouvé");
 
                 currentProfil = new Profil(
@@ -97,10 +119,8 @@ public class ProfilController {
                         currentUser
                 );
 
-                // Afficher le profil
                 afficherProfil();
 
-                // Afficher boutons Modifier et Supprimer
                 if (modifierButton != null) {
                     modifierButton.setVisible(true);
                     System.out.println("✅ Bouton Modifier affiché");
@@ -120,7 +140,6 @@ public class ProfilController {
                 currentProfil = null;
                 afficherMessagePasDeprofil();
 
-                // Afficher bouton Créer
                 if (modifierButton != null) {
                     modifierButton.setVisible(false);
                     System.out.println("✅ Bouton Modifier caché");
@@ -142,6 +161,7 @@ public class ProfilController {
             e.printStackTrace();
         }
     }
+
     // ================= AFFICHER LE PROFIL =================
     private void afficherProfil() {
         if (currentProfil == null) return;
@@ -154,7 +174,6 @@ public class ProfilController {
                 : "Aucune biographie");
         if (emailLabel != null) emailLabel.setText(currentUser.getEmail());
 
-        // Charger l'image de profil
         if (currentProfil.getImage() != null && !currentProfil.getImage().isEmpty()) {
             loadProfileImage(currentProfil.getImage());
         }
@@ -167,7 +186,6 @@ public class ProfilController {
         if (telephoneLabel != null) telephoneLabel.setText("Non renseigné");
         if (bioLabel != null) bioLabel.setText("Vous n'avez pas encore créé votre profil");
 
-        // CORRECTION ICI : Vérifier que currentUser n'est pas null
         if (emailLabel != null) {
             if (currentUser != null && currentUser.getEmail() != null) {
                 emailLabel.setText(currentUser.getEmail());
@@ -200,7 +218,7 @@ public class ProfilController {
             EditProfilController controller = loader.getController();
             controller.setProfilController(this);
             controller.setUser(currentUser);
-            controller.setMode(false); // Mode création
+            controller.setMode(false);
 
             Stage stage = new Stage();
             stage.setTitle("Créer mon profil");
@@ -231,7 +249,7 @@ public class ProfilController {
             controller.setProfilController(this);
             controller.setUser(currentUser);
             controller.setProfil(currentProfil);
-            controller.setMode(true); // Mode modification
+            controller.setMode(true);
 
             Stage stage = new Stage();
             stage.setTitle("Modifier mon profil");
@@ -268,12 +286,87 @@ public class ProfilController {
             try {
                 profilService.supprimer(currentProfil.getId());
                 showSuccess("✅ Profil supprimé avec succès !");
-                loadProfilData(); // Rafraîchir l'affichage
+                loadProfilData();
 
             } catch (Exception e) {
                 showError("❌ Erreur lors de la suppression du profil");
                 e.printStackTrace();
             }
+        }
+    }
+
+    // ================= CHANGER MOT DE PASSE =================
+    @FXML
+    private void handleChangePassword(ActionEvent event) {
+        try {
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Changer le mot de passe");
+            dialog.setHeaderText("Modifier votre mot de passe");
+
+            ButtonType validerButton = new ButtonType("Valider", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(validerButton, ButtonType.CANCEL);
+
+            VBox content = new VBox(15);
+            content.setPadding(new Insets(20));
+
+            PasswordField ancienMdpField = new PasswordField();
+            ancienMdpField.setPromptText("Ancien mot de passe");
+            ancienMdpField.setPrefHeight(40);
+
+            PasswordField nouveauMdpField = new PasswordField();
+            nouveauMdpField.setPromptText("Nouveau mot de passe");
+            nouveauMdpField.setPrefHeight(40);
+
+            PasswordField confirmMdpField = new PasswordField();
+            confirmMdpField.setPromptText("Confirmer le mot de passe");
+            confirmMdpField.setPrefHeight(40);
+
+            content.getChildren().addAll(
+                    new Label("Ancien mot de passe :"),
+                    ancienMdpField,
+                    new Label("Nouveau mot de passe :"),
+                    nouveauMdpField,
+                    new Label("Confirmer le mot de passe :"),
+                    confirmMdpField
+            );
+
+            dialog.getDialogPane().setContent(content);
+
+            Optional<ButtonType> result = dialog.showAndWait();
+
+            if (result.isPresent() && result.get() == validerButton) {
+                String ancienMdp = ancienMdpField.getText();
+                String nouveauMdp = nouveauMdpField.getText();
+                String confirmMdp = confirmMdpField.getText();
+
+                if (ancienMdp.isEmpty() || nouveauMdp.isEmpty() || confirmMdp.isEmpty()) {
+                    showError("❌ Veuillez remplir tous les champs");
+                    return;
+                }
+
+                if (!nouveauMdp.equals(confirmMdp)) {
+                    showError("❌ Les mots de passe ne correspondent pas");
+                    return;
+                }
+
+                if (nouveauMdp.length() < 6) {
+                    showError("❌ Le mot de passe doit contenir au moins 6 caractères");
+                    return;
+                }
+
+                service.UserService userService = new service.UserService();
+                boolean success = userService.changerMotDePasse(currentUser.getId(), ancienMdp, nouveauMdp);
+
+                if (success) {
+                    showSuccess("✅ Mot de passe changé avec succès !");
+                } else {
+                    showError("❌ Ancien mot de passe incorrect");
+                }
+            }
+
+        } catch (Exception e) {
+            showError("❌ Erreur : " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

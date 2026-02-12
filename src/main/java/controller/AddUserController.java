@@ -1,5 +1,4 @@
 package controller;
-
 import entities.EtatCompte;
 import entities.Role;
 import entities.User;
@@ -10,9 +9,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import service.UserService;
-
+import utils.ValidationUtils;
 public class AddUserController {
-
     @FXML private TextField nomField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
@@ -24,20 +22,49 @@ public class AddUserController {
     private DashboardAdminController adminController;
     private ManageUsersController manageUsersController;
 
-    // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         userService = new UserService();
 
-        // Remplir les ComboBox
         roleComboBox.getItems().addAll("AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
         etatComboBox.getItems().addAll("ACTIF", "BLOQUE");
         etatComboBox.setValue("ACTIF");
 
-        messageLabel.setText("");
+        ValidationUtils.clearMessage(messageLabel);
+
+        setupRealTimeValidation();
     }
 
-    // ================= DÉFINIR LES CONTRÔLEURS =================
+    private void setupRealTimeValidation() {
+        nomField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                ValidationUtils.setFieldSuccess(nomField);
+            } else {
+                ValidationUtils.resetFieldStyle(nomField);
+            }
+        });
+
+        emailField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty() && ValidationUtils.isValidEmail(newVal)) {
+                ValidationUtils.setFieldSuccess(emailField);
+            } else if (!newVal.trim().isEmpty()) {
+                ValidationUtils.setFieldError(emailField);
+            } else {
+                ValidationUtils.resetFieldStyle(emailField);
+            }
+        });
+
+        passwordField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.isEmpty() && ValidationUtils.hasMinLength(newVal, 4)) {
+                ValidationUtils.setFieldSuccess(passwordField);
+            } else if (!newVal.isEmpty()) {
+                ValidationUtils.setFieldError(passwordField);
+            } else {
+                ValidationUtils.resetFieldStyle(passwordField);
+            }
+        });
+    }
+
     public void setAdminController(DashboardAdminController controller) {
         this.adminController = controller;
     }
@@ -46,81 +73,61 @@ public class AddUserController {
         this.manageUsersController = controller;
     }
 
-    // ================= ENREGISTRER =================
     @FXML
     private void handleSave() {
-        String nom = nomField.getText().trim();
-        String email = emailField.getText().trim();
+        String nom = ValidationUtils.sanitize(nomField.getText());
+        String email = ValidationUtils.sanitize(emailField.getText());
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
         String etat = etatComboBox.getValue();
 
-        // Validation
-        if (nom.isEmpty() || email.isEmpty() || password.isEmpty() || role == null || etat == null) {
-            showError("❌ Tous les champs sont obligatoires !");
+        if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(email) ||
+                !ValidationUtils.isNotEmpty(password) || role == null || etat == null) {
+            ValidationUtils.showError(messageLabel, "Tous les champs sont obligatoires");
             return;
         }
 
-        if (!isValidEmail(email)) {
-            showError("❌ Format d'email invalide !");
+        if (!ValidationUtils.isValidEmail(email)) {
+            ValidationUtils.showError(messageLabel, "Format d'email invalide");
+            ValidationUtils.setFieldError(emailField);
             return;
         }
 
         if (userService.emailExiste(email)) {
-            showError("❌ Cet email existe déjà !");
+            ValidationUtils.showError(messageLabel, "Cet email existe déjà");
+            ValidationUtils.setFieldError(emailField);
             return;
         }
 
-        if (password.length() < 4) {
-            showError("❌ Le mot de passe doit contenir au moins 4 caractères !");
+        if (!ValidationUtils.hasMinLength(password, 4)) {
+            ValidationUtils.showError(messageLabel, "Le mot de passe doit contenir au moins 4 caractères");
+            ValidationUtils.setFieldError(passwordField);
             return;
         }
 
         try {
-            // Créer l'utilisateur
-            User user = new User(
-                    0,
-                    nom,
-                    email,
-                    password,
-                    Role.valueOf(role),
-                    EtatCompte.valueOf(etat)
-            );
-
+            User user = new User(0, nom, email, password, Role.valueOf(role), EtatCompte.valueOf(etat));
             userService.ajouter(user);
 
-            // Informer le controller approprié
             if (manageUsersController != null) {
-                manageUsersController.showSuccess("✅ Utilisateur ajouté avec succès !");
+                manageUsersController.showSuccess("✅ Utilisateur ajouté avec succès");
                 manageUsersController.handleRefresh();
             } else if (adminController != null) {
-                adminController.showSuccess("✅ Utilisateur ajouté avec succès !");
+                adminController.showSuccess("✅ Utilisateur ajouté avec succès");
                 adminController.handleRefresh();
             }
 
             handleCancel();
 
         } catch (Exception e) {
-            showError("❌ Erreur lors de l'ajout : " + e.getMessage());
+            ValidationUtils.showError(messageLabel, "Erreur lors de l'ajout");
             e.printStackTrace();
         }
     }
 
-    // ================= ANNULER =================
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
-    }
-
-    // ================= VALIDATION EMAIL =================
-    private boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-
-    // ================= MESSAGES =================
-    private void showError(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
     }
 }

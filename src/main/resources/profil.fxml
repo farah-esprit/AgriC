@@ -20,27 +20,15 @@
                         <Font name="System Bold" size="22.0" />
                     </font>
                 </Label>
-                <Label layoutX="29.0" layoutY="46.0" text="Profil" textFill="WHITE">
+                <Label fx:id="roleLabel" layoutX="29.0" layoutY="46.0" text="Utilisateur">
                     <font>
                         <Font name="System Bold" size="15.0" />
                     </font>
                 </Label>
-                <Line endX="75.99998474121094" layoutX="93.0" layoutY="90.0" startX="-93.0" stroke="#666666" />
+                <Line endX="89.60000610351562" layoutX="93.0" layoutY="90.0" startX="-93.0" stroke="#666666" />
                 <VBox layoutX="9.0" layoutY="110.0" prefHeight="200.0" prefWidth="186.0" spacing="5.0">
                     <children>
                         <HBox onMouseClicked="#handleBackToDashboard" prefHeight="40.0" prefWidth="186.0" spacing="8.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
-                            <children>
-                                <Label text="🏠" textFill="WHITE">
-                                    <font>
-                                        <Font size="20.0" />
-                                    </font>
-                                </Label>
-                                <Label prefHeight="32.0" prefWidth="62.0" text="Accueil" textFill="#f4f4f4">
-                                    <font>
-                                        <Font name="System Bold" size="15.0" />
-                                    </font>
-                                </Label>
-                            </children>
                             <padding>
                                 <Insets left="5.0" />
                             </padding>
@@ -78,7 +66,7 @@
                 <!-- EN-TÊTE -->
                 <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="70.0" prefHeight="60.0" prefWidth="554.0" spacing="20.0">
                     <children>
-                        <Label text="👤 Mon Profil">
+                        <Label text="👤 Mon Profil" textFill="#388e3c">
                             <font>
                                 <Font name="System Bold" size="28.0" />
                             </font>
@@ -94,20 +82,20 @@
                 </Label>
 
                 <!-- CARTE PROFIL -->
-                <VBox layoutX="30.0" layoutY="130.0" prefHeight="410.0" prefWidth="554.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <VBox layoutX="11.0" layoutY="165.0" prefHeight="410.0" prefWidth="594.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <children>
                         <!-- PHOTO -->
-                        <HBox alignment="CENTER" prefHeight="100.0">
+                        <HBox alignment="CENTER" prefHeight="90.0">
                             <children>
-                                <Circle fx:id="profileCircle" fill="#dcdcdc" radius="50.0" stroke="#388e3c" strokeWidth="3.0" />
+                                <Circle fx:id="profileCircle" fill="#dcdcdc" radius="45.0" stroke="#388e3c" strokeWidth="3.0" />
                             </children>
                         </HBox>
 
                         <!-- INFORMATIONS -->
-                        <VBox prefHeight="180.0" prefWidth="514.0" spacing="12.0">
+                        <VBox prefHeight="160.0" prefWidth="514.0" spacing="10.0">
                             <children>
                                 <!-- NOM -->
-                                <HBox prefHeight="30.0" spacing="10.0">
+                                <HBox prefHeight="25.0" spacing="10.0">
                                     <children>
                                         <Label prefWidth="120.0" text="Nom :" textFill="#666666">
                                             <font>
@@ -123,7 +111,7 @@
                                 </HBox>
 
                                 <!-- PRÉNOM -->
-                                <HBox prefHeight="30.0" spacing="10.0">
+                                <HBox prefHeight="25.0" spacing="10.0">
                                     <children>
                                         <Label prefWidth="120.0" text="Prénom :" textFill="#666666">
                                             <font>
@@ -139,7 +127,7 @@
                                 </HBox>
 
                                 <!-- EMAIL -->
-                                <HBox prefHeight="30.0" spacing="10.0">
+                                <HBox prefHeight="25.0" spacing="10.0">
                                     <children>
                                         <Label prefWidth="120.0" text="Email :" textFill="#666666">
                                             <font>
@@ -155,7 +143,7 @@
                                 </HBox>
 
                                 <!-- TÉLÉPHONE -->
-                                <HBox prefHeight="30.0" spacing="10.0">
+                                <HBox prefHeight="25.0" spacing="10.0">
                                     <children>
                                         <Label prefWidth="120.0" text="Téléphone :" textFill="#666666">
                                             <font>
@@ -189,33 +177,45 @@
                         </VBox>
 
                         <!-- BOUTONS EN BAS -->
-                        <HBox alignment="CENTER" spacing="15.0">
+                        <VBox alignment="CENTER" spacing="10.0">
                             <children>
-                                <!-- Bouton Créer (visible si pas de profil) -->
-                                <Button fx:id="createProfilButton" onAction="#handleCreateProfil" prefHeight="45.0" prefWidth="180.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="➕ Créer mon profil" visible="false">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Button>
+                                <!-- Première ligne : Créer OU Modifier/Supprimer -->
+                                <HBox alignment="CENTER" prefHeight="40.0" prefWidth="569.0" spacing="15.0">
+                                    <children>
+                                        <!-- Bouton Créer (visible si pas de profil) -->
+                                        <Button fx:id="createProfilButton" onAction="#handleCreateProfil" prefHeight="38.0" prefWidth="290.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="➕ Créer mon profil" visible="false">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Button>
 
-                                <!-- Bouton Modifier (visible si profil existe) -->
-                                <Button fx:id="modifierButton" onAction="#handleModifierProfil" prefHeight="45.0" prefWidth="180.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="✏️ Modifier le profil" visible="false">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Button>
+                                        <!-- Bouton Modifier (visible si profil existe) -->
+                                        <Button fx:id="modifierButton" onAction="#handleModifierProfil" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="✏️ Modifier" visible="false">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Button>
 
-                                <!-- Bouton Supprimer (visible si profil existe) -->
-                                <Button fx:id="supprimerButton" onAction="#handleSupprimerProfil" prefHeight="45.0" prefWidth="180.0" style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🗑️ Supprimer le profil" visible="false">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Button>
+                                        <!-- Bouton Supprimer (visible si profil existe) -->
+                                        <Button fx:id="supprimerButton" onAction="#handleSupprimerProfil" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🗑️ Supprimer" visible="false">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </HBox>
                             </children>
-                        </HBox>
+                        </VBox>
+
+                                            <!-- Deuxième ligne : Changer mot de passe (toujours visible) -->
+                          <Button onAction="#handleChangePassword" prefHeight="32.0" prefWidth="187.0" style="-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔑 Changer le mot de passe">
+                              <font>
+                                  <Font name="System Bold" size="13.0" />
+                              </font>
+                          </Button>
                     </children>
                     <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />
                     </padding>
                 </VBox>
             </children>

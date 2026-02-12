@@ -9,6 +9,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import service.ProfilService;
+import utils.ValidationUtils;
 import java.io.File;
 public class EditProfilController {
     @FXML private TextField nomField;
@@ -21,24 +22,59 @@ public class EditProfilController {
     @FXML private Label messageLabel;
     @FXML private Label titleLabel;
     @FXML private Circle profileCircle;
-
     private User currentUser;
     private Profil currentProfil;
     private ProfilService profilService;
     private ProfilController profilController;
     private String selectedImagePath = "";
-    private boolean isEditMode = false; // true = modification, false = création
+    private boolean isEditMode = false;
 
-    // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         profilService = new ProfilService();
-        if (messageLabel != null) {
-            messageLabel.setText("");
-        }
+        ValidationUtils.clearMessage(messageLabel);
+        setupRealTimeValidation();
     }
 
-    // ================= SETTERS =================
+    // ================= VALIDATION EN TEMPS RÉEL =================
+    private void setupRealTimeValidation() {
+        nomField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidName(newVal)) {
+                    ValidationUtils.setFieldSuccess(nomField);
+                } else {
+                    ValidationUtils.setFieldError(nomField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(nomField);
+            }
+        });
+
+        prenomField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidName(newVal)) {
+                    ValidationUtils.setFieldSuccess(prenomField);
+                } else {
+                    ValidationUtils.setFieldError(prenomField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(prenomField);
+            }
+        });
+
+        telephoneField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.trim().isEmpty()) {
+                if (ValidationUtils.isValidPhone(newVal)) {
+                    ValidationUtils.setFieldSuccess(telephoneField);
+                } else {
+                    ValidationUtils.setFieldError(telephoneField);
+                }
+            } else {
+                ValidationUtils.resetFieldStyle(telephoneField);
+            }
+        });
+    }
+
     public void setProfilController(ProfilController controller) {
         this.profilController = controller;
     }
@@ -50,7 +86,6 @@ public class EditProfilController {
     public void setProfil(Profil profil) {
         this.currentProfil = profil;
 
-        // Remplir les champs
         if (profil != null) {
             nomField.setText(profil.getNom());
             prenomField.setText(profil.getPrenom());
@@ -58,7 +93,6 @@ public class EditProfilController {
             bioField.setText(profil.getBio());
             selectedImagePath = profil.getImage();
 
-            // Afficher l'image
             if (selectedImagePath != null && !selectedImagePath.isEmpty()) {
                 loadProfileImage(selectedImagePath);
             }
@@ -69,19 +103,16 @@ public class EditProfilController {
         this.isEditMode = isEdit;
 
         if (isEdit) {
-            // Mode modification
             if (titleLabel != null) titleLabel.setText("✏️ Modifier mon profil");
             if (saveButton != null) saveButton.setText("💾 Enregistrer");
             if (deleteButton != null) deleteButton.setVisible(true);
         } else {
-            // Mode création
             if (titleLabel != null) titleLabel.setText("➕ Créer mon profil");
             if (saveButton != null) saveButton.setText("💾 Créer");
             if (deleteButton != null) deleteButton.setVisible(false);
         }
     }
 
-    // ================= UPLOAD IMAGE =================
     @FXML
     private void handleUploadImage() {
         FileChooser fileChooser = new FileChooser();
@@ -98,7 +129,6 @@ public class EditProfilController {
         }
     }
 
-    // ================= CHARGER L'IMAGE =================
     private void loadProfileImage(String imagePath) {
         try {
             File file = new File(imagePath);
@@ -107,47 +137,58 @@ public class EditProfilController {
                 profileCircle.setFill(new ImagePattern(image));
             }
         } catch (Exception e) {
-            showError("Erreur de chargement de l'image");
+            ValidationUtils.showError(messageLabel, "Erreur de chargement de l'image");
         }
     }
 
-    // ================= ENREGISTRER PROFIL =================
     @FXML
     private void handleSaveProfil() {
-        // Récupérer les valeurs
-        String nom = nomField.getText().trim();
-        String prenom = prenomField.getText().trim();
-        String telephone = telephoneField.getText().trim();
-        String bio = bioField.getText().trim();
+        String nom = ValidationUtils.sanitize(nomField.getText());
+        String prenom = ValidationUtils.sanitize(prenomField.getText());
+        String telephone = ValidationUtils.sanitize(telephoneField.getText());
+        String bio = ValidationUtils.sanitize(bioField.getText());
 
         // Validation
-        if (nom.isEmpty() || prenom.isEmpty() || telephone.isEmpty()) {
-            showError("❌ Veuillez remplir tous les champs obligatoires (*)");
+        if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(prenom) || !ValidationUtils.isNotEmpty(telephone)) {
+            ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs obligatoires (*)");
             return;
         }
 
-        if (!isValidPhone(telephone)) {
-            showError("❌ Format de téléphone invalide");
+        if (!ValidationUtils.isValidName(nom)) {
+            ValidationUtils.showError(messageLabel, "Format de nom invalide");
+            ValidationUtils.setFieldError(nomField);
+            return;
+        }
+
+        if (!ValidationUtils.isValidName(prenom)) {
+            ValidationUtils.showError(messageLabel, "Format de prénom invalide");
+            ValidationUtils.setFieldError(prenomField);
+            return;
+        }
+
+        if (!ValidationUtils.isValidPhone(telephone)) {
+            ValidationUtils.showError(messageLabel, "Format de téléphone invalide (ex: +216XXXXXXXX)");
+            ValidationUtils.setFieldError(telephoneField);
             return;
         }
 
         try {
             if (!isEditMode || currentProfil == null) {
-                // ✅ CRÉATION - ORDRE CORRECT DES PARAMÈTRES
+                // CRÉATION
                 Profil newProfil = new Profil(
-                        bio,              // 1. bio
-                        telephone,        // 2. telephone
-                        nom,              // 3. nom
-                        prenom,           // 4. prenom
-                        selectedImagePath,// 5. image
-                        currentUser       // 6. user
+                        bio,
+                        telephone,
+                        nom,
+                        prenom,
+                        selectedImagePath,
+                        currentUser
                 );
 
                 profilService.ajouter(newProfil);
-                showSuccess("✅ Profil créé avec succès !");
+                ValidationUtils.showSuccess(messageLabel, "Profil créé avec succès !");
 
             } else {
-                // ✅ MODIFICATION
+                // MODIFICATION
                 currentProfil.setNom(nom);
                 currentProfil.setPrenom(prenom);
                 currentProfil.setTelephone(telephone);
@@ -155,15 +196,14 @@ public class EditProfilController {
                 currentProfil.setImage(selectedImagePath);
 
                 profilService.modifier(currentProfil);
-                showSuccess("✅ Profil modifié avec succès !");
+                ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
             }
 
-            // Rafraîchir le profil principal
             if (profilController != null) {
                 profilController.refreshProfil();
             }
 
-            // Fermer la popup après 1 seconde
+            // Fermer après 1 seconde
             new Thread(() -> {
                 try {
                     Thread.sleep(1000);
@@ -174,12 +214,11 @@ public class EditProfilController {
             }).start();
 
         } catch (Exception e) {
-            showError("❌ Erreur : " + e.getMessage());
+            ValidationUtils.showError(messageLabel, "Erreur : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // ================= SUPPRIMER PROFIL =================
     @FXML
     private void handleDeleteProfil() {
         if (currentProfil == null) return;
@@ -193,7 +232,6 @@ public class EditProfilController {
             try {
                 profilService.supprimer(currentProfil.getId());
 
-                // Rafraîchir le profil principal
                 if (profilController != null) {
                     profilController.refreshProfil();
                 }
@@ -201,34 +239,14 @@ public class EditProfilController {
                 handleCancel();
 
             } catch (Exception e) {
-                showError("❌ Erreur : " + e.getMessage());
+                ValidationUtils.showError(messageLabel, "Erreur : " + e.getMessage());
             }
         }
     }
 
-    // ================= ANNULER =================
     @FXML
     private void handleCancel() {
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
     }
-
-    // ================= VALIDATION TÉLÉPHONE =================
-    private boolean isValidPhone(String phone) {
-        return phone.matches("^\\+?[0-9]{8,15}$");
-    }
-
-    // ================= MESSAGES =================
-    private void showError(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
-        }
-    }
-
-    private void showSuccess(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
-        }
-    }}
+}

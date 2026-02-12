@@ -360,4 +360,48 @@ public class UserService implements IService<User> {
             System.out.println("❌ Erreur fermeture connexion : " + e.getMessage());
         }
     }
+    public User findByEmail(String email) {
+        try {
+            Connection conn = DataBase.getConnection();
+            String sql = "SELECT * FROM user WHERE email = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("user_id"),
+                        rs.getString("nom"),
+                        rs.getString("email"),
+                        rs.getString("motDePasse"),
+                        Role.valueOf(rs.getString("role")),
+                        EtatCompte.valueOf(rs.getString("etatCompte"))
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Met à jour le mot de passe d'un utilisateur
+     */
+    public boolean updatePassword(int userId, String newPassword) {
+        try {
+            Connection conn = DataBase.getConnection();
+            String sql = "UPDATE user SET motDePasse = ? WHERE user_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
