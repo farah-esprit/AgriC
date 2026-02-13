@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.DashboardAgriculteurController"
+            prefWidth="800"
+            prefHeight="500"
+            style="-fx-background-color: #F5F5F5;">
+
+    <!-- ===== SIDEBAR GAUCHE ===== -->
+    <VBox prefWidth="200"
+          prefHeight="500"
+          style="-fx-background-color: #2E7D32;"
+          spacing="15">
+
+        <Label text="🌱 AgriConnect"
+               style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"
+               padding="20"/>
+
+        <Separator/>
+
+        <!-- Menu items -->
+        <HBox spacing="10"
+              alignment="CENTER_LEFT"
+              padding="10"
+              onMouseClicked="#handleGoToCulture"
+              style="-fx-cursor: hand;">
+            <Label text="🌿 Ma culture"
+                   style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+        </HBox>
+
+        <HBox spacing="10"
+              alignment="CENTER_LEFT"
+              padding="10"
+              style="-fx-cursor: hand;">
+            <Label text="🌦 Météo"
+                   style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+        </HBox>
+
+        <HBox spacing="10"
+              alignment="CENTER_LEFT"
+              padding="10"
+              style="-fx-cursor: hand;">
+            <Label text="📊 Statistiques"
+                   style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+        </HBox>
+
+        <HBox spacing="10"
+              alignment="CENTER_LEFT"
+              padding="10"
+              style="-fx-cursor: hand;">
+            <Label text="🚪 Déconnexion"
+                   style="-fx-text-fill: #FFCDD2; -fx-font-size: 14px;"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- ===== CONTENU DYNAMIQUE ===== -->
+    <AnchorPane fx:id="contentPane"
+                layoutX="200"
+                layoutY="0"
+                prefWidth="600"
+                prefHeight="500"
+                style="-fx-background-color: white; -fx-padding: 15;">
+
+        <!-- Message par défaut -->
+        <Label text="Bienvenue dans votre espace Agriculteur 🌾"
+               layoutX="50"
+               layoutY="50"
+               style="-fx-font-size: 18px; -fx-text-fill: #2E7D32;"/>
+
+        <Label text="Sélectionnez une option dans le menu à gauche."
+               layoutX="50"
+               layoutY="90"
+               style="-fx-font-size: 13px; -fx-text-fill: #666;"/>
+
+    </AnchorPane>
+
+</AnchorPane>

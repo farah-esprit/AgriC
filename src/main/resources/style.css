@@ -1,0 +1,19 @@
+.menu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 5;
+}
+
+.menu-btn:hover {
+    -fx-background-color: #334155;
+    -fx-background-radius: 8;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8,0,0,3);
+}

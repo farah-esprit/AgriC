@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controllers.Culture.CultureController"
+            prefWidth="1200" prefHeight="700"
+            style="-fx-background-color:#f0f4f7;">
+
+    <!-- SIDEBAR FIXE À GAUCHE -->
+    <left>
+        <VBox spacing="20" prefWidth="240" style="-fx-background-color: #2E8B57; -fx-padding: 25;">
+            <Label text="🌱 AgriConnect"
+                   style="-fx-font-size: 26px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button text="🏠 Accueil" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+            <Button text="🌱 Cultures" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+            <Button text="💧 Irrigation" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+            <Button text="📦 Stock" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+            <Button text="⚙ Paramètres" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+        </VBox>
+    </left>
+
+    <!-- CONTENU PRINCIPAL -->
+    <center>
+        <StackPane fx:id="mainStackPane" style="-fx-padding: 40;">
+
+            <VBox spacing="30" alignment="TOP_CENTER"
+                  style="-fx-background-color: white;
+                         -fx-background-radius: 20;
+                         -fx-padding: 40;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20,0,0,5);"
+                  maxWidth="850">
+
+                <!-- HEADER PREMIUM -->
+                <Label text="🌱 Ajouter une Culture"
+                       style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #2E8B57;"/>
+                <Separator/>
+
+                <!-- FORMULAIRE -->
+                <HBox spacing="40">
+
+                    <!-- COLONNE GAUCHE -->
+                    <GridPane hgap="15" vgap="20">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120"/>
+                            <ColumnConstraints prefWidth="280"/>
+                        </columnConstraints>
+
+                        <Label text="Nom * :" GridPane.rowIndex="0"/>
+                        <TextField fx:id="txtNom"
+                                   promptText="Nom de la culture"
+                                   GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-background-radius:12;
+                                          -fx-border-radius:12;
+                                          -fx-border-color:#d0d0d0;
+                                          -fx-padding:8;
+                                          -fx-focus-color:#2E8B57;
+                                          -fx-faint-focus-color:transparent;"/>
+
+                        <Label text="Type :" GridPane.rowIndex="1"/>
+                        <TextField fx:id="txtType"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   style="-fx-background-radius:12;
+                                          -fx-border-radius:12;
+                                          -fx-border-color:#d0d0d0;
+                                          -fx-padding:8;
+                                          -fx-focus-color:#2E8B57;
+                                          -fx-faint-focus-color:transparent;"/>
+
+                        <Label text="Superficie * :" GridPane.rowIndex="2"/>
+                        <TextField fx:id="txtSuperficie"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                   style="-fx-background-radius:12;
+                                          -fx-border-radius:12;
+                                          -fx-border-color:#d0d0d0;
+                                          -fx-padding:8;
+                                          -fx-focus-color:#2E8B57;
+                                          -fx-faint-focus-color:transparent;"/>
+
+                        <Label text="Localisation :" GridPane.rowIndex="3"/>
+                        <TextField fx:id="txtLocalisation"
+                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   style="-fx-background-radius:12;
+                                          -fx-border-radius:12;
+                                          -fx-border-color:#d0d0d0;
+                                          -fx-padding:8;
+                                          -fx-focus-color:#2E8B57;
+                                          -fx-faint-focus-color:transparent;"/>
+                    </GridPane>
+
+                    <!-- COLONNE DROITE IMAGE -->
+                    <VBox spacing="15" alignment="CENTER"
+                          style="-fx-background-color:#f9fafb;
+                                 -fx-padding:20;
+                                 -fx-background-radius:15;
+                                 -fx-border-color:#dfe6e9;
+                                 -fx-border-radius:15;
+                                 -fx-border-width:1;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10,0,0,2);">
+
+                        <ImageView fx:id="imageView"
+                                   fitWidth="220" fitHeight="160"
+                                   preserveRatio="true"
+                                   style="-fx-border-color:#ccc; -fx-border-radius:12;"/>
+
+                        <Button text="📷 Choisir Image"
+                                fx:id="btnImage"
+                                onAction="#choisirImage"
+                                style="-fx-background-color:#2E8B57;
+                                       -fx-text-fill:white;
+                                       -fx-font-weight:bold;
+                                       -fx-background-radius:12;
+                                       -fx-pref-width:180;
+                                       -fx-pref-height:38;"/>
+
+                        <Label fx:id="lblImage"
+                               style="-fx-font-size:12px; -fx-text-fill:#777;"/>
+                    </VBox>
+
+                </HBox>
+
+                <Separator/>
+
+                <!-- BOUTONS ACTION PREMIUM -->
+                <HBox spacing="20" alignment="CENTER_RIGHT">
+                    <Button text="❌ Annuler"
+                            onAction="#fermerFenetre"
+                            style="-fx-background-color:#f44336;
+                                   -fx-text-fill:white;
+                                   -fx-font-weight:bold;
+                                   -fx-background-radius:12;
+                                   -fx-pref-width:120;
+                                   -fx-pref-height:38;"/>
+                    <Button fx:id="btnAction"
+                            text="Ajouter"
+                            onAction="#handleAction"
+                            style="-fx-background-color:#2E8B57;
+                                   -fx-text-fill:white;
+                                   -fx-font-weight:bold;
+                                   -fx-background-radius:12;
+                                   -fx-pref-width:120;
+                                   -fx-pref-height:38;"/>
+                </HBox>
+
+                <!-- MESSAGE DYNAMIQUE -->
+                <Label fx:id="lblMessage"
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill: #2E8B57;"/>
+
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

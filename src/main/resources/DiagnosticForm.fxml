@@ -1,0 +1,17 @@
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controllers.DiagnosticController"
+      spacing="15" alignment="CENTER"
+      style="-fx-padding:30; -fx-background-color:white; -fx-background-radius:15;">
+
+    <Label text="📋 Nouveau Diagnostic" style="-fx-font-size:24px; -fx-font-weight:bold;"/>
+
+    <TextField fx:id="txtEtat" promptText="État de la culture"/>
+    <TextArea fx:id="txtDetails" promptText="Détails / observations" prefRowCount="3"/>
+    <TextArea fx:id="txtRecommandations" promptText="Recommandations" prefRowCount="3"/>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#fermer"/>
+        <Button text="Enregistrer" onAction="#handleSave"/>
+    </HBox>
+
+</VBox>
