@@ -16,6 +16,7 @@ public class MainGUI extends Application {
             BorderPane root = loader.load();
 
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
             primaryStage.setTitle("🌱 Gestion des Cultures - Agriconnect");
             primaryStage.setScene(scene);

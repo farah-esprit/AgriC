@@ -9,7 +9,61 @@
 .menu-btn:hover {
     -fx-background-color: #334155;
     -fx-background-radius: 8;
+}/* Pagination container */
+ .pagination {
+     -fx-background-color: transparent;
+ }
+
+ /* Boutons numéros */
+ .pagination .number-button {
+     -fx-background-color: white;
+     -fx-text-fill: #2E8B57;
+     -fx-font-weight: bold;
+     -fx-background-radius: 50;
+     -fx-border-radius: 50;
+     -fx-border-color: #d1d9de;
+     -fx-border-width: 1;
+     -fx-min-width: 36px;
+     -fx-min-height: 36px;
+ }
+
+ /* Hover effect */
+ .pagination .number-button:hover {
+     -fx-background-color: #e8f5e9;
+     -fx-scale-x: 1.1;
+     -fx-scale-y: 1.1;
+     -fx-cursor: hand;
+ }
+
+ /* Page active */
+ .pagination .number-button:selected {
+     -fx-background-color: linear-gradient(to right, #2E8B57, #4CAF50);
+     -fx-text-fill: white;
+     -fx-border-color: transparent;
+ }
+
+ /* Boutons précédent / suivant */
+ .pagination .left-arrow-button,
+ .pagination .right-arrow-button {
+     -fx-background-color: white;
+     -fx-background-radius: 50;
+     -fx-border-radius: 50;
+     -fx-border-color: #d1d9de;
+     -fx-min-width: 36px;
+     -fx-min-height: 36px;
+ }
+
+ /* Hover précédent / suivant */
+ .pagination .left-arrow-button:hover,
+ .pagination .right-arrow-button:hover {
+     -fx-background-color: #e8f5e9;
+     -fx-cursor: hand;
+ }
+.pagination .number-button:selected {
+    -fx-background-color: linear-gradient(to right, #2E8B57, #4CAF50);
+    -fx-effect: dropshadow(gaussian, rgba(46,139,87,0.4), 10, 0, 0, 4);
 }
+
 
 .card {
     -fx-background-color: white;

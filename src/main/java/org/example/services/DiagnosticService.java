@@ -1,30 +1,20 @@
 package org.example.services;
 
-import org.example.entities.diagnostic;
-import org.example.entities.diagnostic;
-
+import org.example.entities.Diagnostic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DiagnosticService {
 
-    private List<diagnostic> diagnostics = new ArrayList<>();
-    private int nextId = 1;
+    private final List<Diagnostic> diagnostics = new ArrayList<>();
 
-    // Ajouter un diagnostic
-    public void ajouter(diagnostic diag) {
-        diag.setId(nextId++);
+    public void ajouter(Diagnostic diag) {
+        diag.setId(diagnostics.size() + 1); // simple id auto-increment
         diagnostics.add(diag);
     }
 
-    // Lister tous les diagnostics
-    public List<diagnostic> getAll() {
-        return diagnostics;
-    }
-
-    // Lister les diagnostics pour une culture
-    public List<diagnostic> getByCulture(int cultureId) {
+    public List<Diagnostic> getByCultureId(int cultureId) {
         return diagnostics.stream()
                 .filter(d -> d.getCultureId() == cultureId)
                 .collect(Collectors.toList());
