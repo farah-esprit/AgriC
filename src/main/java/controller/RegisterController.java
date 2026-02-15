@@ -162,7 +162,7 @@ public class RegisterController {
         }
     }
 
-    // ================= RETOUR LOGIN =================
+    //RETOUR LOGIN
     @FXML
     private void handleBackToLogin() {
         try {
