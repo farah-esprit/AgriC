@@ -35,7 +35,7 @@ public class DashboardFournisseurController {
 
     // ================= NAVIGATION VERS PROFIL =================
     @FXML
-    private void handleGoToProfil(MouseEvent event) {
+    private void handleGoToProfil(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
             Parent root = loader.load();
@@ -52,7 +52,6 @@ public class DashboardFournisseurController {
             e.printStackTrace();
         }
     }
-
     // ================= DÉCONNEXION =================
     @FXML
     private void handleLogout(MouseEvent event) {
@@ -71,11 +70,7 @@ public class DashboardFournisseurController {
     }
 
     // ================= MÉTHODE UTILITAIRE =================
-    /**
-     * Récupère l'utilisateur connecté
-     * Vos collègues peuvent utiliser cette méthode dans leurs fonctionnalités
-     * @return User connecté
-     */
+
     public User getCurrentUser() {
         return currentUser;
     }

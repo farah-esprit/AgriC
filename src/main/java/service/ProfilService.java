@@ -1,7 +1,7 @@
 package service;
 
 import entities.Profil;
-import utils.DataBase;
+import utils.MyDataBase;
 
 import java.sql.*;
 
@@ -11,7 +11,7 @@ public class ProfilService implements IService<Profil> {
 
     public ProfilService() {
         try {
-            connection = DataBase.getConnection();
+            connection = MyDataBase.getConnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

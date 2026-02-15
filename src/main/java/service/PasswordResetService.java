@@ -1,6 +1,6 @@
 package service;
 
-import utils.DataBase;
+import utils.MyDataBase;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -21,7 +21,7 @@ public class PasswordResetService {
      */
     public String createResetRequest(int userId) {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
 
             // Générer le code
             String token = generateResetCode();
@@ -52,7 +52,7 @@ public class PasswordResetService {
      */
     public Integer verifyResetCode(String token) {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
 
             String sql = "SELECT user_id, expiration, used FROM password_reset " +
                     "WHERE token = ? ORDER BY created_at DESC LIMIT 1";
@@ -96,7 +96,7 @@ public class PasswordResetService {
      */
     public void markTokenAsUsed(String token) {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             String sql = "UPDATE password_reset SET used = TRUE WHERE token = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, token);

@@ -3,7 +3,7 @@ package service;
 import entities.User;
 import entities.EtatCompte;
 import entities.Role;
-import utils.DataBase;
+import utils.MyDataBase;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ public class UserService implements IService<User> {
     // ================= CONSTRUCTEUR =================
     public UserService() {
         try {
-            connection = DataBase.getConnection();
+            connection = MyDataBase.getConnection();
         } catch (SQLException e) {
             System.out.println("Erreur de connexion : " + e.getMessage());
         }
@@ -362,7 +362,7 @@ public class UserService implements IService<User> {
     }
     public User findByEmail(String email) {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             String sql = "SELECT * FROM user WHERE email = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -390,7 +390,7 @@ public class UserService implements IService<User> {
      */
     public boolean updatePassword(int userId, String newPassword) {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             String sql = "UPDATE user SET motDePasse = ? WHERE user_id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, newPassword);

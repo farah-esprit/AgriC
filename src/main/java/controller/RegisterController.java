@@ -14,12 +14,18 @@ public class RegisterController {
     @FXML private TextField nomField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
     @FXML private PasswordField confirmPasswordField;
+    @FXML private TextField confirmPasswordTextField;
     @FXML private ChoiceBox<Role> roleChoice;
     @FXML private Label errorLabel;
+    @FXML private Label passwordStrengthLabel;
     @FXML private Button registerButton;
-
+    @FXML private Button togglePasswordBtn;
+    @FXML private Button toggleConfirmPasswordBtn;
     private UserService userService;
+    private boolean isPasswordVisible = false;
+    private boolean isConfirmPasswordVisible = false;
 
     @FXML
     public void initialize() {
@@ -29,8 +35,79 @@ public class RegisterController {
         roleChoice.getItems().addAll(Role.AGRICULTEUR, Role.EXPERT, Role.FOURNISSEUR);
         roleChoice.setValue(Role.AGRICULTEUR);
 
+        // Synchroniser les champs de mot de passe
+        bindPasswordFields();
+
         // Validation en temps réel
         setupRealTimeValidation();
+    }
+
+    // ================= SYNCHRONISATION MOT DE PASSE =================
+    private void bindPasswordFields() {
+        // Synchroniser passwordField et passwordTextField
+        passwordField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.equals(passwordTextField.getText())) {
+                passwordTextField.setText(newVal);
+            }
+        });
+
+        passwordTextField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.equals(passwordField.getText())) {
+                passwordField.setText(newVal);
+            }
+        });
+
+        // Synchroniser confirmPasswordField et confirmPasswordTextField
+        confirmPasswordField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.equals(confirmPasswordTextField.getText())) {
+                confirmPasswordTextField.setText(newVal);
+            }
+        });
+
+        confirmPasswordTextField.textProperty().addListener((obs, old, newVal) -> {
+            if (!newVal.equals(confirmPasswordField.getText())) {
+                confirmPasswordField.setText(newVal);
+            }
+        });
+    }
+
+    // ================= TOGGLE VISIBILITÉ MOT DE PASSE =================
+    @FXML
+    private void togglePasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible;
+
+        if (isPasswordVisible) {
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            togglePasswordBtn.setText("🙈");
+        } else {
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+            togglePasswordBtn.setText("👁️");
+        }
+    }
+
+    @FXML
+    private void toggleConfirmPasswordVisibility() {
+        isConfirmPasswordVisible = !isConfirmPasswordVisible;
+
+        if (isConfirmPasswordVisible) {
+            confirmPasswordTextField.setVisible(true);
+            confirmPasswordTextField.setManaged(true);
+            confirmPasswordField.setVisible(false);
+            confirmPasswordField.setManaged(false);
+            toggleConfirmPasswordBtn.setText("🙈");
+        } else {
+            confirmPasswordField.setVisible(true);
+            confirmPasswordField.setManaged(true);
+            confirmPasswordTextField.setVisible(false);
+            confirmPasswordTextField.setManaged(false);
+            toggleConfirmPasswordBtn.setText("👁️");
+        }
     }
 
     // ================= VALIDATION EN TEMPS RÉEL =================
@@ -61,31 +138,66 @@ public class RegisterController {
             }
         });
 
-        // Validation du mot de passe
-        passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.isEmpty()) {
-                if (ValidationUtils.isValidPassword(newVal)) {
-                    ValidationUtils.setFieldSuccess(passwordField);
-                } else {
-                    ValidationUtils.setFieldError(passwordField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(passwordField);
-            }
-        });
+        // Validation mot de passe (sur les deux champs)
+        passwordField.textProperty().addListener((obs, oldVal, newVal) -> validatePassword(newVal));
+        passwordTextField.textProperty().addListener((obs, oldVal, newVal) -> validatePassword(newVal));
 
-        // Validation de la confirmation
-        confirmPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.isEmpty()) {
-                if (newVal.equals(passwordField.getText())) {
-                    ValidationUtils.setFieldSuccess(confirmPasswordField);
-                } else {
-                    ValidationUtils.setFieldError(confirmPasswordField);
-                }
+        // Validation confirmation
+        confirmPasswordField.textProperty().addListener((obs, oldVal, newVal) -> validateConfirmPassword(newVal));
+        confirmPasswordTextField.textProperty().addListener((obs, oldVal, newVal) -> validateConfirmPassword(newVal));
+    }
+
+    private void validatePassword(String password) {
+        if (!password.isEmpty()) {
+            if (ValidationUtils.isStrongPassword(password)) {
+                ValidationUtils.setFieldSuccess(passwordField);
+                ValidationUtils.setFieldSuccess(passwordTextField);
+                showPasswordStrength("✅ Mot de passe fort", "#4caf50");
+            } else if (ValidationUtils.isValidPassword(password)) {
+                ValidationUtils.setFieldError(passwordField);
+                ValidationUtils.setFieldError(passwordTextField);
+                showPasswordStrength("⚠️ Mot de passe faible - Ajoutez majuscule, minuscule et chiffre", "#ff9800");
             } else {
-                ValidationUtils.resetFieldStyle(confirmPasswordField);
+                ValidationUtils.setFieldError(passwordField);
+                ValidationUtils.setFieldError(passwordTextField);
+                showPasswordStrength("❌ Minimum 8 caractères", "#d32f2f");
             }
-        });
+        } else {
+            ValidationUtils.resetFieldStyle(passwordField);
+            ValidationUtils.resetFieldStyle(passwordTextField);
+            hidePasswordStrength();
+        }
+    }
+
+    private void validateConfirmPassword(String confirmPassword) {
+        String password = passwordField.getText();
+        if (!confirmPassword.isEmpty()) {
+            if (confirmPassword.equals(password)) {
+                ValidationUtils.setFieldSuccess(confirmPasswordField);
+                ValidationUtils.setFieldSuccess(confirmPasswordTextField);
+            } else {
+                ValidationUtils.setFieldError(confirmPasswordField);
+                ValidationUtils.setFieldError(confirmPasswordTextField);
+            }
+        } else {
+            ValidationUtils.resetFieldStyle(confirmPasswordField);
+            ValidationUtils.resetFieldStyle(confirmPasswordTextField);
+        }
+    }
+
+    // ================= AFFICHER LA FORCE DU MOT DE PASSE =================
+    private void showPasswordStrength(String message, String color) {
+        if (passwordStrengthLabel != null) {
+            passwordStrengthLabel.setText(message);
+            passwordStrengthLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px; -fx-font-weight: bold;");
+            passwordStrengthLabel.setVisible(true);
+        }
+    }
+
+    private void hidePasswordStrength() {
+        if (passwordStrengthLabel != null) {
+            passwordStrengthLabel.setVisible(false);
+        }
     }
 
     // ================= INSCRIPTION =================
@@ -125,17 +237,24 @@ public class RegisterController {
             return;
         }
 
-        // Validation du mot de passe
-        if (!ValidationUtils.hasMinLength(password, 4)) {
-            ValidationUtils.showError(errorLabel, "Le mot de passe doit contenir au moins 4 caractères");
+        // Validation mot de passe minimum 8 caractères
+        if (!ValidationUtils.isValidPassword(password)) {
+            ValidationUtils.showError(errorLabel, "Le mot de passe doit contenir au moins 8 caractères");
             ValidationUtils.setFieldError(passwordField);
+            ValidationUtils.setFieldError(passwordTextField);
             return;
+        }
+
+        // Vérification mot de passe fort (avertissement)
+        if (!ValidationUtils.isStrongPassword(password)) {
+            ValidationUtils.showWarning(errorLabel, "⚠️ Mot de passe faible : Ajoutez majuscule, minuscule et chiffre pour plus de sécurité");
         }
 
         // Vérification de la confirmation
         if (!password.equals(confirmPassword)) {
             ValidationUtils.showError(errorLabel, "Les mots de passe ne correspondent pas");
             ValidationUtils.setFieldError(confirmPasswordField);
+            ValidationUtils.setFieldError(confirmPasswordTextField);
             return;
         }
 
@@ -162,7 +281,7 @@ public class RegisterController {
         }
     }
 
-    //RETOUR LOGIN
+    // ================= RETOUR LOGIN =================
     @FXML
     private void handleBackToLogin() {
         try {

@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import utils.DataBase;
+import utils.MyDataBase;
 
 public class ProfilController {
     @FXML private Label nomLabel;
@@ -99,7 +99,7 @@ public class ProfilController {
         }
 
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             String sql = "SELECT * FROM profil WHERE user_id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, currentUser.getId());

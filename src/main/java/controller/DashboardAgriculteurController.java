@@ -37,7 +37,7 @@ public class DashboardAgriculteurController {
         }
     }
     @FXML
-    private void handleGoToProfil(MouseEvent event) {
+    private void handleGoToProfil(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
             Parent root = loader.load();
@@ -45,13 +45,13 @@ public class DashboardAgriculteurController {
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
 
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mon Profil");
 
         } catch (Exception e) {
+            System.err.println("❌ Erreur lors du chargement du profil");
             e.printStackTrace();
         }
     }
-
 }

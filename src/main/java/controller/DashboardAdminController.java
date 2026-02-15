@@ -18,7 +18,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import service.UserService;
-import utils.DataBase;
+import utils.MyDataBase;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -83,7 +83,7 @@ public class DashboardAdminController {
         }
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
+    //DÉFINIR L'UTILISATEUR
     public void setUser(User user) {
         this.currentUser = user;
         if (welcomeLabel != null) {
@@ -91,7 +91,7 @@ public class DashboardAdminController {
         }
     }
 
-    // ================= CONFIGURATION FILTRES =================
+    //CONFIGURATION FILTRES
     private void setupRoleFilter() {
         if (roleFilter != null) {
             roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
@@ -99,7 +99,7 @@ public class DashboardAdminController {
         }
     }
 
-    // ================= CONFIGURATION COLONNES TABLEAU =================
+    //CONFIGURATION COLONNES TABLEAU
     private void setupTableColumns() {
         if (usersTable == null) return;
 
@@ -179,10 +179,10 @@ public class DashboardAdminController {
         });
     }
 
-    // ================= CHARGER STATISTIQUES =================
+    //CHARGER STATISTIQUES
     private void loadStatistics() {
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
 
             // Total utilisateurs
@@ -233,11 +233,11 @@ public class DashboardAdminController {
         }
     }
 
-    // ================= CHARGER UTILISATEURS =================
+    //CHARGER UTILISATEURS
     private void loadUsers() {
         usersList.clear();
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM user ORDER BY user_id DESC");
 
@@ -392,7 +392,7 @@ public class DashboardAdminController {
         if (roleFilter != null) {
             roleFilter.setValue("Tous");
         }
-        showSuccess("🔄 Données actualisées !");
+        showSuccess("Données actualisées !");
     }
 
     // ================= NAVIGATION - BUTTONS (ActionEvent) =================

@@ -11,11 +11,11 @@ public class ValidationUtils {
     );
 
     private static final Pattern PHONE_PATTERN = Pattern.compile(
-            "^\\+?[0-9]{8,15}$"
+            "^\\+?[0-9]{8,8}$"
     );
 
     private static final Pattern NAME_PATTERN = Pattern.compile(
-            "^[A-Za-zÀ-ÿ\\s'-]{2,50}$"
+            "^[A-Za-zÀ-ÿ\\s'-]{4,10}$"
     );
 
     // ================= VALIDATION EMAIL =================
@@ -35,7 +35,7 @@ public class ValidationUtils {
 
     // ================= VALIDATION MOT DE PASSE =================
     public static boolean isValidPassword(String password) {
-        return password != null && password.length() >= 4;
+        return password != null && password.length() >= 8;
     }
 
     public static boolean isStrongPassword(String password) {

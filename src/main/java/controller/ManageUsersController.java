@@ -18,7 +18,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import service.UserService;
-import utils.DataBase;
+import utils.MyDataBase;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -157,7 +157,7 @@ public class ManageUsersController {
     private void loadUsers() {
         usersList.clear();
         try {
-            Connection conn = DataBase.getConnection();
+            Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM user ORDER BY user_id DESC");
 

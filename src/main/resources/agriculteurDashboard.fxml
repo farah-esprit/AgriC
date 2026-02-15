@@ -185,7 +185,7 @@
                         </Label>
 
                         <!-- BOUTON MON PROFIL -->
-                        <Button onMouseClicked="#handleGoToProfil" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="👤 Mon Profil">
+                        <Button onAction="#handleGoToProfil" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="👤 Mon Profil">
                             <font>
                                 <Font name="System Bold" size="16.0" />
                             </font>
