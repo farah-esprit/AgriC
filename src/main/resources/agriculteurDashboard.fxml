@@ -104,6 +104,23 @@
                                 <Insets left="10.0" />
                             </padding>
                         </HBox>
+                  <HBox layoutX="10.0" layoutY="144.0" prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
+                     <children>
+                        <Label text="📝" textFill="WHITE">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Label prefHeight="31.0" prefWidth="150.0" text="Réclamation" textFill="#ffffff">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </HBox>
 
                         <!-- Boutique -->
                         <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
