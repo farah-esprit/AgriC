@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.HistoriqueCommandesController"
+            prefWidth="1000" prefHeight="700"
+            styleClass="main-view"
+            stylesheets="@../css/style.css">
+
+    <top>
+        <VBox styleClass="header">
+            <Label text="Historique des Commandes" styleClass="section-title-large" alignment="CENTER"/>
+            <Label text="Les 20 dernières commandes (les plus récentes en haut)" styleClass="subtitle"/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+            <TableView fx:id="tableHistorique" styleClass="table-view-modern">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="70" minWidth="60"/>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="160" minWidth="140"/>
+                    <TableColumn fx:id="colProduit" text="Produit" prefWidth="220" minWidth="180"/>
+                    <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="100" minWidth="80" style="-fx-alignment: CENTER-RIGHT;"/>
+                    <TableColumn fx:id="colStatut" text="Statut" prefWidth="140" minWidth="120"/>
+                </columns>
+            </TableView>
+
+            <HBox alignment="CENTER_RIGHT" spacing="15">
+                <Button text="Retour à l'accueil" onAction="#retourAccueil" styleClass="button button-info"/>
+                <Button text="Actualiser" onAction="#actualiser" styleClass="button button-info"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>
