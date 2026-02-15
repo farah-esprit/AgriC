@@ -4,52 +4,120 @@ import java.time.LocalDate;
 
 public class Diagnostic {
 
-    private int id;
-    private int cultureId;
+    private int idDiagnostic;
+    private int idCulture;
+    private int idUser;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    private String photoPath;
+
     private LocalDate dateDiagnostic;
-    private String etat; // État de la culture
-    private String symptomes; // Symptômes observés
-    private String informationsComplementaires; // Infos complémentaires
-    private String recommandations; // Conseils
-    private String photo; // chemin image/photo
+    private String etat;
+    private String symptomes;
+    private String informationsComplementaires;
+    private String recommandations;
+
+    private String diseaseDetected;
+    private double confidence;
+    private String rapportIa;
 
     public Diagnostic() {}
 
-    public Diagnostic(int id, int cultureId, LocalDate dateDiagnostic, String etat,
-                      String symptomes, String informationsComplementaires,
-                      String recommandations, String photo) {
-        this.id = id;
-        this.cultureId = cultureId;
-        this.dateDiagnostic = dateDiagnostic;
-        this.etat = etat;
-        this.symptomes = symptomes;
-        this.informationsComplementaires = informationsComplementaires;
-        this.recommandations = recommandations;
-        this.photo = photo;
+    // ================= GETTERS & SETTERS =================
+
+    public int getIdDiagnostic() {
+        return idDiagnostic;
     }
 
-    // Getters & Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setIdDiagnostic(int idDiagnostic) {
+        this.idDiagnostic = idDiagnostic;
+    }
 
-    public int getCultureId() { return cultureId; }
-    public void setCultureId(int cultureId) { this.cultureId = cultureId; }
+    public int getIdCulture() {
+        return idCulture;
+    }
 
-    public LocalDate getDateDiagnostic() { return dateDiagnostic; }
-    public void setDateDiagnostic(LocalDate dateDiagnostic) { this.dateDiagnostic = dateDiagnostic; }
+    public void setIdCulture(int idCulture) {
+        this.idCulture = idCulture;
+    }
 
-    public String getEtat() { return etat; }
-    public void setEtat(String etat) { this.etat = etat; }
+    public int getIdUser() {
+        return idUser;
+    }
 
-    public String getSymptomes() { return symptomes; }
-    public void setSymptomes(String symptomes) { this.symptomes = symptomes; }
 
-    public String getInformationsComplementaires() { return informationsComplementaires; }
-    public void setInformationsComplementaires(String informationsComplementaires) { this.informationsComplementaires = informationsComplementaires; }
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
 
-    public String getRecommandations() { return recommandations; }
-    public void setRecommandations(String recommandations) { this.recommandations = recommandations; }
+    public LocalDate getDateDiagnostic() {
+        return dateDiagnostic;
+    }
 
-    public String getPhoto() { return photo; }
-    public void setPhoto(String photo) { this.photo = photo; }
+    public void setDateDiagnostic(LocalDate dateDiagnostic) {
+        this.dateDiagnostic = dateDiagnostic;
+    }
+
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
+    public String getSymptomes() {
+        return symptomes;
+    }
+
+    public void setSymptomes(String symptomes) {
+        this.symptomes = symptomes;
+    }
+
+    public String getInformationsComplementaires() {
+        return informationsComplementaires;
+    }
+
+    public void setInformationsComplementaires(String informationsComplementaires) {
+        this.informationsComplementaires = informationsComplementaires;
+    }
+
+    public String getRecommandations() {
+        return recommandations;
+    }
+
+    public void setRecommandations(String recommandations) {
+        this.recommandations = recommandations;
+    }
+
+    public String getDiseaseDetected() {
+        return diseaseDetected;
+    }
+
+    public void setDiseaseDetected(String diseaseDetected) {
+        this.diseaseDetected = diseaseDetected;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+
+    public String getRapportIa() {
+        return rapportIa;
+    }
+
+    public void setRapportIa(String rapportIa) {
+        this.rapportIa = rapportIa;
+    }
 }

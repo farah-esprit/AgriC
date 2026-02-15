@@ -4,30 +4,71 @@
 
 <BorderPane fx:controller="org.example.controllers.Diagnostic.DiagnosticController"
             xmlns:fx="http://javafx.com/fxml/1"
-            prefWidth="600" prefHeight="600"
-            style="-fx-padding:20; -fx-background-color:white;">
+            prefWidth="1100" prefHeight="700"
+            style="-fx-background-color:#f4f6f9;">
 
+    <!-- HEADER -->
     <top>
-        <Label fx:id="lblCulture" style="-fx-font-size:20px; -fx-font-weight:bold;"/>
+        <HBox alignment="CENTER_LEFT" spacing="20"
+              style="-fx-padding:25; -fx-background-color:#2E8B57;">
+            <Label fx:id="lblCulture"
+                   style="-fx-font-size:24px;
+                          -fx-text-fill:white;
+                          -fx-font-weight:bold;"/>
+        </HBox>
     </top>
 
+    <!-- CONTENT -->
     <center>
-        <VBox spacing="10" style="-fx-padding:10;">
-            <TextField fx:id="txtEtat" promptText="État de la culture"/>
-            <TextField fx:id="txtSymptomes" promptText="Symptômes observés"/>
-            <TextField fx:id="txtInformations" promptText="Informations complémentaires"/>
-            <Button fx:id="btnChoisirPhoto" text="Choisir Photo" onAction="#choisirPhoto"/>
-            <Button fx:id="btnSauvegarder" text="💾 Sauvegarder" onAction="#sauvegarderDiagnostic"/>
+        <HBox spacing="30" style="-fx-padding:30;">
 
-            <Label text="Historique des diagnostics :" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
-            <TableView fx:id="tblHistorique" prefHeight="250">
-                <columns>
-                    <TableColumn fx:id="colDate" text="Date" prefWidth="120"/>
-                    <TableColumn fx:id="colEtat" text="État" prefWidth="120"/>
-                    <TableColumn fx:id="colSymptomes" text="Symptômes" prefWidth="150"/>
-                    <TableColumn fx:id="colInformations" text="Infos Complémentaires" prefWidth="200"/>
-                </columns>
-            </TableView>
-        </VBox>
+            <!-- LEFT PANEL : Formulaire -->
+            <VBox spacing="15" prefWidth="420"
+                  style="-fx-background-color:white; -fx-padding:25; -fx-background-radius:12;">
+
+                <Label text="📝 Informations Diagnostic"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#2E8B57;"/>
+
+                <TextField fx:id="txtEtat" promptText="État de la culture"/>
+                <TextField fx:id="txtSymptomes" promptText="Symptômes observés"/>
+                <TextField fx:id="txtInformations" promptText="Informations complémentaires"/>
+
+                <Separator/>
+
+                <Label text="🤖 Analyse IA"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#2E8B57;"/>
+
+                <TextField fx:id="txtPlantType" promptText="Type de plante"/>
+                <TextField fx:id="txtLeafColor" promptText="Couleur feuille"/>
+                <TextField fx:id="txtSpotSize" promptText="Taille des taches"/>
+                <TextField fx:id="txtHumidity" promptText="Humidité (%)"/>
+                <TextField fx:id="txtTemperature" promptText="Température (°C)"/>
+
+                <HBox spacing="10">
+                    <Button text="💾 Sauvegarder"
+                            onAction="#sauvegarderDiagnostic"
+                            style="-fx-background-color:#2E8B57; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:8;"/>
+                    <Button text="🖨 Imprimer"
+                            onAction="#imprimerDiagnostic"
+                            style="-fx-background-color:#66BB6A; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:8;"/>
+                </HBox>
+
+            </VBox>
+
+            <!-- RIGHT PANEL : Historique sous cartes -->
+            <VBox spacing="15" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color:white; -fx-padding:25; -fx-background-radius:12;">
+                <Label text="📊 Historique des diagnostics"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#2E8B57;"/>
+
+                <ScrollPane fx:id="scrollHistorique" VBox.vgrow="ALWAYS">
+                    <content>
+                        <FlowPane fx:id="flowHistorique" hgap="15" vgap="15" prefWidth="600"/>
+                    </content>
+                </ScrollPane>
+            </VBox>
+
+        </HBox>
     </center>
+
 </BorderPane>
