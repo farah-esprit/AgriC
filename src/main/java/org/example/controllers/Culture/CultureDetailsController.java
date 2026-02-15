@@ -25,15 +25,15 @@ public class CultureDetailsController {
     private Label lblSuperficie;
     @FXML
     private Label lblLocalisation;
-
     @FXML
-    private Button btnFaireDiagnostic; // 🔥 bouton diagnostic
+    private Button btnFaireDiagnostic;
 
     private Culture culture;
 
-    // Méthode pour remplir les infos
+    // ================= SET CULTURE =================
     public void setCulture(Culture c) {
         this.culture = c;
+
         lblNom.setText("Nom: " + c.getNom());
         lblType.setText("Type: " + (c.getType() != null ? c.getType() : "Non défini"));
         lblSuperficie.setText("Superficie: " + c.getSuperficie() + " ha");
@@ -46,49 +46,34 @@ public class CultureDetailsController {
             }
         }
 
-        // Configurer le bouton Diagnostic
-        if(btnFaireDiagnostic != null){
+        // Action bouton
+        if (btnFaireDiagnostic != null) {
             btnFaireDiagnostic.setOnAction(e -> ouvrirDiagnostic());
         }
     }
 
-    // Fermer la fenêtre
+    // ================= FERMER =================
     @FXML
     private void fermer() {
         Stage stage = (Stage) lblNom.getScene().getWindow();
         stage.close();
     }
-    @FXML
-    private void faireDiagnostic() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Diagnostic.fxml"));
-            Stage stage = new Stage();
-            stage.setScene(new Scene(loader.load()));
 
-            DiagnosticController controller = loader.getController();
-            controller.setCultureId(culture.getIdCulture()); // ✅ Ici c’est valide
-
-            stage.setTitle("Diagnostic de " + culture.getNom());
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    // ================= OUVRIR LA FENÊTRE DIAGNOSTIC =================
+    // ================= OUVRIR DIAGNOSTIC =================
     private void ouvrirDiagnostic() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/DiagnosticForm.fxml"));
             Scene scene = new Scene(loader.load());
 
-            // Récupérer le contrôleur et passer l'ID de la culture
             DiagnosticController controller = loader.getController();
-            controller.setCultureId(culture.getIdCulture()); // 🔥 passer l'ID ou l'objet Culture
+
+            // ✅ PASSER L'OBJET COMPLET
+            controller.setCulture(culture);
 
             Stage stage = new Stage();
-            stage.setTitle("Diagnostic de " + culture.getNom());
+            stage.setTitle("🌱 Diagnostic de " + culture.getNom());
             stage.setScene(scene);
+            stage.setMaximized(true); // 🔥 plein écran
             stage.show();
 
         } catch (Exception ex) {
