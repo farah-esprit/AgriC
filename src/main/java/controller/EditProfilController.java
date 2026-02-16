@@ -76,10 +76,12 @@ public class EditProfilController {
     }
 
     public void setProfilController(ProfilController controller) {
+
         this.profilController = controller;
     }
 
     public void setUser(User user) {
+
         this.currentUser = user;
     }
 

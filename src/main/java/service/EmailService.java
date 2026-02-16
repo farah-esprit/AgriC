@@ -6,13 +6,10 @@ import java.util.Properties;
 
 public class EmailService {
 
-    // ⚠️ REMPLACEZ PAR VOS VRAIES INFORMATIONS
-    private static final String FROM_EMAIL = "agriconnect3a6@gmail.com\n"; // Votre email Gmail
-    private static final String PASSWORD = "ofhd nvdm stky rifc"; // Le mot de passe d'application (16 caractères)
+    private static final String FROM_EMAIL = "agriconnect3a6@gmail.com\n";
+    private static final String PASSWORD = "ofhd nvdm stky rifc"; //
 
-    /**
-     * Envoie un email de réinitialisation de mot de passe
-     */
+
     public boolean sendPasswordResetEmail(String toEmail, String userName, String resetCode) {
         try {
             // Configuration SMTP Gmail

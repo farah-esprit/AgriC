@@ -26,7 +26,10 @@ import java.sql.Statement;
 import java.util.Optional;
 
 public class ManageUsersController {
-
+    @FXML private Label themeModeIcon;
+    @FXML private Label themeModeText;
+    @FXML private AnchorPane sidebar;
+    @FXML private ToggleButton themeToggle;
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
@@ -44,6 +47,8 @@ public class ManageUsersController {
     private UserService userService;
     private ObservableList<User> usersList;
     private ObservableList<User> filteredList;
+    private boolean isDarkMode = false;
+
     @FXML private HBox dashboardMenu;
     @FXML private HBox usersMenu;
     @FXML private HBox profilMenu;
@@ -397,6 +402,31 @@ public class ManageUsersController {
         }
         System.out.println("SUCCESS: " + message);
     }
+    @FXML
+    private void handleToggleTheme() {
+        isDarkMode = !isDarkMode;
 
+        if (isDarkMode) {
+            sidebar.setStyle("-fx-background-color: #1a1a1a;");
+            dashboardPane.setStyle("-fx-background-color: #121212;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            if (themeModeText != null) themeModeText.setText("Sombre");
+            if (themeToggle != null) {
+                themeToggle.setText("☀️");
+                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+            }
+        } else {
+            sidebar.setStyle("-fx-background-color: #388e3c;");
+            dashboardPane.setStyle("-fx-background-color: #f5f5f5;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            if (themeModeText != null) themeModeText.setText("Clair");
+            if (themeToggle != null) {
+                themeToggle.setText("🌙");
+                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+            }
+        }
+    }
 
 }

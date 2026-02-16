@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import service.UserService;
 
@@ -23,7 +24,11 @@ public class ProfilAdminController {
     @FXML private Label etatLabel;
     @FXML private Label dateCreationLabel;
     @FXML private Label messageLabel;
-
+    @FXML private Label themeModeIcon;
+    @FXML private Label themeModeText;
+    @FXML private AnchorPane sidebar;
+    @FXML private ToggleButton themeToggle;
+    private boolean isDarkMode = false;
     private User currentUser;
     private UserService userService;
 
@@ -158,6 +163,31 @@ public class ProfilAdminController {
         if (messageLabel != null) {
             messageLabel.setText(message);
             messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        }
+    }
+    @FXML
+    private void handleToggleTheme() {
+        isDarkMode = !isDarkMode;
+
+        if (isDarkMode) {
+            sidebar.setStyle("-fx-background-color: #1a1a1a;");
+            // Le contenu principal n'a pas de fx:id dans profilAdmin, on peut le skipper
+
+            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            if (themeModeText != null) themeModeText.setText("Sombre");
+            if (themeToggle != null) {
+                themeToggle.setText("☀️");
+                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+            }
+        } else {
+            sidebar.setStyle("-fx-background-color: #388e3c;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            if (themeModeText != null) themeModeText.setText("Clair");
+            if (themeToggle != null) {
+                themeToggle.setText("🌙");
+                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+            }
         }
     }
 }

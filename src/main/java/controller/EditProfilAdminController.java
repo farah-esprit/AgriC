@@ -1,15 +1,19 @@
 package controller;
+
 import entities.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.ValidationUtils;
+
 public class EditProfilAdminController {
     @FXML private TextField nomField;
     @FXML private TextField emailField;
@@ -17,7 +21,12 @@ public class EditProfilAdminController {
     @FXML private PasswordField nouveauMdpField;
     @FXML private PasswordField confirmMdpField;
     @FXML private Label messageLabel;
+    @FXML private Label themeModeIcon;
+    @FXML private Label themeModeText;
+    @FXML private AnchorPane sidebar;
+    @FXML private ToggleButton themeToggle;
 
+    private boolean isDarkMode = false;
     private User currentUser;
     private UserService userService;
 
@@ -90,31 +99,26 @@ public class EditProfilAdminController {
         String nouveauNom = ValidationUtils.sanitize(nomField.getText());
         String nouvelEmail = ValidationUtils.sanitize(emailField.getText());
 
-        // Validation des champs obligatoires
         if (!ValidationUtils.isNotEmpty(nouveauNom) || !ValidationUtils.isNotEmpty(nouvelEmail)) {
             ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs obligatoires");
             return;
         }
 
-        // Validation du nom
         if (!ValidationUtils.isValidName(nouveauNom)) {
             ValidationUtils.showError(messageLabel, "Format de nom invalide");
             ValidationUtils.setFieldError(nomField);
             return;
         }
 
-        // Validation de l'email
         if (!ValidationUtils.isValidEmail(nouvelEmail)) {
             ValidationUtils.showError(messageLabel, "Format d'email invalide");
             ValidationUtils.setFieldError(emailField);
             return;
         }
 
-        // Mettre à jour les informations de base
         currentUser.setNom(nouveauNom);
         currentUser.setEmail(nouvelEmail);
 
-        // Gestion du changement de mot de passe
         String ancien = ancienMdpField.getText();
         String nouveau = nouveauMdpField.getText();
         String confirm = confirmMdpField.getText();
@@ -145,11 +149,9 @@ public class EditProfilAdminController {
             }
         }
 
-        // Enregistrer les modifications
         userService.modifier(currentUser);
         ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
 
-        // Redirection après 1.5 secondes
         new Thread(() -> {
             try {
                 Thread.sleep(1500);
@@ -218,6 +220,64 @@ public class EditProfilAdminController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleToggleTheme() {
+        isDarkMode = !isDarkMode;
+
+        if (isDarkMode) {
+            sidebar.setStyle("-fx-background-color: #1a1a1a;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            if (themeModeText != null) themeModeText.setText("Sombre");
+            if (themeToggle != null) {
+                themeToggle.setText("☀️");
+                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+            }
+        } else {
+            sidebar.setStyle("-fx-background-color: #388e3c;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            if (themeModeText != null) themeModeText.setText("Clair");
+            if (themeToggle != null) {
+                themeToggle.setText("🌙");
+                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+            }
+        }
+    }
+
+    // ================= OUVRIR GESTION UTILISATEURS =================
+    @FXML
+    private void openManageUsers(MouseEvent event) {
+        try {
+            System.out.println("📂 Chargement de manageUsers.fxml...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/manageUsers.fxml"));
+            Parent root = loader.load();
+
+            ManageUsersController controller = loader.getController();
+            controller.setUser(currentUser);
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Gestion des utilisateurs");
+
+            System.out.println("✅ Gestion des utilisateurs chargée !");
+
+        } catch (Exception e) {
+            System.err.println("❌ ERREUR : " + e.getMessage());
+            e.printStackTrace();
+            showError("Impossible de charger la gestion des utilisateurs");
+        }
+    }
+
+    // ================= MESSAGES =================
+    private void showError(String message) {
+        if (messageLabel != null) {
+            messageLabel.setText(message);
+            messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
         }
     }
 }

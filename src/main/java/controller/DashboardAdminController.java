@@ -39,10 +39,15 @@ public class DashboardAdminController {
     @FXML private Label nouveauxLabel;
     @FXML private Label messageLabel;
 
+    // ================= DARK MODE =================
+    @FXML private Label themeModeIcon;
+    @FXML private Label themeModeText;
+    @FXML private AnchorPane sidebar;
+    @FXML private ToggleButton themeToggle;
+
     // ================= MENUS =================
-    @FXML private HBox dashboardMenu;
-    @FXML private HBox usersMenu;
-    @FXML private HBox profilMenu;
+    @FXML private HBox menuDashboard;
+    @FXML private HBox menuUsers;
 
     // ================= PANES =================
     @FXML private AnchorPane dashboardPane;
@@ -65,6 +70,7 @@ public class DashboardAdminController {
     private UserService userService;
     private ObservableList<User> usersList;
     private ObservableList<User> filteredList;
+    private boolean isDarkMode = false;
 
     // ================= INITIALISATION =================
     @FXML
@@ -81,17 +87,54 @@ public class DashboardAdminController {
         if (messageLabel != null) {
             messageLabel.setText("");
         }
+
+        System.out.println("✅ DashboardAdminController initialisé");
     }
 
-    //DÉFINIR L'UTILISATEUR
+    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
         if (welcomeLabel != null) {
             welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
         }
+        System.out.println("✅ Utilisateur : " + user.getNom() + " (Admin)");
     }
 
-    //CONFIGURATION FILTRES
+    // ================= DARK/LIGHT MODE =================
+    @FXML
+    private void handleToggleTheme() {
+        isDarkMode = !isDarkMode;
+
+        if (isDarkMode) {
+            // DARK MODE
+            sidebar.setStyle("-fx-background-color: #1a1a1a;");
+            dashboardPane.setStyle("-fx-background-color: #121212;");
+
+            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            if (themeModeText != null) themeModeText.setText("Sombre");
+            if (themeToggle != null) {
+                themeToggle.setText("☀️");
+                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+            }
+
+            System.out.println("🌙 Mode sombre activé");
+        } else {
+            // LIGHT MODE
+            sidebar.setStyle("-fx-background-color: #388e3c;");
+            dashboardPane.setStyle("");
+
+            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            if (themeModeText != null) themeModeText.setText("Clair");
+            if (themeToggle != null) {
+                themeToggle.setText("🌙");
+                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+            }
+
+            System.out.println("☀️ Mode clair activé");
+        }
+    }
+
+    // ================= CONFIGURATION FILTRES =================
     private void setupRoleFilter() {
         if (roleFilter != null) {
             roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
@@ -99,7 +142,7 @@ public class DashboardAdminController {
         }
     }
 
-    //CONFIGURATION COLONNES TABLEAU
+    // ================= CONFIGURATION COLONNES TABLEAU =================
     private void setupTableColumns() {
         if (usersTable == null) return;
 
@@ -111,16 +154,15 @@ public class DashboardAdminController {
 
         // Style pour l'état
         colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
-
-            protected void updateItem(EtatCompte etat, boolean empty)
-            {
+            @Override
+            protected void updateItem(EtatCompte etat, boolean empty) {
                 super.updateItem(etat, empty);
                 if (empty || etat == null) {
                     setText(null);
                     setStyle("");
                 } else {
                     setText(etat.toString());
-                    if (etat.equals("ACTIF")) {
+                    if (etat == EtatCompte.ACTIF) {
                         setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
                     } else {
                         setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
@@ -179,7 +221,7 @@ public class DashboardAdminController {
         });
     }
 
-    //CHARGER STATISTIQUES
+    // ================= CHARGER STATISTIQUES =================
     private void loadStatistics() {
         try {
             Connection conn = MyDataBase.getConnection();
@@ -227,13 +269,15 @@ public class DashboardAdminController {
                 nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
             }
 
+            System.out.println("✅ Statistiques chargées");
+
         } catch (Exception e) {
-            System.out.println("Erreur chargement stats : " + e.getMessage());
+            System.err.println("❌ Erreur chargement stats : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    //CHARGER UTILISATEURS
+    // ================= CHARGER UTILISATEURS =================
     private void loadUsers() {
         usersList.clear();
         try {
@@ -257,6 +301,8 @@ public class DashboardAdminController {
             if (usersTable != null) {
                 usersTable.setItems(filteredList);
             }
+
+            System.out.println("✅ Utilisateurs chargés : " + usersList.size());
 
         } catch (Exception e) {
             showError("Erreur chargement utilisateurs : " + e.getMessage());
@@ -395,10 +441,9 @@ public class DashboardAdminController {
         showSuccess("Données actualisées !");
     }
 
-    // ================= NAVIGATION - BUTTONS (ActionEvent) =================
+    // ================= NAVIGATION =================
     @FXML
-    private void openManageUsers(MouseEvent event)
-    {
+    private void openManageUsers(MouseEvent event) {
         try {
             System.out.println("📂 Chargement de manageUsers.fxml...");
 
@@ -422,8 +467,7 @@ public class DashboardAdminController {
     }
 
     @FXML
-    private void handleGoToProfil(MouseEvent event)
-    {
+    private void handleGoToProfil(MouseEvent event) {
         try {
             System.out.println("📂 Chargement de profilAdmin.fxml...");
 
@@ -446,26 +490,15 @@ public class DashboardAdminController {
         }
     }
 
-    // ================= NAVIGATION - HBOX (MouseEvent) =================
-    @FXML
-    private void handleShowDashboard(MouseEvent event) {
-        showPane(dashboardPane);
-        setActiveMenu(dashboardMenu);
-    }
-
-    @FXML
-    private void handleShowUsers(MouseEvent event) {
-        showPane(usersPane);
-        setActiveMenu(usersMenu);
-    }
-
     @FXML
     private void handleLogout(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) dashboardPane.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.show();
+            stage.setTitle("AgriConnect - Login");
+
+            System.out.println("✅ Déconnexion");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -474,6 +507,18 @@ public class DashboardAdminController {
     }
 
     // ================= AFFICHAGE DES PANES =================
+    @FXML
+    private void handleShowDashboard(MouseEvent event) {
+        showPane(dashboardPane);
+        setActiveMenu(menuDashboard);
+    }
+
+    @FXML
+    private void handleShowUsers(MouseEvent event) {
+        showPane(usersPane);
+        setActiveMenu(menuUsers);
+    }
+
     private void showPane(AnchorPane pane) {
         if (dashboardPane != null) dashboardPane.setVisible(false);
         if (usersPane != null) usersPane.setVisible(false);
@@ -481,17 +526,14 @@ public class DashboardAdminController {
     }
 
     private void setActiveMenu(HBox menu) {
-        if (dashboardMenu != null) {
-            dashboardMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
+        if (menuDashboard != null) {
+            menuDashboard.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
         }
-        if (usersMenu != null) {
-            usersMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (profilMenu != null) {
-            profilMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
+        if (menuUsers != null) {
+            menuUsers.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
         }
         if (menu != null) {
-            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;");
+            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;");
         }
     }
 
@@ -510,5 +552,10 @@ public class DashboardAdminController {
             messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
         }
         System.out.println("SUCCESS: " + message);
+    }
+
+    // ================= UTILITAIRE =================
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

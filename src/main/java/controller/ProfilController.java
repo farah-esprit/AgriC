@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -33,6 +34,8 @@ public class ProfilController {
     @FXML private Label telephoneLabel;
     @FXML private Label bioLabel;
     @FXML private Label emailLabel;
+    @FXML private AnchorPane contentPane;
+
     @FXML private Label roleLabel;  // ← AJOUTÉ ICI
     @FXML private Button modifierButton;
     @FXML private Button supprimerButton;
@@ -448,14 +451,14 @@ public class ProfilController {
 
     // ================= DÉCONNEXION =================
     @FXML
-    private void handleLogout(MouseEvent event) {
+    private void handleLogout(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) nomLabel.getScene().getWindow();
+            Stage stage = (Stage) contentPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
 
-            System.out.println("✅ Déconnexion réussie");
+            System.out.println("✅ Déconnexion");
 
         } catch (Exception e) {
             System.err.println("❌ Erreur déconnexion");

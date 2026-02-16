@@ -47,9 +47,7 @@ public class PasswordResetService {
         }
     }
 
-    /**
-     * Vérifie si le code est valide
-     */
+
     public Integer verifyResetCode(String token) {
         try {
             Connection conn = MyDataBase.getConnection();
@@ -92,7 +90,7 @@ public class PasswordResetService {
     }
 
     /**
-     * Marque le code comme utilisé
+     *Marque le code comme utilisé
      */
     public void markTokenAsUsed(String token) {
         try {

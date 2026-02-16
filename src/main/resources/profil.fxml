@@ -10,10 +10,10 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
     <children>
         <!-- SIDEBAR -->
-        <AnchorPane prefHeight="600.0" prefWidth="186.0" style="-fx-background-color: #388e3c;">
+        <AnchorPane prefHeight="606.0" prefWidth="196.0" style="-fx-background-color: #388e3c;">
             <children>
                 <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
                     <font>
@@ -38,23 +38,18 @@
                 <Line endX="84.79995727539062" layoutX="101.0" layoutY="552.0" startX="-101.0" stroke="#666666" />
                 <HBox layoutX="11.0" layoutY="564.0" onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="164.0" spacing="8.0" style="-fx-cursor: hand;">
                     <children>
-                        <Label text="➜]">
+                        <Button onAction="#handleLogout" prefHeight="40.0" prefWidth="210.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="🚪 Déconnexion" textFill="WHITE">
                             <font>
-                                <Font size="18.0" />
+                                <Font name="System Bold" size="14.0" />
                             </font>
-                        </Label>
-                        <Label text="Déconnexion">
-                            <font>
-                                <Font size="15.0" />
-                            </font>
-                        </Label>
+                        </Button>
                     </children>
                 </HBox>
             </children>
         </AnchorPane>
 
         <!-- ZONE PRINCIPALE -->
-        <AnchorPane layoutX="186.0" prefHeight="600.0" prefWidth="614.0" style="-fx-background-color: #f5f5f5;">
+        <AnchorPane layoutX="186.0" prefHeight="606.0" prefWidth="614.0" style="-fx-background-color: #f5f5f5;">
             <children>
                 <!-- BOUTON RETOUR (FLÈCHE) -->
                 <Button layoutX="20.0" layoutY="20.0" onMouseClicked="#handleBackToDashboard" prefHeight="40.0" prefWidth="44.0" style="-fx-background-color: #898989; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="⬅" textFill="WHITE">
@@ -208,7 +203,7 @@
                         </VBox>
 
                                             <!-- Deuxième ligne : Changer mot de passe (toujours visible) -->
-                          <Button onAction="#handleChangePassword" prefHeight="32.0" prefWidth="187.0" style="-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔑 Changer le mot de passe">
+                          <Button onAction="#handleChangePassword" prefHeight="32.0" prefWidth="187.0" style="-fx-background-color: #acacac; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔑 Changer le mot de passe">
                               <font>
                                   <Font name="System Bold" size="13.0" />
                               </font>
