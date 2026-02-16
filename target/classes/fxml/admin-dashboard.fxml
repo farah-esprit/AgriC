@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eventmanagement.controllers.AdminDashboardController"
+            stylesheets="@../css/style.css" prefWidth="1360" prefHeight="820">
+    <left>
+        <VBox styleClass="sidebar-admin" prefWidth="240" spacing="10" style="-fx-padding: 22;">
+            <Label text="Admin Console" styleClass="logo-label">
+                <font>
+                    <Font name="Segoe UI Bold" size="22"/>
+                </font>
+            </Label>
+            <Label text="Back-office global" styleClass="sidebar-subtitle"/>
+            <Separator/>
+            <Button text="Statistiques" onAction="#showStatsSection" styleClass="sidebar-button" prefWidth="200"/>
+            <Button text="Evenements" onAction="#showEvenementsSection" styleClass="sidebar-button" prefWidth="200"/>
+            <Button text="Reclamations" onAction="#showReclamationsSection" styleClass="sidebar-button" prefWidth="200"/>
+            <Button text="Utilisateurs" onAction="#showUtilisateursSection" styleClass="sidebar-button" prefWidth="200"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Deconnexion" onAction="#handleLogout" styleClass="logout-button" prefWidth="200"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="16" styleClass="page-container">
+            <Label fx:id="welcomeLabel" styleClass="welcome-label">
+                <font>
+                    <Font name="Segoe UI Semibold" size="21"/>
+                </font>
+            </Label>
+
+            <VBox fx:id="statsSection" spacing="15">
+                <Label text="Vue globale" styleClass="section-title"/>
+                <HBox spacing="14">
+                    <VBox styleClass="stat-card stat-card-events" prefWidth="220">
+                        <Label text="Evenements" styleClass="stat-caption"/>
+                        <Label fx:id="totalEvenementsLabel" text="0" styleClass="stat-number"/>
+                    </VBox>
+                    <VBox styleClass="stat-card stat-card-claims" prefWidth="220">
+                        <Label text="Reclamations" styleClass="stat-caption"/>
+                        <Label fx:id="totalReclamationsLabel" text="0" styleClass="stat-number"/>
+                    </VBox>
+                    <VBox styleClass="stat-card stat-card-users" prefWidth="220">
+                        <Label text="Utilisateurs" styleClass="stat-caption"/>
+                        <Label fx:id="totalUtilisateursLabel" text="0" styleClass="stat-number"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <VBox alignment="CENTER_RIGHT">
+                        <Button text="Export global" onAction="#handleExportGlobalReport" styleClass="export-button"/>
+                    </VBox>
+                </HBox>
+                <TextArea fx:id="statsTextArea" editable="false" wrapText="true" prefHeight="380" styleClass="stats-text"/>
+            </VBox>
+
+            <VBox fx:id="evenementsSection" spacing="15" visible="false" managed="false">
+                <Label text="Gestion des evenements" styleClass="section-title"/>
+                <HBox spacing="10">
+                    <TextField fx:id="evtSearchField" promptText="Rechercher par titre ou lieu..." styleClass="search-field" prefWidth="280"/>
+                    <ComboBox fx:id="evtStatusFilter" prefWidth="160" promptText="Statut"/>
+                    <TextField fx:id="evtLieuFilterField" promptText="Filtre lieu..." styleClass="search-field" prefWidth="180"/>
+                    <DatePicker fx:id="evtDateFromFilter"/>
+                    <DatePicker fx:id="evtDateToFilter"/>
+                    <Button text="Filtrer" onAction="#handleSearchEvenements" styleClass="search-button"/>
+                    <Button text="Reset" onAction="#handleResetEvenementFilters" styleClass="secondary-button"/>
+                </HBox>
+                <TableView fx:id="evenementsTable" styleClass="custom-table" prefHeight="420">
+                    <columns>
+                        <TableColumn fx:id="evtIdCol" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="evtTitreCol" text="Titre" prefWidth="250"/>
+                        <TableColumn fx:id="evtLieuCol" text="Lieu" prefWidth="180"/>
+                        <TableColumn fx:id="evtDateDebutCol" text="Date debut" prefWidth="120"/>
+                        <TableColumn fx:id="evtDateFinCol" text="Date fin" prefWidth="120"/>
+                        <TableColumn fx:id="evtCapaciteCol" text="Capacite" prefWidth="90"/>
+                        <TableColumn fx:id="evtStatutCol" text="Statut" prefWidth="120"/>
+                        <TableColumn fx:id="evtOrgCol" text="Organisateur" prefWidth="110"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Ajouter" onAction="#handleAddEvenement" styleClass="add-button"/>
+                    <Button text="Modifier" onAction="#handleEditEvenement" styleClass="edit-button"/>
+                    <Button text="Approuver" onAction="#handleApproveEvenement" styleClass="approve-button"/>
+                    <Button text="Rejeter" onAction="#handleRejectEvenement" styleClass="reject-button"/>
+                    <Button text="Supprimer" onAction="#handleDeleteEvenement" styleClass="delete-button"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Export PDF" onAction="#handleExportEvenementsPDF" styleClass="export-button"/>
+                    <Button text="Export CSV" onAction="#handleExportEvenementsCSV" styleClass="export-button"/>
+                </HBox>
+                <Pagination fx:id="evtPagination" pageCount="1" maxPageIndicatorCount="7"/>
+            </VBox>
+
+            <VBox fx:id="reclamationsSection" spacing="15" visible="false" managed="false">
+                <Label text="Gestion des reclamations" styleClass="section-title"/>
+                <HBox spacing="10">
+                    <TextField fx:id="reclSearchField" promptText="Rechercher objet/type..." styleClass="search-field" prefWidth="280"/>
+                    <ComboBox fx:id="reclStatusFilter" prefWidth="180" promptText="Statut"/>
+                    <ComboBox fx:id="reclTypeFilter" prefWidth="180" promptText="Type"/>
+                    <Button text="Filtrer" onAction="#handleSearchReclamations" styleClass="search-button"/>
+                    <Button text="Reset" onAction="#handleResetReclamationFilters" styleClass="secondary-button"/>
+                </HBox>
+                <TableView fx:id="reclamationsTable" styleClass="custom-table" prefHeight="420">
+                    <columns>
+                        <TableColumn fx:id="reclIdCol" text="ID" prefWidth="55"/>
+                        <TableColumn fx:id="reclObjetCol" text="Objet" prefWidth="250"/>
+                        <TableColumn fx:id="reclDateCol" text="Date" prefWidth="110"/>
+                        <TableColumn fx:id="reclStatutCol" text="Statut" prefWidth="130"/>
+                        <TableColumn fx:id="reclPrioriteCol" text="Priorite" prefWidth="110"/>
+                        <TableColumn fx:id="reclTypeCol" text="Type" prefWidth="150"/>
+                        <TableColumn fx:id="reclUserCol" text="User ID" prefWidth="90"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10">
+                    <Button text="Changer statut" onAction="#handleChangeReclamationStatus" styleClass="edit-button"/>
+                    <Button text="Repondre" onAction="#handleReplyReclamation" styleClass="approve-button"/>
+                    <Button text="Marquer traitee" onAction="#handleMarkReclamationProcessed" styleClass="approve-button"/>
+                    <Button text="Supprimer" onAction="#handleDeleteReclamation" styleClass="delete-button"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Export PDF" onAction="#handleExportReclamationsPDF" styleClass="export-button"/>
+                    <Button text="Export CSV" onAction="#handleExportReclamationsCSV" styleClass="export-button"/>
+                </HBox>
+                <Pagination fx:id="reclPagination" pageCount="1" maxPageIndicatorCount="7"/>
+            </VBox>
+
+            <VBox fx:id="utilisateursSection" spacing="15" visible="false" managed="false">
+                <Label text="Gestion des utilisateurs" styleClass="section-title"/>
+                <HBox spacing="10">
+                    <TextField fx:id="userSearchField" promptText="Rechercher nom/email..." styleClass="search-field" prefWidth="280"/>
+                    <ComboBox fx:id="userRoleFilter" prefWidth="150" promptText="Role"/>
+                    <ComboBox fx:id="userStatusFilter" prefWidth="150" promptText="Statut"/>
+                    <Button text="Filtrer" onAction="#handleSearchUtilisateurs" styleClass="search-button"/>
+                    <Button text="Reset" onAction="#handleResetUtilisateurFilters" styleClass="secondary-button"/>
+                </HBox>
+                <TableView fx:id="utilisateursTable" styleClass="custom-table" prefHeight="420">
+                    <columns>
+                        <TableColumn fx:id="userIdCol" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="userNomCol" text="Nom" prefWidth="190"/>
+                        <TableColumn fx:id="userEmailCol" text="Email" prefWidth="260"/>
+                        <TableColumn fx:id="userRoleCol" text="Role" prefWidth="100"/>
+                        <TableColumn fx:id="userStatusCol" text="Statut" prefWidth="110"/>
+                        <TableColumn fx:id="userPhoneCol" text="Telephone" prefWidth="130"/>
+                        <TableColumn fx:id="userAddressCol" text="Adresse" prefWidth="170"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10">
+                    <Button text="Ajouter" onAction="#handleAddUtilisateur" styleClass="add-button"/>
+                    <Button text="Modifier" onAction="#handleEditUtilisateur" styleClass="edit-button"/>
+                    <Button text="Activer/desactiver" onAction="#handleToggleUtilisateurStatus" styleClass="approve-button"/>
+                    <Button text="Supprimer" onAction="#handleDeleteUtilisateur" styleClass="delete-button"/>
+                </HBox>
+                <Pagination fx:id="userPagination" pageCount="1" maxPageIndicatorCount="7"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eventmanagement.controllers.RegisterController"
+            stylesheets="@../css/style.css" prefWidth="500" prefHeight="700">
+    
+    <center>
+        <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30;">
+            <Label text="Inscription" styleClass="title-label">
+                <font>
+                    <Font name="System Bold" size="26"/>
+                </font>
+            </Label>
+            
+            <VBox spacing="10" style="-fx-max-width: 350;">
+                <Label text="Nom complet:" styleClass="field-label"/>
+                <TextField fx:id="nomField" promptText="Votre nom" styleClass="custom-field"/>
+                
+                <Label text="Email:" styleClass="field-label"/>
+                <TextField fx:id="emailField" promptText="Votre email" styleClass="custom-field"/>
+                
+                <Label text="Mot de passe:" styleClass="field-label"/>
+                <HBox spacing="5">
+                    <PasswordField fx:id="passwordField" promptText="Mot de passe (min 6 caractères)" 
+                                   styleClass="custom-field" HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="passwordVisibleField" promptText="Mot de passe" 
+                               styleClass="custom-field" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="togglePasswordBtn" text="👁" onAction="#togglePasswordVisibility" 
+                            styleClass="icon-button" prefWidth="40"/>
+                </HBox>
+                
+                <Label text="Confirmer mot de passe:" styleClass="field-label"/>
+                <HBox spacing="5">
+                    <PasswordField fx:id="confirmPasswordField" promptText="Confirmer le mot de passe" 
+                                   styleClass="custom-field" HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="confirmPasswordVisibleField" promptText="Confirmer le mot de passe" 
+                               styleClass="custom-field" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="toggleConfirmPasswordBtn" text="👁" onAction="#toggleConfirmPasswordVisibility" 
+                            styleClass="icon-button" prefWidth="40"/>
+                </HBox>
+                
+                <Label fx:id="errorLabel" styleClass="error-label" visible="false"/>
+                
+                <Button text="S'inscrire" onAction="#handleRegister" styleClass="primary-button" 
+                        prefWidth="350" prefHeight="40">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Button>
+                
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Déjà un compte ?"/>
+                    <Hyperlink text="Se connecter" onAction="#handleBackToLogin" styleClass="link"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
