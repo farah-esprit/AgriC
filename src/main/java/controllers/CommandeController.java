@@ -10,8 +10,12 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -105,7 +109,30 @@ public class CommandeController {
         loadCommandes();
     }
 
-    // =================== AJOUTER ===================
+    // ✅ NOUVELLE MÉTHODE : Retour à l'accueil
+    @FXML
+    private void retourAccueil() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/home.fxml"));
+            Parent root = loader.load();
+
+            Stage homeStage = new Stage();
+            homeStage.setScene(new Scene(root, 1400, 850));
+            homeStage.setTitle("Accueil - AgriConnect");
+
+            Stage currentStage = (Stage) tfQuantite.getScene().getWindow();
+            currentStage.close();
+
+            homeStage.show();
+
+            System.out.println("🏠 Retour à l'accueil depuis Commandes");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Erreur de navigation", "Impossible de retourner à l'accueil : " + e.getMessage());
+        }
+    }
+
     @FXML
     private void handleAjouter() {
         if (!verifierSaisie()) return;
@@ -129,7 +156,6 @@ public class CommandeController {
         }
     }
 
-    // =================== MODIFIER ===================
     @FXML
     private void handleModifier() {
         if (currentSelection == null) {
@@ -153,7 +179,6 @@ public class CommandeController {
         }
     }
 
-    // =================== SUPPRIMER ===================
     @FXML
     private void handleSupprimer() {
         if (currentSelection == null) {
@@ -190,7 +215,6 @@ public class CommandeController {
         }
     }
 
-    // =================== ACTUALISER ===================
     @FXML
     private void handleActualiser() {
         loadCommandes();
@@ -201,7 +225,6 @@ public class CommandeController {
         );
     }
 
-    // =================== PAYER STRIPE ===================
     @FXML
     private void handlePayerStripe() {
         if (!verifierSaisie()) return;
@@ -227,7 +250,6 @@ public class CommandeController {
                     "Veuillez compléter le paiement dans la fenêtre du navigateur qui s'est ouverte.\n" +
                             "Une fois terminé, revenez ici pour confirmer la commande.");
 
-            // Ajouter commande en attente de paiement
             Commande c = new Commande();
             c.setQuantiteCommandee(qte);
             c.setIdProduit(p.getIdProduit());
@@ -242,7 +264,6 @@ public class CommandeController {
         }
     }
 
-    // =================== EXPORT CSV ===================
     @FXML
     private void exporterCSV() {
         FileChooser fileChooser = new FileChooser();
@@ -280,7 +301,6 @@ public class CommandeController {
         return s;
     }
 
-    // =================== VALIDATION ===================
     private boolean verifierSaisie() {
         Produit produit = cbProduit.getValue();
         String qteTexte = tfQuantite.getText().trim();
@@ -320,7 +340,6 @@ public class CommandeController {
         return true;
     }
 
-    // =================== UTILITAIRES ===================
     private void loadCommandes() {
         List<Commande> commandes = commandeService.getAllCommandes();
         ObservableList<CommandeData> data = FXCollections.observableArrayList();
