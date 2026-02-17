@@ -25,6 +25,7 @@ public class HistoriqueCommandesController {
     @FXML private TableColumn<CommandeMini, String> colProduit;
     @FXML private TableColumn<CommandeMini, Integer> colQuantite;
     @FXML private TableColumn<CommandeMini, String> colStatut;
+    @FXML private Label lblStatus;
 
     private final CommandeService commandeService = new CommandeService();
     private final ProduitService produitService = new ProduitService();
@@ -42,7 +43,7 @@ public class HistoriqueCommandesController {
 
     @FXML
     private void actualiser() {
-        List<Commande> dernieres = commandeService.getDernieresCommandes(20); // 20 dernières
+        List<Commande> dernieres = commandeService.getDernieresCommandes(20);
 
         ObservableList<CommandeMini> data = FXCollections.observableArrayList();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -62,6 +63,13 @@ public class HistoriqueCommandesController {
         }
 
         tableHistorique.setItems(data);
+
+        // Mise à jour du status
+        if (lblStatus != null) {
+            lblStatus.setText(data.size() + " commande(s) chargée(s)");
+        }
+
+        showInfoAlert("Liste actualisée", "Historique rafraîchi : " + data.size() + " commande(s) affichée(s).");
     }
 
     @FXML
@@ -70,16 +78,48 @@ public class HistoriqueCommandesController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/home.fxml"));
             Parent root = loader.load();
 
-            Stage stage = (Stage) tableHistorique.getScene().getWindow();
-            stage.setScene(new Scene(root, 1280, 720));
-            stage.setTitle("AgriConnect - Accueil");
+            Stage homeStage = new Stage();
+            homeStage.setScene(new Scene(root, 1920, 1080));
+            homeStage.setTitle("Accueil - AgriConnect");
+            homeStage.setMaximized(true);
+
+            Stage currentStage = (Stage) tableHistorique.getScene().getWindow();
+            currentStage.close();
+
+            homeStage.show();
+
+            System.out.println("🏠 Retour à l'accueil depuis Historique");
+
         } catch (IOException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Impossible de retourner à l'accueil").showAndWait();
+            showErrorAlert("Erreur de navigation", "Impossible de retourner à l'accueil : " + e.getMessage());
         }
     }
 
-    // Mini model for display
+    // ═══════════════════════════════════════════════════════════
+    // MÉTHODES D'ALERTE
+    // ═══════════════════════════════════════════════════════════
+
+    private void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // MINI MODEL FOR DISPLAY
+    // ═══════════════════════════════════════════════════════════
+
     public static class CommandeMini {
         public final IntegerProperty id = new SimpleIntegerProperty();
         public final StringProperty date = new SimpleStringProperty();

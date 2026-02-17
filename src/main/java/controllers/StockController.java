@@ -5,21 +5,29 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.example.utils.MyDatabase;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 
 public class StockController {
 
     @FXML private ComboBox<Produit> cbProduit;
     @FXML private TextField tfQuantite, tfSeuilAlerte;
+    @FXML private Button btnRetourAccueil;
     @FXML private TableView<StockData> tableStock;
     @FXML private TableColumn<StockData, Integer> colIdStock, colIdProduit, colQuantite, colSeuilAlerte;
     @FXML private TableColumn<StockData, String> colProduit;
+    @FXML private Label lblStatus;
 
     private Connection conn;
     private StockData currentSelection = null;
@@ -63,6 +71,31 @@ public class StockController {
         });
     }
 
+    // ✅ NOUVELLE MÉTHODE : Retour à l'accueil
+    @FXML
+    private void handleRetourAccueil() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/home.fxml"));
+            Parent root = loader.load();
+
+            Stage homeStage = new Stage();
+            homeStage.setScene(new Scene(root, 1920, 1080));
+            homeStage.setTitle("Accueil - AgriConnect");
+            homeStage.setMaximized(true);
+
+            Stage currentStage = (Stage) tfQuantite.getScene().getWindow();
+            currentStage.close();
+
+            homeStage.show();
+
+            System.out.println("🏠 Retour à l'accueil depuis Stock");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Erreur de navigation : " + e.getMessage());
+        }
+    }
+
     private void chargerProduits() {
         ObservableList<Produit> produits = FXCollections.observableArrayList();
         try (Statement st = conn.createStatement();
@@ -75,7 +108,6 @@ public class StockController {
                         rs.getDouble("prix"),
                         rs.getString("categorie"),
                         rs.getBoolean("actif")
-
                 ));
             }
         } catch (SQLException e) {
@@ -106,16 +138,12 @@ public class StockController {
         return null;
     }
 
-    // ───────────────────────────────
-    // Validation des champs
-    // ───────────────────────────────
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
 
         if (cbProduit.getValue() == null)
             errors.append("• Le produit est obligatoire\n");
 
-        // Quantité
         if (tfQuantite.getText().trim().isEmpty()) {
             errors.append("• La quantité est obligatoire\n");
         } else {
@@ -127,7 +155,6 @@ public class StockController {
             }
         }
 
-        // Seuil alerte
         if (tfSeuilAlerte.getText().trim().isEmpty()) {
             errors.append("• Le seuil d'alerte est obligatoire\n");
         } else {
@@ -140,15 +167,12 @@ public class StockController {
         }
 
         if (errors.length() > 0) {
-            showError(errors.toString());
+            showErrorAlert("Champs incomplets ou invalides", errors.toString());
             return false;
         }
         return true;
     }
 
-    // ───────────────────────────────
-    // Ajouter / Modifier avec validation
-    // ───────────────────────────────
     @FXML
     private void handleAjouter() {
         if (!validateInput()) return;
@@ -168,20 +192,20 @@ public class StockController {
 
                 ResultSet rs = pst.getGeneratedKeys();
                 int id = rs.next() ? rs.getInt(1) : 0;
-                showSuccess("Stock ajouté (ID: " + id + ")");
+                showSuccessAlert("Stock ajouté avec succès !", "Stock ajouté (ID: " + id + ")");
                 clearInputs();
                 chargerStock();
             }
 
         } catch (Exception e) {
-            showError(e.getMessage());
+            showErrorAlert("Erreur lors de l'ajout", e.getMessage());
         }
     }
 
     @FXML
     private void handleModifier() {
         if (currentSelection == null) {
-            showError("Sélectionnez une ligne !");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner une ligne dans le tableau.");
             return;
         }
 
@@ -202,39 +226,55 @@ public class StockController {
             }
 
             chargerStock();
-            showSuccess("Stock modifié");
+            showSuccessAlert("Stock modifié avec succès !", "Les modifications ont été enregistrées.");
 
         } catch (Exception e) {
-            showError(e.getMessage());
+            showErrorAlert("Erreur lors de la modification", e.getMessage());
         }
     }
 
     @FXML
     private void handleSupprimer() {
         if (currentSelection == null) {
-            showError("Sélectionnez une ligne !");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner une ligne à supprimer.");
             return;
         }
 
-        try {
-            String sql = "DELETE FROM stock WHERE idStock=?";
-            try (PreparedStatement pst = conn.prepareStatement(sql)) {
-                pst.setInt(1, currentSelection.idStock.get());
-                pst.executeUpdate();
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmer la suppression");
+        confirm.setHeaderText("Supprimer ce stock ?");
+        confirm.setContentText(
+                "Produit : " + currentSelection.produit.get() + "\n" +
+                        "Quantité : " + currentSelection.quantite.get() + "\n" +
+                        "Cette action est irréversible."
+        );
+
+        ButtonType btnOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.YES);
+        ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        confirm.getButtonTypes().setAll(btnOui, btnNon);
+
+        if (confirm.showAndWait().orElse(btnNon) == btnOui) {
+            try {
+                String sql = "DELETE FROM stock WHERE idStock=?";
+                try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                    pst.setInt(1, currentSelection.idStock.get());
+                    pst.executeUpdate();
+                }
+
+                chargerStock();
+                showSuccessAlert("Supprimé avec succès", "Le stock a été supprimé de la base.");
+                clearInputs();
+
+            } catch (Exception e) {
+                showErrorAlert("Erreur suppression", e.getMessage());
             }
-
-            chargerStock();
-            showSuccess("Stock supprimé");
-
-        } catch (Exception e) {
-            showError(e.getMessage());
         }
     }
 
     @FXML
     public void handleActualiser() {
         chargerStock();
-        showSuccess("Liste de stock actualisée !");
+        showInfoAlert("Liste actualisée", "La liste des stocks a été rafraîchie.\n" + tableStock.getItems().size() + " stock(s) affiché(s).");
     }
 
     private void chargerStock() {
@@ -262,6 +302,9 @@ public class StockController {
         }
 
         tableStock.setItems(data);
+        if (lblStatus != null) {
+            lblStatus.setText("Liste chargée : " + data.size() + " stock(s)");
+        }
     }
 
     private void clearInputs() {
@@ -272,27 +315,20 @@ public class StockController {
         currentSelection = null;
     }
 
-    private void showSuccess(String message) {
-        new Alert(Alert.AlertType.INFORMATION, message).showAndWait();
-    }
-
-    private void showError(String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
-    }
-
     @FXML
     private void exporterCSV() {
         try {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Enregistrer le fichier CSV");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+            fileChooser.setTitle("Exporter les stocks en CSV");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+            fileChooser.setInitialFileName("stocks_" + LocalDate.now() + ".csv");
             File file = fileChooser.showSaveDialog(tableStock.getScene().getWindow());
 
             if (file != null) {
                 try (FileWriter writer = new FileWriter(file)) {
                     writer.write("ID Stock,ID Produit,Produit,Quantité,Seuil Alerte\n");
                     for (StockData stock : tableStock.getItems()) {
-                        writer.write(String.format("%d,%d,%s,%d,%d\n",
+                        writer.write(String.format("%d,%d,\"%s\",%d,%d\n",
                                 stock.idStock.get(),
                                 stock.idProduit.get(),
                                 stock.produit.get(),
@@ -300,10 +336,55 @@ public class StockController {
                                 stock.seuilAlerte.get()));
                     }
                 }
-                showSuccess("Export CSV terminé !");
+                showSuccessAlert("Export réussi", "Le fichier CSV a été sauvegardé :\n" + file.getAbsolutePath());
             }
         } catch (Exception e) {
-            showError("Erreur lors de l'export CSV : " + e.getMessage());
+            showErrorAlert("Erreur d'export", "Impossible de sauvegarder le fichier :\n" + e.getMessage());
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // MÉTHODES D'ALERTE HARMONISÉES
+    // ═══════════════════════════════════════════════════════════
+
+    private void showSuccessAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Succès");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showWarningAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Attention");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    // Méthodes deprecated (pour compatibilité)
+    private void showSuccess(String message) {
+        showSuccessAlert("Succès", message);
+    }
+
+    private void showError(String message) {
+        showErrorAlert("Erreur", message);
     }
 }

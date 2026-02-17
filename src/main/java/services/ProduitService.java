@@ -29,7 +29,7 @@ public class ProduitService {
         }
     }
 
-    // ✅ CORRECTION : Récupération du champ imagePath
+
     public List<Produit> getAllProduits() {
         List<Produit> list = new ArrayList<>();
         String sql = "SELECT * FROM produit";
@@ -46,10 +46,10 @@ public class ProduitService {
                 p.setPrix(rs.getDouble("prix"));
                 p.setCategorie(rs.getString("categorie"));
                 p.setActif(rs.getBoolean("actif"));
-                p.setImagePath(rs.getString("imagePath")); // ✅ AJOUT - TRÈS IMPORTANT !
+                p.setImagePath(rs.getString("imagePath"));
                 list.add(p);
 
-                // Debug pour vérifier
+
                 System.out.println("📦 Produit chargé : " + p.getNom() + " | Image : " + p.getImagePath());
             }
         } catch (SQLException e) {
@@ -59,7 +59,7 @@ public class ProduitService {
         return list;
     }
 
-    // ✅ CORRECTION : Modification du champ imagePath
+
     public void modifier(Produit p) {
         String sql = "UPDATE produit SET nom=?, description=?, prix=?, categorie=?, actif=?, imagePath=? WHERE id_produit=?";
         try (Connection cn = MyDatabase.getInstance().getConnection();
@@ -94,7 +94,7 @@ public class ProduitService {
         }
     }
 
-    // ✅ CORRECTION : getById avec imagePath
+
     public Produit getById(long id) {
         String sql = "SELECT * FROM produit WHERE id_produit = ?";
         try (Connection cn = MyDatabase.getInstance().getConnection();
