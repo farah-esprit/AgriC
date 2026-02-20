@@ -72,4 +72,59 @@ public class EmailService {
             return false;
         }
     }
+    public boolean sendWelcomeEmail(String toEmail, String userName) {
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("🌱 Bienvenue sur AgriConnect !");
+
+            String htmlContent =
+                    "<html>" +
+                            "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
+                            "<div style='background-color: #f5f5f5; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto;'>" +
+                            "<h2 style='color: #388e3c; text-align: center;'>🌱 Bienvenue sur AgriConnect</h2>" +
+                            "<h3>Bonjour " + userName + ",</h3>" +
+                            "<p style='font-size: 16px;'>Nous sommes ravis de vous accueillir sur <strong>AgriConnect</strong>, votre plateforme agricole !</p>" +
+                            "<div style='background-color: white; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #388e3c;'>" +
+                            "<h4 style='color: #388e3c; margin-top: 0;'>✅ Votre compte a été créé avec succès</h4>" +
+                            "<p>Vous pouvez maintenant :</p>" +
+                            "<ul>" +
+                            "<li>Gérer vos cultures</li>" +
+                            "<li>Consulter des experts</li>" +
+                            "<li>Commander des produits agricoles</li>" +
+                            "<li>Accéder à nos ressources</li>" +
+                            "</ul>" +
+                            "</div>" +
+                            "<p style='color: #999; font-size: 12px; text-align: center;'>© 2026 AgriConnect - Cultivons l'avenir ensemble 🌾</p>" +
+                            "</div>" +
+                            "</body>" +
+                            "</html>";
+
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+            Transport.send(message);
+
+            System.out.println("✅ Email de bienvenue envoyé à " + toEmail);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur email : " + e.getMessage());
+            return false;
+        }
+    }
 }

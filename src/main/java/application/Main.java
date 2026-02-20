@@ -11,12 +11,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Charger login.fxml (page d'accueil)
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
 
             Scene scene = new Scene(root);
             primaryStage.setTitle("AgriConnect - Login");
             primaryStage.setScene(scene);
+            primaryStage.setMaximized(true);
             primaryStage.show();
 
         } catch (Exception e) {

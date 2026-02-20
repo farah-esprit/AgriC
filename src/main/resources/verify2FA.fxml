@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<StackPane style="-fx-background-color: white;"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="controller.Verify2FAController">
+    <children>
+        <VBox alignment="CENTER" spacing="25" maxWidth="440.0" StackPane.alignment="CENTER">
+            <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+            <Label text="🔐" style="-fx-font-size: 60px;"/>
+            <Label text="Authentification à 2 facteurs" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #388e3c;"/>
+            <Label fx:id="emailLabel" text="Entrez le code de vérification"
+                   style="-fx-font-size: 14px; -fx-text-fill: #666;" textAlignment="CENTER"/>
+            <VBox spacing="8" alignment="CENTER">
+                <Label text="Code à 6 chiffres" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="codeField" promptText="000000" maxWidth="200" prefHeight="45"
+                           style="-fx-font-size: 24px; -fx-alignment: center; -fx-font-weight: bold; -fx-border-color: #388e3c; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+            </VBox>
+            <Label fx:id="messageLabel" text="" style="-fx-font-size: 13px;"/>
+            <HBox spacing="12" alignment="CENTER">
+                <Button fx:id="btnVerify" text="✅ Vérifier" onAction="#handleVerify"
+                        prefWidth="150" prefHeight="40"
+                        style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 8;"/>
+                <Button text="← Retour" onAction="#handleBackToLogin"
+                        prefWidth="150" prefHeight="40"
+                        style="-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 8;"/>
+            </HBox>
+            <Label text="💡 Ouvrez Google Authenticator sur votre téléphone"
+                   style="-fx-font-size: 11px; -fx-text-fill: #999;"/>
+        </VBox>
+    </children>
+</StackPane>

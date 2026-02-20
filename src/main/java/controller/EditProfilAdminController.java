@@ -1,6 +1,7 @@
 package controller;
 
 import entities.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.ValidationUtils;
@@ -35,6 +37,16 @@ public class EditProfilAdminController {
         userService = new UserService();
         ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     // ================= VALIDATION EN TEMPS RÉEL =================
@@ -159,14 +171,12 @@ public class EditProfilAdminController {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
                         Parent root = loader.load();
-
                         ProfilAdminController controller = loader.getController();
                         controller.setUser(currentUser);
-
                         Stage stage = (Stage) nomField.getScene().getWindow();
                         stage.setScene(new Scene(root));
                         stage.setTitle("AgriConnect - Mon Profil");
-
+                        stage.setMaximized(true); // ✅
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -177,18 +187,17 @@ public class EditProfilAdminController {
         }).start();
     }
 
+
     @FXML
     private void handleAnnuler(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
             Parent root = loader.load();
-
             ProfilAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -199,13 +208,11 @@ public class EditProfilAdminController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
             Parent root = loader.load();
-
             DashboardAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -217,7 +224,7 @@ public class EditProfilAdminController {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
             Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -248,31 +255,24 @@ public class EditProfilAdminController {
         }
     }
 
+
     // ================= OUVRIR GESTION UTILISATEURS =================
     @FXML
     private void openManageUsers(MouseEvent event) {
         try {
-            System.out.println("📂 Chargement de manageUsers.fxml...");
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/manageUsers.fxml"));
             Parent root = loader.load();
-
             ManageUsersController controller = loader.getController();
             controller.setUser(currentUser);
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) nomField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Gestion des utilisateurs");
-
-            System.out.println("✅ Gestion des utilisateurs chargée !");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ ERREUR : " + e.getMessage());
-            e.printStackTrace();
             showError("Impossible de charger la gestion des utilisateurs");
+            e.printStackTrace();
         }
     }
-
     // ================= MESSAGES =================
     private void showError(String message) {
         if (messageLabel != null) {

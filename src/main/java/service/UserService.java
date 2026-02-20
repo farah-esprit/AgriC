@@ -31,33 +31,59 @@ public class UserService implements IService<User> {
 
             ps.setString(1, user.getNom());
             ps.setString(2, user.getEmail());
-            ps.setString(3, user.getMotDePasse());
+            // ✅ HASHER LE MOT DE PASSE
+            ps.setString(3, PasswordService.hashPassword(user.getMotDePasse()));
             ps.setString(4, user.getRole().name());
             ps.setString(5, user.getEtatCompte().name());
-
-            // Gérer la date de création
-            if (user.getDateCreation() != null) {
-                ps.setTimestamp(6, Timestamp.valueOf(user.getDateCreation()));
-            } else {
-                ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-            }
+            ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
 
             ps.executeUpdate();
 
-            // Récupérer l'ID généré
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 user.setId(rs.getInt(1));
             }
 
-            System.out.println("✅ User ajouté avec ID = " + user.getId());
+            System.out.println("✅ User ajouté avec mot de passe hashé");
 
         } catch (SQLException e) {
-            System.out.println("❌ Erreur lors de l'ajout : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Modifier authenticate()
+    public User authenticate(String email, String plainPassword) {
+        String sql = "SELECT * FROM user WHERE email = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String hashedPassword = rs.getString("motDePasse");
+
+                // ✅ VÉRIFIER AVEC BCRYPT
+                if (PasswordService.checkPassword(plainPassword, hashedPassword)) {
+                    return new User(
+                            rs.getInt("user_id"),
+                            rs.getString("nom"),
+                            rs.getString("email"),
+                            hashedPassword,
+                            Role.valueOf(rs.getString("role")),
+                            EtatCompte.valueOf(rs.getString("etatCompte")),
+                            rs.getTimestamp("date_creation").toLocalDateTime()
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     // ================= VÉRIFIER SI EMAIL EXISTE =================
     public boolean emailExiste(String email) {
         String sql = "SELECT COUNT(*) as total FROM user WHERE email = ?";
@@ -77,41 +103,64 @@ public class UserService implements IService<User> {
 
         return false;
     }
-
-    // ================= AUTHENTIFICATION =================
-    public User authenticate(String email, String motDePasse) {
-        String sql = "SELECT * FROM user WHERE email = ? AND motDePasse = ?";
+    public void enable2FA(int userId, String secret) {
+        String sql = "UPDATE user SET two_factor_secret = ?, two_factor_enabled = TRUE WHERE user_id = ?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, email);
-            ps.setString(2, motDePasse);
+            ps.setString(1, secret);
+            ps.setInt(2, userId);
 
-            ResultSet rs = ps.executeQuery();
+            int rowsAffected = ps.executeUpdate();
 
-            if (rs.next()) {
-                // Récupérer la date de création
-                Timestamp timestamp = rs.getTimestamp("date_creation");
-                LocalDateTime dateCreation = timestamp != null ? timestamp.toLocalDateTime() : null;
-
-                return new User(
-                        rs.getInt("user_id"),
-                        rs.getString("nom"),
-                        rs.getString("email"),
-                        rs.getString("motDePasse"),
-                        Role.valueOf(rs.getString("role")),
-                        EtatCompte.valueOf(rs.getString("etatCompte")),
-                        dateCreation
-                );
+            if (rowsAffected > 0) {
+                System.out.println("✅ 2FA activé pour userId: " + userId);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Erreur authentification : " + e.getMessage());
+            System.err.println("❌ Erreur enable2FA : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public boolean is2FAEnabled(int userId) {
+        String sql = "SELECT two_factor_enabled FROM user WHERE user_id = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBoolean("two_factor_enabled");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public String get2FASecret(int userId) {
+        String sql = "SELECT two_factor_secret FROM user WHERE user_id = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("two_factor_secret");
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
     }
+
 
     // ================= RÉCUPÉRER UN USER PAR ID =================
     public User getUserById(int id) {

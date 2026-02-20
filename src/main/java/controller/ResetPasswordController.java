@@ -1,4 +1,5 @@
 package controller;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -6,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.PasswordResetService;
 import service.UserService;
@@ -25,6 +27,16 @@ public class ResetPasswordController {
         resetService = new PasswordResetService();
         ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     // ================= VALIDATION EN TEMPS RÉEL =================
@@ -143,9 +155,8 @@ public class ResetPasswordController {
             Stage stage = (Stage) codeField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Connexion");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ Erreur retour login");
             e.printStackTrace();
         }
     }

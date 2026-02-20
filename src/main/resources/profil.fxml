@@ -10,10 +10,10 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
     <children>
         <!-- SIDEBAR -->
-        <AnchorPane prefHeight="606.0" prefWidth="196.0" style="-fx-background-color: #388e3c;">
+        <AnchorPane style="-fx-background-color: #388e3c;">
             <children>
                 <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
                     <font>
@@ -36,9 +36,13 @@
                     </children>
                 </VBox>
                 <Line endX="84.79995727539062" layoutX="101.0" layoutY="552.0" startX="-101.0" stroke="#666666" />
-                <HBox layoutX="11.0" layoutY="564.0" onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="164.0" spacing="8.0" style="-fx-cursor: hand;">
+                <HBox layoutX="11.0" layoutY="564.0" prefHeight="36.0" prefWidth="164.0" spacing="8.0" style="-fx-cursor: hand;">
                     <children>
-                        <Button onAction="#handleLogout" prefHeight="40.0" prefWidth="210.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="🚪 Déconnexion" textFill="WHITE">
+                        <Button onAction="#handleLogout"
+                                prefHeight="40.0"
+                                prefWidth="164.0"
+                                text="🚪 Déconnexion"
+                                style="-fx-background-color: #000000; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
@@ -49,7 +53,7 @@
         </AnchorPane>
 
         <!-- ZONE PRINCIPALE -->
-        <AnchorPane layoutX="186.0" prefHeight="606.0" prefWidth="614.0" style="-fx-background-color: #f5f5f5;">
+        <AnchorPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="0.0" style="-fx-background-color: #f5f5f5;">
             <children>
                 <!-- BOUTON RETOUR (FLÈCHE) -->
                 <Button layoutX="20.0" layoutY="20.0" onMouseClicked="#handleBackToDashboard" prefHeight="40.0" prefWidth="44.0" style="-fx-background-color: #898989; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="⬅" textFill="WHITE">
@@ -185,14 +189,14 @@
                                         </Button>
 
                                         <!-- Bouton Modifier (visible si profil existe) -->
-                                        <Button fx:id="modifierButton" onAction="#handleModifierProfil" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="📝Modifier" visible="false">
+                                        <Button fx:id="modifierButton" onAction="#handleModifierProfil" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="📝Modifier" visible="false">
                                             <font>
                                                 <Font name="System Bold" size="13.0" />
                                             </font>
                                         </Button>
 
                                         <!-- Bouton Supprimer (visible si profil existe) -->
-                                        <Button fx:id="supprimerButton" onAction="#handleSupprimerProfil" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🗑Supprimer" visible="false">
+                                        <Button fx:id="supprimerButton" onAction="#handleSupprimerProfil" prefHeight="38.0" prefWidth="47.0" style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🗑" visible="false">
                                             <font>
                                                 <Font name="System Bold" size="13.0" />
                                             </font>
@@ -208,6 +212,14 @@
                                   <Font name="System Bold" size="13.0" />
                               </font>
                           </Button>
+                        <Button fx:id="manage2FAButton" onAction="#handleManage2FA"
+                                prefHeight="40" prefWidth="250"
+                                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;"
+                                text="🔐 Gérer l'authentification 2FA">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
                     </children>
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />

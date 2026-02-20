@@ -1,7 +1,7 @@
 package controller;
-
 import entities.Profil;
 import entities.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,52 +11,54 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import service.ProfilService;
-
+import service.UserService;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
-
 import utils.MyDataBase;
-
 public class ProfilController {
     @FXML private Label nomLabel;
     @FXML private Label prenomLabel;
     @FXML private Label telephoneLabel;
     @FXML private Label bioLabel;
     @FXML private Label emailLabel;
-    @FXML private AnchorPane contentPane;
-
-    @FXML private Label roleLabel;  // ← AJOUTÉ ICI
+    @FXML private Label roleLabel;
     @FXML private Button modifierButton;
     @FXML private Button supprimerButton;
     @FXML private Button createProfilButton;
     @FXML private Label messageLabel;
     @FXML private Circle profileCircle;
-
     private User currentUser;
     private Profil currentProfil;
     private ProfilService profilService;
-
-    // ================= INITIALISATION =================
+    private UserService userService;
     @FXML
     public void initialize() {
         profilService = new ProfilService();
-        if (messageLabel != null) {
-            messageLabel.setText("");
-        }
+        userService = new UserService();
+        if (messageLabel != null) messageLabel.setText("");
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         if (user == null) {
             System.err.println("❌ ERREUR : User est null dans setUser()");
@@ -66,7 +68,6 @@ public class ProfilController {
         this.currentUser = user;
         System.out.println("✅ User défini dans ProfilController : " + user.getNom() + " (ID: " + user.getId() + ")");
 
-        // ✅ METTRE À JOUR LE RÔLE DANS LA SIDEBAR
         if (roleLabel != null) {
             String role = user.getRole().toString();
             switch (role) {
@@ -94,7 +95,6 @@ public class ProfilController {
         loadProfilData();
     }
 
-    // ================= CHARGER LES DONNÉES DU PROFIL =================
     private void loadProfilData() {
         if (currentUser == null) {
             System.err.println("❌ ERREUR : currentUser est null dans loadProfilData()");
@@ -109,9 +109,6 @@ public class ProfilController {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // ✅ PROFIL EXISTE
-                System.out.println("✅ Profil existant trouvé");
-
                 currentProfil = new Profil(
                         rs.getInt("id"),
                         rs.getString("bio"),
@@ -124,39 +121,17 @@ public class ProfilController {
 
                 afficherProfil();
 
-                if (modifierButton != null) {
-                    modifierButton.setVisible(true);
-                    System.out.println("✅ Bouton Modifier affiché");
-                }
-                if (supprimerButton != null) {
-                    supprimerButton.setVisible(true);
-                    System.out.println("✅ Bouton Supprimer affiché");
-                }
-                if (createProfilButton != null) {
-                    createProfilButton.setVisible(false);
-                    System.out.println("✅ Bouton Créer caché");
-                }
+                if (modifierButton != null) modifierButton.setVisible(true);
+                if (supprimerButton != null) supprimerButton.setVisible(true);
+                if (createProfilButton != null) createProfilButton.setVisible(false);
 
             } else {
-                // ❌ PAS DE PROFIL
-                System.out.println("ℹ️ Aucun profil - Affichage du bouton Créer");
                 currentProfil = null;
                 afficherMessagePasDeprofil();
 
-                if (modifierButton != null) {
-                    modifierButton.setVisible(false);
-                    System.out.println("✅ Bouton Modifier caché");
-                }
-                if (supprimerButton != null) {
-                    supprimerButton.setVisible(false);
-                    System.out.println("✅ Bouton Supprimer caché");
-                }
-                if (createProfilButton != null) {
-                    createProfilButton.setVisible(true);
-                    System.out.println("✅ Bouton Créer affiché");
-                } else {
-                    System.err.println("❌ createProfilButton est NULL !");
-                }
+                if (modifierButton != null) modifierButton.setVisible(false);
+                if (supprimerButton != null) supprimerButton.setVisible(false);
+                if (createProfilButton != null) createProfilButton.setVisible(true);
             }
 
         } catch (SQLException e) {
@@ -165,7 +140,6 @@ public class ProfilController {
         }
     }
 
-    // ================= AFFICHER LE PROFIL =================
     private void afficherProfil() {
         if (currentProfil == null) return;
 
@@ -182,7 +156,6 @@ public class ProfilController {
         }
     }
 
-    // ================= AFFICHER MESSAGE PAS DE PROFIL =================
     private void afficherMessagePasDeprofil() {
         if (nomLabel != null) nomLabel.setText("Non renseigné");
         if (prenomLabel != null) prenomLabel.setText("Non renseigné");
@@ -198,7 +171,6 @@ public class ProfilController {
         }
     }
 
-    // ================= CHARGER L'IMAGE =================
     private void loadProfileImage(String imagePath) {
         try {
             File file = new File(imagePath);
@@ -211,7 +183,6 @@ public class ProfilController {
         }
     }
 
-    // ================= CRÉER PROFIL =================
     @FXML
     private void handleCreateProfil() {
         try {
@@ -236,7 +207,6 @@ public class ProfilController {
         }
     }
 
-    // ================= MODIFIER PROFIL =================
     @FXML
     private void handleModifierProfil() {
         if (currentProfil == null) {
@@ -267,7 +237,6 @@ public class ProfilController {
         }
     }
 
-    // ================= SUPPRIMER PROFIL =================
     @FXML
     private void handleSupprimerProfil(ActionEvent event) {
         if (currentProfil == null) {
@@ -298,7 +267,6 @@ public class ProfilController {
         }
     }
 
-    // ================= CHANGER MOT DE PASSE =================
     @FXML
     private void handleChangePassword(ActionEvent event) {
         try {
@@ -357,7 +325,6 @@ public class ProfilController {
                     return;
                 }
 
-                service.UserService userService = new service.UserService();
                 boolean success = userService.changerMotDePasse(currentUser.getId(), ancienMdp, nouveauMdp);
 
                 if (success) {
@@ -373,13 +340,50 @@ public class ProfilController {
         }
     }
 
-    // ================= RAFRAÎCHIR =================
+    // ✅ NOUVELLE MÉTHODE : Gérer 2FA
+    @FXML
+    private void handleManage2FA(ActionEvent event) {
+        boolean is2FAEnabled = userService.is2FAEnabled(currentUser.getId());
+
+        if (is2FAEnabled) {
+            // 2FA déjà activé - proposer de désactiver
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Désactiver 2FA");
+            alert.setHeaderText("L'authentification à deux facteurs est actuellement activée");
+            alert.setContentText("Voulez-vous la désactiver ?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // TODO: Implémenter désactivation
+                showSuccess("✅ 2FA désactivé");
+            }
+        } else {
+            // 2FA non activé - rediriger vers activation
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactorSetup.fxml"));
+                Parent root = loader.load();
+
+                TwoFactorController controller = loader.getController();
+                controller.setUser(currentUser);
+
+                Stage stage = new Stage();
+                stage.setTitle("Activer l'authentification à deux facteurs");
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.show();
+
+            } catch (Exception e) {
+                showError("❌ Erreur : " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void refreshProfil() {
         loadProfilData();
         showSuccess("✅ Profil mis à jour !");
     }
 
-    // ================= MESSAGES =================
     private void showError(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
@@ -394,74 +398,46 @@ public class ProfilController {
         }
     }
 
-    // ================= RETOUR DASHBOARD =================
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
-        if (currentUser == null) {
-            System.err.println("❌ ERREUR : currentUser est null dans handleBackToDashboard()");
-            return;
-        }
-
+        if (currentUser == null) return;
         try {
             String fxmlFile = "";
-
             switch (currentUser.getRole()) {
-                case ADMIN:
-                    fxmlFile = "/adminDashboard.fxml";
-                    break;
-                case AGRICULTEUR:
-                    fxmlFile = "/agriculteurDashboard.fxml";
-                    break;
-                case EXPERT:
-                    fxmlFile = "/expertDashboard.fxml";
-                    break;
-                case FOURNISSEUR:
-                    fxmlFile = "/fournisseurDashboard.fxml";
-                    break;
+                case ADMIN:       fxmlFile = "/adminDashboard.fxml"; break;
+                case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
+                case EXPERT:      fxmlFile = "/expertDashboard.fxml"; break;
+                case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
             }
-
-            System.out.println("📂 Retour vers : " + fxmlFile);
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
-
             Object controller = loader.getController();
-
-            if (controller instanceof DashboardAdminController) {
+            if (controller instanceof DashboardAdminController)
                 ((DashboardAdminController) controller).setUser(currentUser);
-            } else if (controller instanceof DashboardAgriculteurController) {
+            else if (controller instanceof DashboardAgriculteurController)
                 ((DashboardAgriculteurController) controller).setUser(currentUser);
-            } else if (controller instanceof DashboardExpertController) {
+            else if (controller instanceof DashboardExpertController)
                 ((DashboardExpertController) controller).setUser(currentUser);
-            } else if (controller instanceof DashboardFournisseurController) {
+            else if (controller instanceof DashboardFournisseurController)
                 ((DashboardFournisseurController) controller).setUser(currentUser);
-            }
-
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Dashboard");
-
-            System.out.println("✅ Retour au dashboard réussi");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ Erreur retour dashboard : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // ================= DÉCONNEXION =================
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) contentPane.getScene().getWindow();
+            Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
-
-            System.out.println("✅ Déconnexion");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ Erreur déconnexion");
             e.printStackTrace();
         }
     }

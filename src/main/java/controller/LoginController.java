@@ -1,7 +1,7 @@
 package controller;
-
 import entities.User;
 import entities.EtatCompte;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,11 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
-
 public class LoginController {
-
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
@@ -25,10 +24,17 @@ public class LoginController {
     @FXML
     public void initialize() {
         userService = new UserService();
+        if (errorLabel != null) errorLabel.setText("");
 
-        if (errorLabel != null) {
-            errorLabel.setText("");
-        }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) emailField.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     @FXML
@@ -40,6 +46,7 @@ public class LoginController {
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Inscription");
+            stage.setMaximized(true); // ✅ ajouté
 
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement de l'inscription");
@@ -48,7 +55,6 @@ public class LoginController {
         }
     }
 
-    // ================= NOUVELLE MÉTHODE : MOT DE PASSE OUBLIÉ =================
     @FXML
     private void handleForgotPassword() {
         try {
@@ -56,6 +62,7 @@ public class LoginController {
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mot de passe oublié");
+            stage.setMaximized(true); // ✅ ajouté
 
         } catch (Exception e) {
             System.err.println("❌ Erreur chargement forgotPassword");
@@ -64,19 +71,19 @@ public class LoginController {
         }
     }
 
-    // ================= LOGIN =================
+    // ================= LOGIN AVEC VÉRIFICATION 2FA =================
     @FXML
     private void handleLogin() {
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
         if (email.isEmpty() || password.isEmpty()) {
-            showError("Veuillez remplir tous les champs");
+            showError("❌ Veuillez remplir tous les champs");
             return;
         }
 
         if (!isValidEmail(email)) {
-            showError("Format d'email invalide");
+            showError("❌ Format d'email invalide");
             return;
         }
 
@@ -84,32 +91,64 @@ public class LoginController {
         User user = userService.authenticate(email, password);
 
         if (user == null) {
-            showError("Email ou mot de passe incorrect");
+            showError("❌ Email ou mot de passe incorrect");
             return;
         }
 
         // Vérification de l'état du compte
         if (user.getEtatCompte() == EtatCompte.BLOQUE) {
-            showError("Votre compte est bloqué. Contactez l'administrateur.");
+            showError("❌ Votre compte est bloqué. Contactez l'administrateur.");
             return;
         }
 
-        // Connexion réussie
-        showSuccess("Connexion réussie ! Bienvenue " + user.getNom());
+        // ✅ VÉRIFIER SI 2FA EST ACTIVÉ
+        boolean twoFactorEnabled = userService.is2FAEnabled(user.getId());
 
-        // Redirection selon le rôle
-        redirectToDashboard(user);
+        System.out.println("🔐 2FA activé pour " + user.getEmail() + " : " + twoFactorEnabled);
+
+        if (twoFactorEnabled) {
+            // ✅ REDIRIGER VERS PAGE DE VÉRIFICATION 2FA
+            System.out.println("🔐 Redirection vers vérification 2FA...");
+            redirectToTwoFactorVerification(user);
+        } else {
+            // Connexion réussie sans 2FA
+            showSuccess("✅ Connexion réussie ! Bienvenue " + user.getNom());
+            redirectToDashboard(user);
+        }
+    }
+
+    // ✅ NOUVELLE MÉTHODE : Redirection vers vérification 2FA
+    private void redirectToTwoFactorVerification(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/verify2FA.fxml"));
+            Parent root = loader.load();
+
+            Verify2FAController controller = loader.getController();
+            controller.setUser(user);
+
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Vérification 2FA");
+            stage.setMaximized(true); // ✅ manquait ici
+
+            System.out.println("✅ Page verify2FA chargée avec succès");
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur chargement verify2FA : " + e.getMessage());
+            e.printStackTrace();
+            showError("❌ Erreur de chargement de la vérification 2FA");
+        }
     }
 
     // ================= MESSAGES =================
     private void showError(String message) {
         errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        errorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
     }
 
     private void showSuccess(String message) {
         errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+        errorLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
     }
 
     // ================= VALIDATION EMAIL =================
@@ -121,57 +160,40 @@ public class LoginController {
         try {
             String fxmlFile = "";
 
-            // Choisir le dashboard selon le rôle
             switch (user.getRole()) {
-                case ADMIN:
-                    fxmlFile = "/adminDashboard.fxml";
-                    break;
-                case AGRICULTEUR:
-                    fxmlFile = "/agriculteurDashboard.fxml";
-                    break;
-                case EXPERT:
-                    fxmlFile = "/expertDashboard.fxml";
-                    break;
-                case FOURNISSEUR:
-                    fxmlFile = "/fournisseurDashboard.fxml";
-                    break;
+                case ADMIN:      fxmlFile = "/adminDashboard.fxml"; break;
+                case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
+                case EXPERT:     fxmlFile = "/expertDashboard.fxml"; break;
+                case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
             }
 
-            System.out.println("📂 Chargement de : " + fxmlFile);
-
-            // Charger le FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
-            // Passer l'utilisateur au controller approprié
             Object controller = loader.getController();
-
-            if (controller instanceof DashboardAdminController) {
+            if (controller instanceof DashboardAdminController)
                 ((DashboardAdminController) controller).setUser(user);
-                System.out.println("✅ DashboardAdminController initialisé");
-            } else if (controller instanceof DashboardAgriculteurController) {
+            else if (controller instanceof DashboardAgriculteurController)
                 ((DashboardAgriculteurController) controller).setUser(user);
-                System.out.println("✅ DashboardAgriculteurController initialisé");
-            } else if (controller instanceof DashboardFournisseurController) {
+            else if (controller instanceof DashboardFournisseurController)
                 ((DashboardFournisseurController) controller).setUser(user);
-                System.out.println("✅ DashboardFournisseurController initialisé");
-            } else if (controller instanceof DashboardExpertController) {
+            else if (controller instanceof DashboardExpertController)
                 ((DashboardExpertController) controller).setUser(user);
-                System.out.println("✅ DashboardExpertController initialisé");
-            }
 
-            // Changer la scène
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("AgriConnect - Dashboard " + user.getRole());
 
+            // ✅ ICI c'est le bon endroit !
+            stage.setMaximized(true);
+
             System.out.println("✅ Redirection réussie vers " + fxmlFile);
 
         } catch (Exception e) {
-            System.out.println("❌ ERREUR lors de la redirection :");
+            System.err.println("❌ ERREUR lors de la redirection :");
             e.printStackTrace();
-            showError("Erreur lors de la redirection : " + e.getMessage());
+            showError("❌ Erreur lors de la redirection : " + e.getMessage());
         }
     }
 }

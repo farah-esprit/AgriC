@@ -2,14 +2,20 @@ package controller;
 import entities.EtatCompte;
 import entities.Role;
 import entities.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import service.EmailService;
 import service.UserService;
 import utils.ValidationUtils;
+
+import static utils.ValidationUtils.showSuccess;
+
 public class RegisterController {
     @FXML private TextField nomField;
     @FXML private TextField emailField;
@@ -30,18 +36,21 @@ public class RegisterController {
     @FXML
     public void initialize() {
         userService = new UserService();
-
-        // Remplir le choix de rôle
         roleChoice.getItems().addAll(Role.AGRICULTEUR, Role.EXPERT, Role.FOURNISSEUR);
         roleChoice.setValue(Role.AGRICULTEUR);
-
-        // Synchroniser les champs de mot de passe
         bindPasswordFields();
-
-        // Validation en temps réel
         setupRealTimeValidation();
-    }
 
+        Platform.runLater(() -> {
+            Stage stage = (Stage) roleChoice.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
+    }
     // ================= SYNCHRONISATION MOT DE PASSE =================
     private void bindPasswordFields() {
         // Synchroniser passwordField et passwordTextField
@@ -263,8 +272,11 @@ public class RegisterController {
             User newUser = new User(nom, email, password, role, EtatCompte.ACTIF);
             userService.ajouter(newUser);
 
-            ValidationUtils.showSuccess(errorLabel, "Compte créé avec succès !");
+            // ✅ ENVOYER EMAIL DE BIENVENUE
+            EmailService emailService = new EmailService();
+            emailService.sendWelcomeEmail(email, nom);
 
+            showSuccess(errorLabel, "✅ Compte créé ! Consultez votre email.");
             // Redirection après 1.5 secondes
             new Thread(() -> {
                 try {
@@ -279,6 +291,7 @@ public class RegisterController {
             ValidationUtils.showError(errorLabel, "Erreur lors de la création du compte");
             e.printStackTrace();
         }
+
     }
 
     // ================= RETOUR LOGIN =================
@@ -289,6 +302,7 @@ public class RegisterController {
             Stage stage = (Stage) registerButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Connexion");
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }

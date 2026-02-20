@@ -1,12 +1,14 @@
 package controller;
 
 import entities.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.EmailService;
 import service.PasswordResetService;
@@ -27,10 +29,17 @@ public class ForgotPasswordController {
         userService = new UserService();
         resetService = new PasswordResetService();
         emailService = new EmailService();
+        if (messageLabel != null) messageLabel.setText("");
 
-        if (messageLabel != null) {
-            messageLabel.setText("");
-        }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     // ================= ENVOYER LE CODE =================
@@ -102,18 +111,15 @@ public class ForgotPasswordController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/resetPassword.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Réinitialisation");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ Erreur navigation resetPassword");
             e.printStackTrace();
         }
     }
 
-    // ================= RETOUR LOGIN =================
     @FXML
     private void handleBackToLogin() {
         try {
@@ -121,13 +127,11 @@ public class ForgotPasswordController {
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Connexion");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ Erreur retour login");
             e.printStackTrace();
         }
     }
-
     // ================= VALIDATION EMAIL =================
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");

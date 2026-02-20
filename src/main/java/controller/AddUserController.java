@@ -2,11 +2,15 @@ package controller;
 import entities.EtatCompte;
 import entities.Role;
 import entities.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.ValidationUtils;
@@ -24,15 +28,25 @@ public class AddUserController {
 
     @FXML
     public void initialize() {
+        // Ton code existant
         userService = new UserService();
-
         roleComboBox.getItems().addAll("AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
         etatComboBox.getItems().addAll("ACTIF", "BLOQUE");
         etatComboBox.setValue("ACTIF");
-
         ValidationUtils.clearMessage(messageLabel);
-
         setupRealTimeValidation();
+
+        // Full screen
+        Platform.runLater(() -> {
+            Stage stage = (Stage) roleComboBox.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            Parent root = scene.getRoot();
+            if (root instanceof Region) {
+                ((Region) root).prefWidthProperty().bind(scene.widthProperty());
+                ((Region) root).prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     private void setupRealTimeValidation() {

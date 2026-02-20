@@ -3,6 +3,7 @@ package controller;
 import entities.EtatCompte;
 import entities.Role;
 import entities.User;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.MyDataBase;
@@ -61,14 +63,20 @@ public class ManageUsersController {
         userService = new UserService();
         usersList = FXCollections.observableArrayList();
         filteredList = FXCollections.observableArrayList();
-
         setupRoleFilter();
         setupTableColumns();
         loadUsers();
+        if (messageLabel != null) messageLabel.setText("");
 
-        if (messageLabel != null) {
-            messageLabel.setText("");
-        }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     // ================= DÉFINIR L'UTILISATEUR =================
@@ -187,7 +195,6 @@ public class ManageUsersController {
         }
     }
 
-    // ================= RECHERCHE =================
     @FXML
     private void handleSearch() {
         String searchText = searchField.getText().toLowerCase();
@@ -305,42 +312,43 @@ public class ManageUsersController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
             Parent root = loader.load();
-
             DashboardAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) usersTable.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Dashboard Admin");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleGoToProfil(MouseEvent event)
-    {
+    private void handleGoToProfil(MouseEvent event) {
         try {
-            System.out.println("📂 Chargement de profilAdmin.fxml...");
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
             Parent root = loader.load();
-
             ProfilAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mon Profil");
-
-            System.out.println("✅ Profil Admin chargé !");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ ERREUR : " + e.getMessage());
             e.printStackTrace();
-            showError("Impossible de charger le profil");
+        }
+    }
+
+    @FXML
+    private void handleLogout(MouseEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
+            Stage stage = (Stage) usersTable.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgriConnect - Login");
+            stage.setMaximized(true); // ✅
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     @FXML
@@ -354,17 +362,7 @@ public class ManageUsersController {
         showPane(usersPane);
         setActiveMenu(usersMenu);
     }
-    @FXML
-    private void handleLogout(MouseEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Login");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
     private void showPane(AnchorPane pane) {
         if (dashboardPane != null) dashboardPane.setVisible(false);
         if (usersPane != null) usersPane.setVisible(false);

@@ -1,9 +1,12 @@
 package controller;
 import entities.Profil;
 import entities.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
@@ -34,6 +37,16 @@ public class EditProfilController {
         profilService = new ProfilService();
         ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) messageLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
     }
 
     // ================= VALIDATION EN TEMPS RÉEL =================

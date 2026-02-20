@@ -1,6 +1,7 @@
 package controller;
 
 import entities.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
 
@@ -35,8 +37,17 @@ public class ProfilAdminController {
     @FXML
     public void initialize() {
         userService = new UserService();
-    }
 
+        Platform.runLater(() -> {
+            Stage stage = (Stage) nomLabel.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+        });
+    }
     public void setUser(User user) {
         this.currentUser = user;
 
@@ -63,17 +74,14 @@ public class ProfilAdminController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/editProfilAdmin.fxml"));
             Parent root = loader.load();
-
             EditProfilAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Modifier mon profil");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Erreur lors du chargement de la page de modification");
         }
     }
 
@@ -82,7 +90,7 @@ public class ProfilAdminController {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation de suppression");
         confirmation.setHeaderText("Supprimer votre compte ?");
-        confirmation.setContentText("⚠️ ATTENTION : Cette action est IRRÉVERSIBLE !\n\nÊtes-vous absolument sûr de vouloir supprimer votre compte ?");
+        confirmation.setContentText("⚠️ ATTENTION : Cette action est IRRÉVERSIBLE !");
 
         ButtonType buttonOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonNon = new ButtonType("Non, annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -91,13 +99,12 @@ public class ProfilAdminController {
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == buttonOui) {
             userService.supprimer(currentUser.getId());
-
-            // Redirection vers login
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
                 Stage stage = (Stage) nomLabel.getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.setTitle("AgriConnect - Connexion");
+                stage.setMaximized(true); // ✅
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -109,41 +116,30 @@ public class ProfilAdminController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
             Parent root = loader.load();
-
             DashboardAdminController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Dashboard Admin");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void openManageUsers(MouseEvent event)
-    {
-        try {
-            System.out.println("📂 Chargement de manageUsers.fxml...");
 
+    @FXML
+    private void openManageUsers(MouseEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
             Parent root = loader.load();
-
-            controller.ManageUsersController controller = loader.getController();
+            ManageUsersController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Utilisateurs");
-
-            System.out.println("✅ liste des utilisateurs  chargée !");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
-            System.err.println("❌ ERREUR : " + e.getMessage());
             e.printStackTrace();
-            showError("Impossible de charger les utilisateurs");
         }
     }
 
@@ -153,12 +149,12 @@ public class ProfilAdminController {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
-
+            stage.setTitle("AgriConnect - Login");
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     private void showError(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);

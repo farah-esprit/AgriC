@@ -1,6 +1,7 @@
 package controller;
 
 import entities.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
@@ -38,25 +40,27 @@ public class DashboardAgriculteurController {
     private User currentUser;
     private boolean isDarkMode = false;
 
-    // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         System.out.println("✅ DashboardAgriculteurController initialisé");
-
-        // Date actuelle
         if (dateLabel != null) {
             LocalDate today = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.FRENCH);
             dateLabel.setText(today.format(formatter));
         }
+        if (menuHome != null) setActiveMenu(menuHome);
 
-        // Menu actif par défaut
-        if (menuHome != null) {
-            setActiveMenu(menuHome);
-        }
+        Platform.runLater(() -> {
+            Stage stage = (Stage) menuHome.getScene().getWindow();
+            stage.setMaximized(true);
+            Scene scene = stage.getScene();
+            if (scene.getRoot() instanceof Region r) {  // ← accolades ajoutées
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }  // ← accolade fermante manquait
+        });
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
         if (welcomeLabel != null) {
@@ -148,28 +152,23 @@ public class DashboardAgriculteurController {
         setActiveMenu(menuBoutique);
         System.out.println("📍 Boutique");
     }
-
-    // ================= PROFIL =================
     @FXML
     private void handleGoToProfil(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
             Parent root = loader.load();
-
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
-
             Stage stage = (Stage) contentPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Mon Profil");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             System.err.println("❌ Erreur profil");
             e.printStackTrace();
         }
     }
 
-    // ================= DÉCONNEXION =================
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
@@ -177,16 +176,13 @@ public class DashboardAgriculteurController {
             Stage stage = (Stage) contentPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
-
-            System.out.println("✅ Déconnexion");
-
+            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             System.err.println("❌ Erreur déconnexion");
             e.printStackTrace();
         }
     }
 
-    // ================= UTILITAIRE =================
     public User getCurrentUser() {
         return currentUser;
     }
