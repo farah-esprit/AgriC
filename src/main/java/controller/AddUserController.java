@@ -4,12 +4,14 @@ import entities.Role;
 import entities.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
@@ -28,25 +30,12 @@ public class AddUserController {
 
     @FXML
     public void initialize() {
-        // Ton code existant
         userService = new UserService();
         roleComboBox.getItems().addAll("AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
         etatComboBox.getItems().addAll("ACTIF", "BLOQUE");
         etatComboBox.setValue("ACTIF");
         ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
-
-        // Full screen
-        Platform.runLater(() -> {
-            Stage stage = (Stage) roleComboBox.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            Parent root = scene.getRoot();
-            if (root instanceof Region) {
-                ((Region) root).prefWidthProperty().bind(scene.widthProperty());
-                ((Region) root).prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
     }
 
     private void setupRealTimeValidation() {
@@ -138,10 +127,34 @@ public class AddUserController {
             e.printStackTrace();
         }
     }
+    private AnchorPane contentPane;
+
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
 
     @FXML
     private void handleCancel() {
-        Stage stage = (Stage) nomField.getScene().getWindow();
-        stage.close();
+        // ✅ Retourner à ManageUsers dans le contentPane
+        if (contentPane != null && manageUsersController != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
+                Parent root = loader.load();
+                ManageUsersController controller = loader.getController();
+                controller.setDashboardController(manageUsersController.getDashboardController());
+                controller.setContentPane(contentPane);
+                controller.setUser(manageUsersController.getCurrentUser());
+
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(root);
+                AnchorPane.setTopAnchor(root, 0.0);
+                AnchorPane.setBottomAnchor(root, 0.0);
+                AnchorPane.setLeftAnchor(root, 0.0);
+                AnchorPane.setRightAnchor(root, 0.0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 }

@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class DashboardAdminController {
@@ -39,18 +42,15 @@ public class DashboardAdminController {
     @FXML private Label comptesActifsLabel;
     @FXML private Label nouveauxLabel;
     @FXML private Label messageLabel;
-
     @FXML private Label themeModeIcon;
     @FXML private Label themeModeText;
     @FXML private AnchorPane sidebar;
+    @FXML private AnchorPane contentPane;
     @FXML private ToggleButton themeToggle;
-
     @FXML private HBox menuDashboard;
     @FXML private HBox menuUsers;
-
     @FXML private AnchorPane dashboardPane;
     @FXML private AnchorPane usersPane;
-
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
@@ -58,7 +58,7 @@ public class DashboardAdminController {
     @FXML private TableColumn<User, Role> colRole;
     @FXML private TableColumn<User, EtatCompte> colEtat;
     @FXML private TableColumn<User, Void> colActions;
-
+    @FXML private Label adminNameLabel;
     @FXML private TextField searchField;
     @FXML private ComboBox<String> roleFilter;
 
@@ -67,6 +67,9 @@ public class DashboardAdminController {
     private ObservableList<User> usersList;
     private ObservableList<User> filteredList;
     private boolean isDarkMode = false;
+
+    // ✅ Sauvegarder le contenu original du contentPane
+    private List<Node> originalDashboardContent;
 
     @FXML
     public void initialize() {
@@ -79,13 +82,10 @@ public class DashboardAdminController {
         loadStatistics();
         loadUsers();
 
-        if (messageLabel != null) {
-            messageLabel.setText("");
-        }
+        if (messageLabel != null) messageLabel.setText("");
 
         System.out.println("✅ DashboardAdminController initialisé");
 
-        // Full screen
         Platform.runLater(() -> {
             Stage stage = (Stage) totalUsersLabel.getScene().getWindow();
             stage.setMaximized(true);
@@ -95,47 +95,72 @@ public class DashboardAdminController {
                 ((Region) root).prefWidthProperty().bind(scene.widthProperty());
                 ((Region) root).prefHeightProperty().bind(scene.heightProperty());
             }
+
+            // ✅ Sauvegarder le contenu original APRÈS que le FXML est chargé
+            if (contentPane != null) {
+                originalDashboardContent = new ArrayList<>(contentPane.getChildren());
+                System.out.println("✅ Contenu original sauvegardé : " + originalDashboardContent.size() + " éléments");
+            }
         });
+
+        if (menuUsers != null) {
+            menuUsers.setOnMouseEntered(e ->
+                    menuUsers.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 12; -fx-padding: 0 20;"));
+            menuUsers.setOnMouseExited(e ->
+                    menuUsers.setStyle("-fx-cursor: hand; -fx-background-radius: 12; -fx-padding: 0 20;"));
+        }
     }
 
-    //DÉFINIR L'UTILISATEUR =================
+    public AnchorPane getContentPane() {
+        return contentPane;
+    }
+
     public void setUser(User user) {
         this.currentUser = user;
-        if (welcomeLabel != null) {
-            welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
-        }
+        if (welcomeLabel != null) welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
+        if (adminNameLabel != null) adminNameLabel.setText(user.getNom());
         System.out.println("✅ Utilisateur : " + user.getNom() + " (Admin)");
+    }
+
+    @FXML
+    private void handleShowDashboard(MouseEvent event) {
+        reloadDashboardContent();
+    }
+
+    // ✅ Restaurer le contenu original du contentPane
+    public void reloadDashboardContent() {
+        if (contentPane != null && originalDashboardContent != null) {
+            contentPane.getChildren().clear();
+            contentPane.getChildren().addAll(originalDashboardContent);
+            loadStatistics(); // ✅ Rafraîchir les stats
+            System.out.println("✅ Retour au dashboard - contenu restauré");
+        }
+        setActiveMenu(menuDashboard);
     }
 
     @FXML
     private void handleToggleTheme() {
         isDarkMode = !isDarkMode;
-
         if (isDarkMode) {
-            // DARK MODE
             sidebar.setStyle("-fx-background-color: #1a1a1a;");
-            dashboardPane.setStyle("-fx-background-color: #121212;");
-
+            if (dashboardPane != null) dashboardPane.setStyle("-fx-background-color: #121212;");
+            if (contentPane != null) contentPane.setStyle("-fx-background-color: #121212;");
             if (themeModeIcon != null) themeModeIcon.setText("🌙");
             if (themeModeText != null) themeModeText.setText("Sombre");
             if (themeToggle != null) {
                 themeToggle.setText("☀️");
                 themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
             }
-
-            System.out.println("🌙 Mode sombre activé");
         } else {
-            // LIGHT MODE
             sidebar.setStyle("-fx-background-color: #388e3c;");
-            dashboardPane.setStyle("");
-
+            if (dashboardPane != null) dashboardPane.setStyle("");
+            if (contentPane != null) contentPane.setStyle("-fx-background-color: #f5f5f5;");
             if (themeModeIcon != null) themeModeIcon.setText("☀️");
             if (themeModeText != null) themeModeText.setText("Clair");
             if (themeToggle != null) {
                 themeToggle.setText("🌙");
                 themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
             }
-            System.out.println("☀️ Mode clair activé");
         }
     }
 
@@ -155,26 +180,20 @@ public class DashboardAdminController {
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etatCompte"));
 
-        // Style pour l'état
         colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
             @Override
             protected void updateItem(EtatCompte etat, boolean empty) {
                 super.updateItem(etat, empty);
-                if (empty || etat == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
+                if (empty || etat == null) { setText(null); setStyle(""); }
+                else {
                     setText(etat.toString());
-                    if (etat == EtatCompte.ACTIF) {
-                        setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
-                    }
+                    setStyle(etat == EtatCompte.ACTIF
+                            ? "-fx-text-fill: #4caf50; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
                 }
             }
         });
 
-        // Colonne Actions avec boutons
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button editBtn = new Button("✏️");
             private final Button deleteBtn = new Button("🗑️");
@@ -185,20 +204,9 @@ public class DashboardAdminController {
                 deleteBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
                 blockBtn.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
 
-                editBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleEditUser(user);
-                });
-
-                deleteBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleDeleteUser(user);
-                });
-
-                blockBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleToggleBlockUser(user);
-                });
+                editBtn.setOnAction(event -> handleEditUser(getTableView().getItems().get(getIndex())));
+                deleteBtn.setOnAction(event -> handleDeleteUser(getTableView().getItems().get(getIndex())));
+                blockBtn.setOnAction(event -> handleToggleBlockUser(getTableView().getItems().get(getIndex())));
             }
 
             @Override
@@ -215,7 +223,6 @@ public class DashboardAdminController {
                         blockBtn.setText("🔓");
                         blockBtn.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10;");
                     }
-
                     HBox hbox = new HBox(5, editBtn, deleteBtn, blockBtn);
                     hbox.setAlignment(Pos.CENTER);
                     setGraphic(hbox);
@@ -229,52 +236,28 @@ public class DashboardAdminController {
             Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
 
-            // Total utilisateurs
             ResultSet rs = st.executeQuery("SELECT COUNT(*) as total FROM user");
-            if (rs.next() && totalUsersLabel != null) {
-                totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && totalUsersLabel != null) totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Agriculteurs
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='AGRICULTEUR'");
-            if (rs.next() && agriculteursLabel != null) {
-                agriculteursLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && agriculteursLabel != null) agriculteursLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Experts
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='EXPERT'");
-            if (rs.next() && expertsLabel != null) {
-                expertsLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && expertsLabel != null) expertsLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Fournisseurs
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE role='FOURNISSEUR'");
-            if (rs.next() && fournisseursLabel != null) {
-                fournisseursLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && fournisseursLabel != null) fournisseursLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Comptes actifs
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='ACTIF'");
-            if (rs.next() && comptesActifsLabel != null) {
-                comptesActifsLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && comptesActifsLabel != null) comptesActifsLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Comptes bloqués
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='BLOQUE'");
-            if (rs.next() && comptesBloquesLabel != null) {
-                comptesBloquesLabel.setText(String.valueOf(rs.getInt("total")));
-            }
+            if (rs.next() && comptesBloquesLabel != null) comptesBloquesLabel.setText(String.valueOf(rs.getInt("total")));
 
-            // Nouveaux utilisateurs (7 derniers jours)
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE date_creation >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-            if (rs.next() && nouveauxLabel != null) {
-                nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
-            }
-
-            System.out.println("✅ Statistiques chargées");
+            if (rs.next() && nouveauxLabel != null) nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur chargement stats : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -285,7 +268,6 @@ public class DashboardAdminController {
             Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM user ORDER BY user_id DESC");
-
             while (rs.next()) {
                 User user = new User(
                         rs.getInt("user_id"),
@@ -297,14 +279,8 @@ public class DashboardAdminController {
                 );
                 usersList.add(user);
             }
-
             filteredList.setAll(usersList);
-            if (usersTable != null) {
-                usersTable.setItems(filteredList);
-            }
-
-            System.out.println("✅ Utilisateurs chargés : " + usersList.size());
-
+            if (usersTable != null) usersTable.setItems(filteredList);
         } catch (Exception e) {
             showError("Erreur chargement utilisateurs : " + e.getMessage());
             e.printStackTrace();
@@ -314,42 +290,30 @@ public class DashboardAdminController {
     @FXML
     private void handleSearch() {
         if (searchField == null) return;
-
         String searchText = searchField.getText().toLowerCase();
         filteredList.clear();
-
         for (User user : usersList) {
             if (user.getNom().toLowerCase().contains(searchText) ||
                     user.getEmail().toLowerCase().contains(searchText)) {
                 filteredList.add(user);
             }
         }
-
-        if (usersTable != null) {
-            usersTable.setItems(filteredList);
-        }
+        if (usersTable != null) usersTable.setItems(filteredList);
     }
 
     @FXML
     private void handleFilterByRole() {
         if (roleFilter == null) return;
-
         String selectedRole = roleFilter.getValue();
         filteredList.clear();
-
         if (selectedRole.equals("Tous")) {
             filteredList.setAll(usersList);
         } else {
             for (User user : usersList) {
-                if (user.getRole().name().equals(selectedRole)) {
-                    filteredList.add(user);
-                }
+                if (user.getRole().name().equals(selectedRole)) filteredList.add(user);
             }
         }
-
-        if (usersTable != null) {
-            usersTable.setItems(filteredList);
-        }
+        if (usersTable != null) usersTable.setItems(filteredList);
     }
 
     @FXML
@@ -357,15 +321,12 @@ public class DashboardAdminController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/addUser.fxml"));
             Parent root = loader.load();
-
             AddUserController controller = loader.getController();
             controller.setAdminController(this);
-
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Ajouter un utilisateur");
             stage.show();
-
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
             e.printStackTrace();
@@ -376,16 +337,13 @@ public class DashboardAdminController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/editUser.fxml"));
             Parent root = loader.load();
-
             EditUserController controller = loader.getController();
             controller.setUser(user);
             controller.setAdminController(this);
-
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Modifier l'utilisateur");
             stage.show();
-
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
             e.printStackTrace();
@@ -396,8 +354,7 @@ public class DashboardAdminController {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
         confirmation.setHeaderText("Supprimer l'utilisateur ?");
-        confirmation.setContentText("Voulez-vous vraiment supprimer " + user.getNom() + " ?\nCette action est irréversible.");
-
+        confirmation.setContentText("Voulez-vous vraiment supprimer " + user.getNom() + " ?");
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             userService.supprimer(user.getId());
@@ -419,53 +376,60 @@ public class DashboardAdminController {
     }
 
     @FXML
-    public void handleRefresh(ActionEvent event) {
-        handleRefresh();
-    }
+    public void handleRefresh(ActionEvent event) { handleRefresh(); }
 
     public void handleRefresh() {
         loadUsers();
         loadStatistics();
-        if (searchField != null) {
-            searchField.clear();
-        }
-        if (roleFilter != null) {
-            roleFilter.setValue("Tous");
-        }
+        if (searchField != null) searchField.clear();
+        if (roleFilter != null) roleFilter.setValue("Tous");
         showSuccess("Données actualisées !");
+    }
+
+    private void loadContentInPane(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent newContent = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof ProfilAdminController) {
+                ((ProfilAdminController) controller).setUser(currentUser);
+                ((ProfilAdminController) controller).setDashboardController(this);
+            } else if (controller instanceof ManageUsersController) {
+                ((ManageUsersController) controller).setUser(currentUser);
+                ((ManageUsersController) controller).setDashboardController(this);
+                ((ManageUsersController) controller).setContentPane(contentPane);
+            }
+
+            AnchorPane targetPane = (contentPane != null) ? contentPane : dashboardPane;
+            targetPane.getChildren().clear();
+            targetPane.getChildren().add(newContent);
+            AnchorPane.setTopAnchor(newContent, 0.0);
+            AnchorPane.setBottomAnchor(newContent, 0.0);
+            AnchorPane.setLeftAnchor(newContent, 0.0);
+            AnchorPane.setRightAnchor(newContent, 0.0);
+
+            System.out.println("✅ Contenu chargé : " + fxmlPath);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur : " + fxmlPath);
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void openManageUsers(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
-            Parent root = loader.load();
-            ManageUsersController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) dashboardPane.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Gestion des utilisateurs");
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            showError("Impossible de charger la gestion des utilisateurs");
-            e.printStackTrace();
+        if (contentPane != null) {
+            setActiveMenu(menuUsers);
+            loadContentInPane("/managerUsers.fxml");
         }
     }
 
     @FXML
     private void handleGoToProfil(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
-            Parent root = loader.load();
-            ProfilAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) dashboardPane.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Mon Profil");
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            showError("Impossible de charger le profil");
-            e.printStackTrace();
+        if (contentPane != null) {
+            setActiveMenu(null);
+            loadContentInPane("/profilAdmin.fxml");
         }
     }
 
@@ -473,26 +437,24 @@ public class DashboardAdminController {
     private void handleLogout(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) dashboardPane.getScene().getWindow();
+            Stage stage = (Stage) contentPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
-            stage.setMaximized(true); // ✅
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Erreur lors de la déconnexion");
-        }
-    }
+            stage.setMaximized(false);
 
-    @FXML
-    private void handleShowDashboard(MouseEvent event) {
-        showPane(dashboardPane);
-        setActiveMenu(menuDashboard);
+            System.out.println("✅ Déconnexion");
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur déconnexion");
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleShowUsers(MouseEvent event) {
         showPane(usersPane);
         setActiveMenu(menuUsers);
+        loadUsers();
     }
 
     private void showPane(AnchorPane pane) {
@@ -502,15 +464,9 @@ public class DashboardAdminController {
     }
 
     private void setActiveMenu(HBox menu) {
-        if (menuDashboard != null) {
-            menuDashboard.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
-        }
-        if (menuUsers != null) {
-            menuUsers.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
-        }
-        if (menu != null) {
-            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;");
-        }
+        if (menuDashboard != null) menuDashboard.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
+        if (menuUsers != null) menuUsers.setStyle("-fx-cursor: hand; -fx-background-radius: 8;");
+        if (menu != null) menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;");
     }
 
     private void showError(String message) {
@@ -529,7 +485,5 @@ public class DashboardAdminController {
         System.out.println("SUCCESS: " + message);
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
+    public User getCurrentUser() { return currentUser; }
 }

@@ -31,73 +31,80 @@ public class EditProfilAdminController {
     private boolean isDarkMode = false;
     private User currentUser;
     private UserService userService;
+    private AnchorPane contentPane;
 
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
+    private DashboardAdminController dashboardController;
+
+    public void setDashboardController(DashboardAdminController controller) {
+        this.dashboardController = controller;
+    }
     @FXML
     public void initialize() {
         userService = new UserService();
-        ValidationUtils.clearMessage(messageLabel);
+        if (messageLabel != null) ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) messageLabel.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            if (scene.getRoot() instanceof Region r) {
-                r.prefWidthProperty().bind(scene.widthProperty());
-                r.prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
+        // ✅ Supprimer le Platform.runLater avec setMaximized
     }
 
-    // ================= VALIDATION EN TEMPS RÉEL =================
     private void setupRealTimeValidation() {
-        nomField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidName(newVal)) {
-                    ValidationUtils.setFieldSuccess(nomField);
+        if (nomField != null) {
+            nomField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.trim().isEmpty()) {
+                    if (ValidationUtils.isValidName(newVal)) {
+                        ValidationUtils.setFieldSuccess(nomField);
+                    } else {
+                        ValidationUtils.setFieldError(nomField);
+                    }
                 } else {
-                    ValidationUtils.setFieldError(nomField);
+                    ValidationUtils.resetFieldStyle(nomField);
                 }
-            } else {
-                ValidationUtils.resetFieldStyle(nomField);
-            }
-        });
+            });
+        }
 
-        emailField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidEmail(newVal)) {
-                    ValidationUtils.setFieldSuccess(emailField);
+        if (emailField != null) {
+            emailField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.trim().isEmpty()) {
+                    if (ValidationUtils.isValidEmail(newVal)) {
+                        ValidationUtils.setFieldSuccess(emailField);
+                    } else {
+                        ValidationUtils.setFieldError(emailField);
+                    }
                 } else {
-                    ValidationUtils.setFieldError(emailField);
+                    ValidationUtils.resetFieldStyle(emailField);
                 }
-            } else {
-                ValidationUtils.resetFieldStyle(emailField);
-            }
-        });
+            });
+        }
 
-        nouveauMdpField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.isEmpty()) {
-                if (ValidationUtils.hasMinLength(newVal, 6)) {
-                    ValidationUtils.setFieldSuccess(nouveauMdpField);
+        if (nouveauMdpField != null) {
+            nouveauMdpField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.isEmpty()) {
+                    if (ValidationUtils.hasMinLength(newVal, 6)) {
+                        ValidationUtils.setFieldSuccess(nouveauMdpField);
+                    } else {
+                        ValidationUtils.setFieldError(nouveauMdpField);
+                    }
                 } else {
-                    ValidationUtils.setFieldError(nouveauMdpField);
+                    ValidationUtils.resetFieldStyle(nouveauMdpField);
                 }
-            } else {
-                ValidationUtils.resetFieldStyle(nouveauMdpField);
-            }
-        });
+            });
+        }
 
-        confirmMdpField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.isEmpty()) {
-                if (newVal.equals(nouveauMdpField.getText())) {
-                    ValidationUtils.setFieldSuccess(confirmMdpField);
+        if (confirmMdpField != null) {
+            confirmMdpField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.isEmpty()) {
+                    if (newVal.equals(nouveauMdpField.getText())) {
+                        ValidationUtils.setFieldSuccess(confirmMdpField);
+                    } else {
+                        ValidationUtils.setFieldError(confirmMdpField);
+                    }
                 } else {
-                    ValidationUtils.setFieldError(confirmMdpField);
+                    ValidationUtils.resetFieldStyle(confirmMdpField);
                 }
-            } else {
-                ValidationUtils.resetFieldStyle(confirmMdpField);
-            }
-        });
+            });
+        }
     }
 
     public void setUser(User user) {
@@ -108,6 +115,7 @@ public class EditProfilAdminController {
 
     @FXML
     private void handleEnregistrer(ActionEvent event) {
+
         String nouveauNom = ValidationUtils.sanitize(nomField.getText());
         String nouvelEmail = ValidationUtils.sanitize(emailField.getText());
 
@@ -128,93 +136,80 @@ public class EditProfilAdminController {
             return;
         }
 
-        currentUser.setNom(nouveauNom);
-        currentUser.setEmail(nouvelEmail);
+        try {
 
-        String ancien = ancienMdpField.getText();
-        String nouveau = nouveauMdpField.getText();
-        String confirm = confirmMdpField.getText();
+            currentUser.setNom(nouveauNom);
+            currentUser.setEmail(nouvelEmail);
+            userService.modifier(currentUser);
 
-        if (!ancien.isEmpty() || !nouveau.isEmpty() || !confirm.isEmpty()) {
-            if (!ValidationUtils.isNotEmpty(ancien) || !ValidationUtils.isNotEmpty(nouveau) || !ValidationUtils.isNotEmpty(confirm)) {
-                ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs du mot de passe");
-                return;
-            }
+            ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
 
-            if (!nouveau.equals(confirm)) {
-                ValidationUtils.showError(messageLabel, "Les mots de passe ne correspondent pas");
-                ValidationUtils.setFieldError(confirmMdpField);
-                return;
-            }
+            // petit délai
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1200);
 
-            if (!ValidationUtils.hasMinLength(nouveau, 6)) {
-                ValidationUtils.showError(messageLabel, "Le mot de passe doit contenir au moins 6 caractères");
-                ValidationUtils.setFieldError(nouveauMdpField);
-                return;
-            }
+                    Platform.runLater(() -> {
+                        try {
 
-            boolean mdpChange = userService.changerMotDePasse(currentUser.getId(), ancien, nouveau);
-            if (!mdpChange) {
-                ValidationUtils.showError(messageLabel, "Ancien mot de passe incorrect");
-                ValidationUtils.setFieldError(ancienMdpField);
-                return;
-            }
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+                            Parent root = loader.load();
+
+                            ProfilAdminController controller = loader.getController();
+                            controller.setUser(currentUser);
+                            controller.setDashboardController(dashboardController);
+
+                            AnchorPane contentPane = dashboardController.getContentPane();
+                            contentPane.getChildren().clear();
+                            contentPane.getChildren().add(root);
+
+                            AnchorPane.setTopAnchor(root, 0.0);
+                            AnchorPane.setBottomAnchor(root, 0.0);
+                            AnchorPane.setLeftAnchor(root, 0.0);
+                            AnchorPane.setRightAnchor(root, 0.0);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+        } catch (Exception e) {
+            ValidationUtils.showError(messageLabel, "Erreur lors de la modification");
+            e.printStackTrace();
         }
-
-        userService.modifier(currentUser);
-        ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(1500);
-                javafx.application.Platform.runLater(() -> {
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
-                        Parent root = loader.load();
-                        ProfilAdminController controller = loader.getController();
-                        controller.setUser(currentUser);
-                        Stage stage = (Stage) nomField.getScene().getWindow();
-                        stage.setScene(new Scene(root));
-                        stage.setTitle("AgriConnect - Mon Profil");
-                        stage.setMaximized(true); // ✅
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
-
 
     @FXML
     private void handleAnnuler(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
-            Parent root = loader.load();
-            ProfilAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) nomField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (dashboardController != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+                Parent root = loader.load();
+                ProfilAdminController controller = loader.getController();
+                controller.setUser(currentUser);
+                controller.setDashboardController(dashboardController);
+
+                AnchorPane contentPane = dashboardController.getContentPane();
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(root);
+                AnchorPane.setTopAnchor(root, 0.0);
+                AnchorPane.setBottomAnchor(root, 0.0);
+                AnchorPane.setLeftAnchor(root, 0.0);
+                AnchorPane.setRightAnchor(root, 0.0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
-
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
-            Parent root = loader.load();
-            DashboardAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) nomField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (dashboardController != null) {
+            dashboardController.reloadDashboardContent(); // ✅ recharge le contenu dans le même stage
         }
     }
 

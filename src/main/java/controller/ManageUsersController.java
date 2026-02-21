@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,126 +20,179 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import service.UserService;
 import utils.MyDataBase;
-
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Optional;
 
 public class ManageUsersController {
-    @FXML private Label themeModeIcon;
-    @FXML private Label themeModeText;
-    @FXML private AnchorPane sidebar;
-    @FXML private ToggleButton themeToggle;
+
+    // ================= TABLE ET COLONNES =================
     @FXML private TableView<User> usersTable;
-    @FXML private TableColumn<User, Integer> colId;
     @FXML private TableColumn<User, String> colNom;
     @FXML private TableColumn<User, String> colEmail;
     @FXML private TableColumn<User, Role> colRole;
     @FXML private TableColumn<User, EtatCompte> colEtat;
     @FXML private TableColumn<User, Void> colActions;
 
+    // ================= FILTRES =================
     @FXML private TextField searchField;
     @FXML private ComboBox<String> roleFilter;
+    @FXML private ComboBox<String> etatFilter;
+
+    // ================= STATISTIQUES =================
+    @FXML private Label totalUsersLabel;
+    @FXML private Label actifsLabel;
+    @FXML private Label bloquesLabel;
+    @FXML private Label nouveauxLabel;
     @FXML private Label messageLabel;
-    @FXML private AnchorPane dashboardPane;
 
     private User currentUser;
     private UserService userService;
     private ObservableList<User> usersList;
     private ObservableList<User> filteredList;
-    private boolean isDarkMode = false;
+    private DashboardAdminController dashboardController;
+    private AnchorPane contentPane; // ✅ référence au contentPane du dashboard
 
-    @FXML private HBox dashboardMenu;
-    @FXML private HBox usersMenu;
-    @FXML private HBox profilMenu;
-
-    // ================= PANES =================
-    @FXML private AnchorPane usersPane;
     // ================= INITIALISATION =================
     @FXML
     public void initialize() {
         userService = new UserService();
         usersList = FXCollections.observableArrayList();
         filteredList = FXCollections.observableArrayList();
-        setupRoleFilter();
+
+        setupFilters();
         setupTableColumns();
         loadUsers();
+        updateStatistics();
+
         if (messageLabel != null) messageLabel.setText("");
 
-        Platform.runLater(() -> {
-            Stage stage = (Stage) messageLabel.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            if (scene.getRoot() instanceof Region r) {
-                r.prefWidthProperty().bind(scene.widthProperty());
-                r.prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
+        startAutoRefresh();
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
-    public void setUser(User user) {
-        this.currentUser = user;
+    // ================= CONTENT PANE =================
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
+
+    private void loadInContentPane(Parent root) {
+        if (contentPane != null) {
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+        }
+    }
+
+    // ================= AUTO-REFRESH =================
+    private void startAutoRefresh() {
+        Thread refreshThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(30000);
+                    Platform.runLater(() -> {
+                        loadUsers();
+                        updateStatistics();
+                    });
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        refreshThread.setDaemon(true);
+        refreshThread.start();
     }
 
     // ================= CONFIGURATION FILTRES =================
-    private void setupRoleFilter() {
-        roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
-        roleFilter.setValue("Tous");
+    private void setupFilters() {
+        if (roleFilter != null) {
+            roleFilter.getItems().addAll("Tous", "AGRICULTEUR", "EXPERT", "FOURNISSEUR", "ADMIN");
+            roleFilter.setValue("Tous");
+        }
+        if (etatFilter != null) {
+            etatFilter.getItems().addAll("Tous", "ACTIF", "BLOQUE");
+            etatFilter.setValue("Tous");
+        }
     }
 
-    // ================= CONFIGURATION COLONNES TABLEAU =================
+    // ================= CONFIGURATION COLONNES =================
     private void setupTableColumns() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etatCompte"));
 
-        // Style pour l'état
-        colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
-            protected void updateItem(String etat, boolean empty) {
-                super.updateItem(EtatCompte.valueOf(etat), empty);
-                if (empty || etat == null) {
+        colRole.setCellFactory(column -> new TableCell<User, Role>() {
+            @Override
+            protected void updateItem(Role role, boolean empty) {
+                super.updateItem(role, empty);
+                if (empty || role == null) {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(etat);
-                    if (etat.equals("ACTIF")) {
-                        setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+                    setText(role.toString());
+                    switch (role) {
+                        case ADMIN -> setStyle("-fx-background-color: #fef3c7; -fx-text-fill: #92400e; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 5;");
+                        case AGRICULTEUR -> setStyle("-fx-background-color: #d1fae5; -fx-text-fill: #065f46; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 5;");
+                        case EXPERT -> setStyle("-fx-background-color: #dbeafe; -fx-text-fill: #1e40af; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 5;");
+                        case FOURNISSEUR -> setStyle("-fx-background-color: #e0e7ff; -fx-text-fill: #3730a3; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 5;");
                     }
                 }
             }
         });
 
-        // Colonne Actions avec boutons
+        colEtat.setCellFactory(column -> new TableCell<User, EtatCompte>() {
+            @Override
+            protected void updateItem(EtatCompte etat, boolean empty) {
+                super.updateItem(etat, empty);
+                if (empty || etat == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Label badge = new Label();
+                    if (etat == EtatCompte.ACTIF) {
+                        badge.setText("✓ ACTIF");
+                        badge.setStyle("-fx-background-color: #d1fae5; -fx-text-fill: #065f46; -fx-font-weight: bold; -fx-padding: 5 15; -fx-background-radius: 15;");
+                    } else {
+                        badge.setText("✕ BLOQUÉ");
+                        badge.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #991b1b; -fx-font-weight: bold; -fx-padding: 5 15; -fx-background-radius: 15;");
+                    }
+                    setGraphic(badge);
+                    setText(null);
+                }
+            }
+        });
+
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button editBtn = new Button("✏️");
-            private final Button deleteBtn = new Button("🗑️");
-            private final Button blockBtn = new Button("🔒");
+            private final MenuButton menuBtn = new MenuButton("⚙");
 
             {
-                editBtn.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                deleteBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                blockBtn.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+                menuBtn.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-border-color: #e2e8f0;" +
+                                "-fx-border-width: 1.5;" +
+                                "-fx-border-radius: 8;" +
+                                "-fx-background-radius: 8;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-font-size: 14px;"
+                );
 
-                editBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleEditUser(user);
-                });
+                MenuItem editItem = new MenuItem("Modifier");
+                MenuItem blockItem = new MenuItem("Bloquer");
+                MenuItem deleteItem = new MenuItem("Supprimer");
+                deleteItem.setStyle("-fx-text-fill: #dc2626;");
 
-                deleteBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleDeleteUser(user);
-                });
+                editItem.setOnAction(e -> handleEditUser(getTableView().getItems().get(getIndex())));
+                blockItem.setOnAction(e -> handleToggleBlockUser(getTableView().getItems().get(getIndex())));
+                deleteItem.setOnAction(e -> handleDeleteUser(getTableView().getItems().get(getIndex())));
 
-                blockBtn.setOnAction(event -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    handleToggleBlockUser(user);
-                });
+                menuBtn.getItems().addAll(editItem, new SeparatorMenuItem(), blockItem, new SeparatorMenuItem(), deleteItem);
             }
 
             @Override
@@ -150,15 +202,18 @@ public class ManageUsersController {
                     setGraphic(null);
                 } else {
                     User user = getTableView().getItems().get(getIndex());
-                    if (user.getEtatCompte() == EtatCompte.ACTIF) {
-                        blockBtn.setText("🔒");
-                        blockBtn.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10;");
-                    } else {
-                        blockBtn.setText("🔓");
-                        blockBtn.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10;");
-                    }
-
-                    HBox hbox = new HBox(5, editBtn, deleteBtn, blockBtn);
+                    // Mettre à jour bloquer/débloquer
+                    menuBtn.getItems().stream()
+                            .filter(i -> i instanceof MenuItem && ((MenuItem) i).getText() != null
+                                    && (((MenuItem) i).getText().contains("Bloquer") || ((MenuItem) i).getText().contains("Débloquer")))
+                            .forEach(i -> {
+                                if (user.getEtatCompte() == EtatCompte.ACTIF) {
+                                    ((MenuItem) i).setText("Bloquer");
+                                } else {
+                                    ((MenuItem) i).setText("Débloquer");
+                                }
+                            });
+                    HBox hbox = new HBox(menuBtn);
                     hbox.setAlignment(Pos.CENTER);
                     setGraphic(hbox);
                 }
@@ -173,7 +228,6 @@ public class ManageUsersController {
             Connection conn = MyDataBase.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM user ORDER BY user_id DESC");
-
             while (rs.next()) {
                 User user = new User(
                         rs.getInt("user_id"),
@@ -185,70 +239,91 @@ public class ManageUsersController {
                 );
                 usersList.add(user);
             }
-
             filteredList.setAll(usersList);
             usersTable.setItems(filteredList);
-
         } catch (Exception e) {
-            showError("Erreur chargement utilisateurs : " + e.getMessage());
+            showError("Erreur chargement : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    @FXML
-    private void handleSearch() {
-        String searchText = searchField.getText().toLowerCase();
-        filteredList.clear();
+    // ================= STATISTIQUES =================
+    private void updateStatistics() {
+        try {
+            Connection conn = MyDataBase.getConnection();
+            Statement st = conn.createStatement();
 
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) as total FROM user");
+            if (rs.next() && totalUsersLabel != null) totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
+
+            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='ACTIF'");
+            if (rs.next() && actifsLabel != null) actifsLabel.setText(String.valueOf(rs.getInt("total")));
+
+            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='BLOQUE'");
+            if (rs.next() && bloquesLabel != null) bloquesLabel.setText(String.valueOf(rs.getInt("total")));
+
+            rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE date_creation >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+            if (rs.next() && nouveauxLabel != null) nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ================= FILTRES =================
+    @FXML private void handleSearch() { applyFilters(); }
+    @FXML private void handleFilterByRole() { applyFilters(); }
+    @FXML private void handleFilterByEtat() { applyFilters(); }
+
+    private void applyFilters() {
+        String searchText = (searchField != null) ? searchField.getText().toLowerCase() : "";
+        String selectedRole = (roleFilter != null) ? roleFilter.getValue() : "Tous";
+        String selectedEtat = (etatFilter != null) ? etatFilter.getValue() : "Tous";
+
+        filteredList.clear();
         for (User user : usersList) {
-            if (user.getNom().toLowerCase().contains(searchText) ||
-                    user.getEmail().toLowerCase().contains(searchText)) {
-                filteredList.add(user);
-            }
+            boolean matchSearch = searchText.isEmpty() ||
+                    user.getNom().toLowerCase().contains(searchText) ||
+                    user.getEmail().toLowerCase().contains(searchText);
+            boolean matchRole = selectedRole.equals("Tous") || user.getRole().name().equals(selectedRole);
+            boolean matchEtat = selectedEtat.equals("Tous") || user.getEtatCompte().name().equals(selectedEtat);
+
+            if (matchSearch && matchRole && matchEtat) filteredList.add(user);
         }
         usersTable.setItems(filteredList);
     }
 
-    // ================= FILTRE PAR RÔLE =================
     @FXML
-    private void handleFilterByRole() {
-        String selectedRole = roleFilter.getValue();
-        filteredList.clear();
-
-        if (selectedRole.equals("Tous")) {
-            filteredList.setAll(usersList);
-        } else {
-            for (User user : usersList) {
-                if (user.getRole().name().equals(selectedRole)) {
-                    filteredList.add(user);
-                }
-            }
-        }
+    private void handleResetFilters() {
+        if (searchField != null) searchField.clear();
+        if (roleFilter != null) roleFilter.setValue("Tous");
+        if (etatFilter != null) etatFilter.setValue("Tous");
+        filteredList.setAll(usersList);
         usersTable.setItems(filteredList);
+        showSuccess("🔄 Filtres réinitialisés");
     }
 
-    // ================= AJOUTER UTILISATEUR =================
+    // ================= ACTIONS =================
     @FXML
     private void handleAddUser() {
+        System.out.println("🔍 contentPane = " + contentPane); // ← vérifier si null
+        if (contentPane == null) {
+            showError("❌ contentPane est null !");
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/addUser.fxml"));
             Parent root = loader.load();
-
             AddUserController controller = loader.getController();
             controller.setManageUsersController(this);
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Ajouter un utilisateur");
-            stage.show();
-
+            controller.setContentPane(contentPane);
+            loadInContentPane(root);
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // ================= MODIFIER UTILISATEUR =================
     private void handleEditUser(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/editUser.fxml"));
@@ -257,11 +332,9 @@ public class ManageUsersController {
             EditUserController controller = loader.getController();
             controller.setUser(user);
             controller.setManageUsersController(this);
+            controller.setContentPane(contentPane); // ✅
 
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Modifier l'utilisateur");
-            stage.show();
+            loadInContentPane(root); // ✅ dans contentPane
 
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
@@ -269,7 +342,6 @@ public class ManageUsersController {
         }
     }
 
-    // ================= SUPPRIMER UTILISATEUR =================
     private void handleDeleteUser(User user) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
@@ -279,12 +351,12 @@ public class ManageUsersController {
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             userService.supprimer(user.getId());
+            loadUsers();
+            updateStatistics();
             showSuccess("✅ Utilisateur supprimé !");
-            handleRefresh();
         }
     }
 
-    // ================= BLOQUER/DÉBLOQUER =================
     private void handleToggleBlockUser(User user) {
         if (user.getEtatCompte() == EtatCompte.ACTIF) {
             user.setEtatCompte(EtatCompte.BLOQUE);
@@ -294,137 +366,42 @@ public class ManageUsersController {
             showSuccess("🔓 Compte débloqué !");
         }
         userService.modifier(user);
-        handleRefresh();
-    }
-
-    // ================= REFRESH =================
-    @FXML
-    public void handleRefresh() {
         loadUsers();
-        searchField.clear();
-        roleFilter.setValue("Tous");
-        showSuccess("🔄 Données actualisées !");
+        updateStatistics();
     }
 
     // ================= NAVIGATION =================
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminDashboard.fxml"));
-            Parent root = loader.load();
-            DashboardAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Dashboard Admin");
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (dashboardController != null) {
+            dashboardController.reloadDashboardContent();
         }
     }
 
-    @FXML
-    private void handleGoToProfil(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
-            Parent root = loader.load();
-            ProfilAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Mon Profil");
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // ================= REFRESH =================
+    public void handleRefresh() {
+        loadUsers();
+        updateStatistics();
     }
 
-    @FXML
-    private void handleLogout(MouseEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Login");
-            stage.setMaximized(true); // ✅
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    @FXML
-    private void handleShowDashboard(MouseEvent event) {
-        showPane(dashboardPane);
-        setActiveMenu(dashboardMenu);
-    }
-
-    @FXML
-    private void handleShowUsers(MouseEvent event) {
-        showPane(usersPane);
-        setActiveMenu(usersMenu);
-    }
-
-    private void showPane(AnchorPane pane) {
-        if (dashboardPane != null) dashboardPane.setVisible(false);
-        if (usersPane != null) usersPane.setVisible(false);
-        if (pane != null) pane.setVisible(true);
-    }
-
-    private void setActiveMenu(HBox menu) {
-        if (dashboardMenu != null) {
-            dashboardMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (usersMenu != null) {
-            usersMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (profilMenu != null) {
-            profilMenu.setStyle("-fx-cursor: hand; -fx-background-radius: 5;");
-        }
-        if (menu != null) {
-            menu.setStyle("-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 5;");
-        }
-    }
+    // ================= GETTERS / SETTERS =================
+    public void setUser(User user) { this.currentUser = user; }
+    public User getCurrentUser() { return currentUser; }
+    public void setDashboardController(DashboardAdminController controller) { this.dashboardController = controller; }
+    public DashboardAdminController getDashboardController() { return dashboardController; }
 
     // ================= MESSAGES =================
     private void showError(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+            messageLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
         }
-        System.err.println("ERROR: " + message);
     }
 
     public void showSuccess(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
-            messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
-        }
-        System.out.println("SUCCESS: " + message);
-    }
-    @FXML
-    private void handleToggleTheme() {
-        isDarkMode = !isDarkMode;
-
-        if (isDarkMode) {
-            sidebar.setStyle("-fx-background-color: #1a1a1a;");
-            dashboardPane.setStyle("-fx-background-color: #121212;");
-
-            if (themeModeIcon != null) themeModeIcon.setText("🌙");
-            if (themeModeText != null) themeModeText.setText("Sombre");
-            if (themeToggle != null) {
-                themeToggle.setText("☀️");
-                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
-            }
-        } else {
-            sidebar.setStyle("-fx-background-color: #388e3c;");
-            dashboardPane.setStyle("-fx-background-color: #f5f5f5;");
-
-            if (themeModeIcon != null) themeModeIcon.setText("☀️");
-            if (themeModeText != null) themeModeText.setText("Clair");
-            if (themeToggle != null) {
-                themeToggle.setText("🌙");
-                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
-            }
+            messageLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
         }
     }
-
 }

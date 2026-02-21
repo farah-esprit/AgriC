@@ -1,0 +1,111 @@
+package controller;
+
+import entities.User;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.layout.AnchorPane;
+import service.UserService;
+
+public class ChangePasswordController {
+
+    @FXML private PasswordField ancienMdpField;
+    @FXML private PasswordField nouveauMdpField;
+    @FXML private PasswordField confirmMdpField;
+    @FXML private Label messageLabel;
+
+    private User currentUser;
+    private UserService userService;
+    private DashboardAdminController dashboardController;
+    private AnchorPane contentPane;
+
+    @FXML
+    public void initialize() {
+        userService = new UserService();
+        if (messageLabel != null) messageLabel.setText("");
+    }
+
+    public void setUser(User user) {
+        this.currentUser = user;
+    }
+
+    public void setDashboardController(DashboardAdminController controller) {
+        this.dashboardController = controller;
+    }
+
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
+
+    @FXML
+    private void handleSave() {
+        String ancien = ancienMdpField.getText();
+        String nouveau = nouveauMdpField.getText();
+        String confirm = confirmMdpField.getText();
+
+        if (ancien.isEmpty() || nouveau.isEmpty() || confirm.isEmpty()) {
+            showError("❌ Veuillez remplir tous les champs");
+            return;
+        }
+        if (!nouveau.equals(confirm)) {
+            showError("❌ Les mots de passe ne correspondent pas");
+            return;
+        }
+        if (nouveau.length() < 6) {
+            showError("❌ Minimum 6 caractères");
+            return;
+        }
+
+        boolean success = userService.changerMotDePasse(currentUser.getId(), ancien, nouveau);
+        if (success) {
+            showSuccess("✅ Mot de passe changé avec succès !");
+            // Retour au profil après 1.5 secondes
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1500);
+                    javafx.application.Platform.runLater(this::retournerAuProfil);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } else {
+            showError("❌ Ancien mot de passe incorrect");
+        }
+    }
+
+    @FXML
+    private void handleCancel() {
+        retournerAuProfil();
+    }
+
+    private void retournerAuProfil() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+            Parent root = loader.load();
+            ProfilAdminController controller = loader.getController();
+            controller.setUser(currentUser);
+            controller.setDashboardController(dashboardController);
+
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showError(String message) {
+        messageLabel.setText(message);
+        messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+    }
+
+    private void showSuccess(String message) {
+        messageLabel.setText(message);
+        messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+    }
+}
