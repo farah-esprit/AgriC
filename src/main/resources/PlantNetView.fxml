@@ -7,36 +7,54 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controller.PlantNetController"
       spacing="20"
-      style="-fx-padding:20; -fx-background-color:#F4F6F9;">
+      alignment="TOP_CENTER"
+      style="-fx-padding:30; -fx-background-color:#F8F4EC;">
 
-    <Label text="🌱 Scanner une plante"
-           style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2E8B57;"/>
+    <!-- Header -->
+    <VBox spacing="8"
+          alignment="CENTER_LEFT"
+          style="-fx-background-radius:32; -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2D5016, #5A7A3A); -fx-padding:25 20;">
+        <HBox spacing="6" alignment="CENTER_LEFT"
+              style="-fx-background-color: rgba(168,213,181,0.2); -fx-padding:4 12; -fx-background-radius:20; -fx-border-color: rgba(168,213,181,0.3); -fx-border-radius:20;">
+            <Label text="•" style="-fx-text-fill:#A8D5B5; -fx-font-size:10px;"/>
+            <Label text="PlantNet AI" style="-fx-text-fill:#A8D5B5; -fx-font-size:11; -fx-font-weight:500; -fx-text-transform:uppercase;"/>
+        </HBox>
+        <Label text="🌱 Scanner une plante"
+               style="-fx-font-family:'Playfair Display'; -fx-font-size:26px; -fx-font-weight:700; -fx-text-fill:white;"/>
+        <Label text="Identification instantanée par IA botanique"
+               style="-fx-font-size:13; -fx-text-fill:rgba(255,255,255,0.65); -fx-font-weight:300;"/>
+    </VBox>
 
+    <!-- Choisir une image -->
     <Button text="📷 Choisir une image"
             fx:id="chooseFileBtn"
-            onAction="#chooseImage"/>
+            onAction="#chooseImage"
+            style="-fx-background-radius:16; -fx-background-color:#66BB6A; -fx-text-fill:white; -fx-font-size:16; -fx-padding:10 20;"/>
 
     <Label fx:id="selectedFileLabel"
-           text="Aucune image sélectionnée"/>
+           text="Aucune image sélectionnée"
+           style="-fx-font-size:14px; -fx-text-fill:#555555;"/>
 
+    <!-- Identifier la plante -->
     <Button text="🔍 Identifier la plante"
             fx:id="identifyBtn"
             onAction="#identifyPlant"
-            disable="true"/>
+            disable="true"
+            style="-fx-background-radius:16; -fx-background-color:#43A047; -fx-text-fill:white; -fx-font-size:16; -fx-padding:10 20;"/>
 
+    <!-- Card pour les résultats -->
     <VBox spacing="10"
-          style="-fx-background-color:white;
-                 -fx-padding:15;
-                 -fx-background-radius:10;
-                 -fx-effect:dropshadow(three-pass-box,
-                 rgba(0,0,0,0.1),10,0,0,5);">
+          style="-fx-background-color:white; -fx-padding:20; -fx-background-radius:15; -fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);"
+          alignment="CENTER_LEFT"
+          maxWidth="400">
 
         <Label fx:id="organLabel"
-               text="Organe détecté : ..."/>
+               text="Organe détecté : ..."
+               style="-fx-font-size:16px; -fx-font-weight:600; -fx-text-fill:#2E7D32;"/>
 
         <Label fx:id="speciesLabel"
-               text="Nom scientifique : ..."/>
-
+               text="Nom scientifique : ..."
+               style="-fx-font-size:16px; -fx-font-weight:600; -fx-text-fill:#388E3C;"/>
     </VBox>
 
 </VBox>
