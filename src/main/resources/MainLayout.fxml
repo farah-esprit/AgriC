@@ -1,51 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controllers.MainLayoutController"
-            prefWidth="1200" prefHeight="700"
-            stylesheets="@sidebar.css"
-            style="-fx-background-color:#f4f6f9;">
+            prefWidth="1300" prefHeight="800"
+            style="-fx-background-color: #F4F7F6;">
 
-    <!-- SIDEBAR -->
     <left>
-        <VBox spacing="25"
-              prefWidth="220"
-              styleClass="sidebar">
+        <VBox prefWidth="240" spacing="10"
+              style="-fx-background-color: #3E6B27; -fx-padding: 30 15 20 15;">
 
-            <Label text="🌱 AgriConnect" styleClass="sidebar-title"/>
+            <VBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 0 0 30 10;">
+                <Label text="AgriConnect"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-letter-spacing: 1px;"/>
+                <Label text="Agriculture Intelligente"
+                       style="-fx-font-size: 11px; -fx-text-fill: #A7C09A; -fx-font-weight: bold;"/>
+            </VBox>
 
-            <Separator styleClass="sidebar-separator"/>
+            <VBox spacing="8" VBox.vgrow="ALWAYS">
+                <Button text="🏠  Tableau de bord" onAction="#goDashboard"
+                        styleClass="nav-button-active"
+                        style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-font-weight: bold; -fx-pref-width: 210;"/>
 
-            <Button text="🏠 Accueil" onAction="#goDashboard" styleClass="sidebar-btn"/>
-            <Button text="🌱 Cultures" onAction="#goCultures" styleClass="sidebar-btn"/>
-            <Button text="💧 Irrigation" styleClass="sidebar-btn"/>
-            <Button text="🩺 Diagnostics" onAction="#goDiagnostics" styleClass="sidebar-btn"/>
-            <Button text="Historique" styleClass="sidebar-btn"/>
-            <Button text="⚙ Paramètres" styleClass="sidebar-btn-logout"/>
+                <Button text="🌱  Mes Cultures" onAction="#goCultures"
+                        style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
 
+                <Button text="💧  Irrigation"
+                        style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
+
+                <Button text="🩺  Diagnostics IA" onAction="#goDiagnostics"
+                        style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
+
+                <Button text="📊  Analyses &amp; Historique"
+                        style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
+            </VBox>
+
+            <VBox spacing="10" style="-fx-padding: 20 0 0 0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 1 0 0 0;">
+                <Button text="⚙  Paramètres"
+                        style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-padding: 10 15;"/>
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 5 10;">
+                    <Circle radius="18" fill="#64DC50"/>
+                    <VBox>
+                        <Label text="Admin" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                        <Label text="Connecté" style="-fx-text-fill: #A7C09A; -fx-font-size: 10px;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
         </VBox>
     </left>
 
-
-
-    <!-- HEADER -->
     <top>
-        <HBox alignment="CENTER_RIGHT"
-              style="-fx-padding:15; -fx-background-color:white; -fx-border-color:#ddd;">
+        <HBox alignment="CENTER_RIGHT" prefHeight="65"
+              style="-fx-background-color: white; -fx-padding: 0 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);">
 
-            <Label text="Bienvenue, Admin"
-                   style="-fx-font-size:14px;"/>
+            <HBox alignment="CENTER_LEFT" spacing="20" HBox.hgrow="ALWAYS">
+                <Label text="Dashboard Principal" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2D3436;"/>
+            </HBox>
+
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="🔔" style="-fx-background-color: #F8FAFC; -fx-background-radius: 10; -fx-padding: 8;"/>
+                <Separator orientation="VERTICAL" prefHeight="20">
+                    <padding><Insets top="15" bottom="15"/></padding>
+                </Separator>
+                <Label text="21 Fév. 2026" style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold;"/>
+            </HBox>
         </HBox>
     </top>
 
-    <!-- CONTENU DYNAMIQUE -->
     <center>
-        <StackPane fx:id="contentArea"/>
+        <StackPane fx:id="contentArea" style="-fx-padding: 25;">
+        </StackPane>
     </center>
 
 </BorderPane>
