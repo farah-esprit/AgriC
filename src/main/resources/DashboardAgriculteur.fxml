@@ -87,11 +87,14 @@
                         <VBox spacing="12">
                             <HBox spacing="10" alignment="CENTER_LEFT">
                                 <Label text="Température :" style="-fx-text-fill: #4A5568;"/>
-                                <Label fx:id="temperatureLabel" text="--" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                <Label fx:id="temperatureLabel" text="--" style="-fx-font-weight: bold;
+              -fx-font-size: 16px;
+              -fx-text-fill: #2D3436;"/>
                             </HBox>
                             <HBox spacing="10" alignment="CENTER_LEFT">
                                 <Label text="Vent :" style="-fx-text-fill: #4A5568;"/>
-                                <Label fx:id="windspeedLabel" text="--" style="-fx-font-weight: bold;"/>
+                                <Label fx:id="windspeedLabel" text="--" style="-fx-font-weight: bold;
+              -fx-text-fill: #2D3436;"/>
                             </HBox>
                             <HBox spacing="10" alignment="CENTER_LEFT">
                                 <Label text="Conditions :" style="-fx-text-fill: #4A5568;"/>
@@ -101,6 +104,7 @@
                     </VBox>
 
                     <!-- Conseil du jour -->
+                    <!-- Conseil du jour -->
                     <VBox spacing="15" HBox.hgrow="ALWAYS"
                           style="-fx-background-color: #3E6B27; -fx-padding: 25; -fx-background-radius: 20;
                                  -fx-effect: dropshadow(three-pass-box, rgba(62,107,39,0.2), 15, 0, 0, 5);">
@@ -108,13 +112,14 @@
                             <Label text="💡" style="-fx-font-size: 20px;"/>
                             <Label text="CONSEIL DU JOUR" style="-fx-font-weight: bold; -fx-text-fill: #A7C09A; -fx-font-size: 12px;"/>
                         </HBox>
-                        <Label text="Surveillez l’humidité du sol après les dernières pluies pour éviter les maladies fongiques."
-                               wrapText="true" style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-line-spacing: 5;"/>
+                        <Label fx:id="agriTipLabel"
+                               text="Chargement du conseil..."
+                               wrapText="true"
+                               style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-line-spacing: 5;"/>
                         <Region VBox.vgrow="ALWAYS"/>
                         <Button text="En savoir plus" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-background-radius: 10;"/>
                     </VBox>
                 </HBox>
-
             </VBox>
         </ScrollPane>
     </center>

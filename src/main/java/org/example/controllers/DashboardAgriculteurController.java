@@ -21,6 +21,7 @@ public class DashboardAgriculteurController {
     @FXML private Label windspeedLabel;
     @FXML private Label weatherCodeLabel;
 
+    private final String AGRI_TIP_API = "https://api.example.com/agri-tips/today"; // Remplace par ton API réel
     private final String API_URL = "https://api.open-meteo.com/v1/forecast?latitude=36.8065&longitude=10.1815&current_weather=true";
 
     @FXML
@@ -103,4 +104,5 @@ public class DashboardAgriculteurController {
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
+
 }
