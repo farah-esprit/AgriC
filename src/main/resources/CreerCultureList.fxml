@@ -5,66 +5,62 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controllers.Culture.CultureListController"
             prefWidth="1100" prefHeight="650"
-            style="-fx-background-color:#f4f6f9;">
+            style="-fx-background-color:#F8F4EC;">
 
     <center>
-        <VBox spacing="20" style="-fx-padding: 30;">
+        <VBox spacing="20" style="-fx-padding:30;">
 
             <!-- Header -->
-            <HBox spacing="15" alignment="CENTER_LEFT">
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding:0 0 10 0;">
                 <Label text="🌱 Mes cultures"
-                       style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+                       style="-fx-font-family:'Playfair Display'; -fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#2D5016;"/>
 
                 <Button text="➕ Nouvelle culture"
                         onAction="#openAddForm"
-                        style="-fx-background-color: #2E8B57;
+                        style="-fx-background-color: #66BB6A;
                                -fx-text-fill: white;
                                -fx-font-weight: bold;
-                               -fx-background-radius: 8;"/>
+                               -fx-background-radius: 16;
+                               -fx-padding:10 20;
+                               -fx-cursor: hand;
+                               -fx-font-size:14px;"/>
 
-                <!-- 🔥 Bouton Rafraîchir -->
-                <Button text="🔄 Rafraîchir"
-                        onAction="#handleRefresh"
-                        style="-fx-background-color: #4CAF50;
-                               -fx-text-fill: white;
-                               -fx-font-weight: bold;
-                               -fx-background-radius: 8;"/>
+
             </HBox>
-            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
+
+            <!-- Filtre -->
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding:0 0 0 0;">
                 <Label text="Filtrer par type :"
-                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#333;"/>
+                       style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#3D2E1A;"/>
 
                 <ComboBox fx:id="cbType" promptText="Tous les types" prefWidth="220"
-                          style="-fx-background-radius: 12;
-                     -fx-border-radius: 12;
-                     -fx-border-color: #d1d9de;
-                     -fx-border-width: 1;
-                     -fx-background-color: #ffffff;
-                     -fx-padding: 5 10 5 10;
-                     -fx-font-size: 14px;
-                     -fx-cursor: hand;"/>
+                          style="-fx-background-radius:16;
+                                 -fx-border-radius:16;
+                                 -fx-border-color:#A8D5B5;
+                                 -fx-border-width:1;
+                                 -fx-background-color:#ffffff;
+                                 -fx-padding:5 10 5 10;
+                                 -fx-font-size:14px;
+                                 -fx-cursor: hand;"/>
             </HBox>
-
-
-
-
 
             <!-- Recherche -->
             <TextField fx:id="txtRecherche"
                        promptText="🔍 Rechercher une culture..."
-                       style="-fx-background-radius: 8;
-                              -fx-padding: 10;
-                              -fx-font-size: 14px;"/>
+                       style="-fx-background-radius:16;
+                              -fx-background-color:#ffffff;
+                              -fx-border-color:#A8D5B5;
+                              -fx-border-radius:16;
+                              -fx-padding:10 15;
+                              -fx-font-size:14px;
+                              -fx-cursor:text;"/>
 
             <!-- Pagination -->
             <Pagination fx:id="pagination"
                         pageCount="1"
                         maxPageIndicatorCount="10"
-                        style="
-                -fx-page-information-visible: false;
-                -fx-padding: 20 0 0 0;
-            "/>
-
+                        style="-fx-page-information-visible: false;
+                               -fx-padding:20 0 0 0;"/>
 
         </VBox>
     </center>
