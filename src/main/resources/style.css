@@ -63,6 +63,53 @@
     -fx-background-color: linear-gradient(to right, #2E8B57, #4CAF50);
     -fx-effect: dropshadow(gaussian, rgba(46,139,87,0.4), 10, 0, 0, 4);
 }
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 10;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.2);
+}
+
+.sidebar-btn-logout {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFCDD2;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 10;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 15;
+    -fx-pref-width: 200;
+    -fx-alignment: CENTER;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15,0,0,5);
+}
+
+.stat-card:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.card-title {
+    -fx-text-fill: #777;
+    -fx-font-size: 14px;
+}
+
+.card-value {
+    -fx-text-fill: #2E8B57;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
 
 
 .card {

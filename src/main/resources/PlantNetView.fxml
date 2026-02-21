@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.PlantNetController"
+      spacing="20"
+      style="-fx-padding:20; -fx-background-color:#F4F6F9;">
+
+    <Label text="🌱 Scanner une plante"
+           style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2E8B57;"/>
+
+    <Button text="📷 Choisir une image"
+            fx:id="chooseFileBtn"
+            onAction="#chooseImage"/>
+
+    <Label fx:id="selectedFileLabel"
+           text="Aucune image sélectionnée"/>
+
+    <Button text="🔍 Identifier la plante"
+            fx:id="identifyBtn"
+            onAction="#identifyPlant"
+            disable="true"/>
+
+    <VBox spacing="10"
+          style="-fx-background-color:white;
+                 -fx-padding:15;
+                 -fx-background-radius:10;
+                 -fx-effect:dropshadow(three-pass-box,
+                 rgba(0,0,0,0.1),10,0,0,5);">
+
+        <Label fx:id="organLabel"
+               text="Organe détecté : ..."/>
+
+        <Label fx:id="speciesLabel"
+               text="Nom scientifique : ..."/>
+
+    </VBox>
+
+</VBox>

@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controllers.MainLayoutController"
             prefWidth="1200" prefHeight="700"
+            stylesheets="@sidebar.css"
             style="-fx-background-color:#f4f6f9;">
 
     <!-- SIDEBAR -->
-    <!-- SIDEBAR FIXE À GAUCHE -->
     <left>
-        <VBox spacing="20" prefWidth="220" style="-fx-background-color: #2E8B57; -fx-padding: 20;">
-            <Label text="🌱 AgriC" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Button text="🏠 Accueil" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-            <Button text="🌱 Cultures" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-            <Button text="💧 Irrigation" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-            <Button text="🩺 Diagnostics" fx:id="btnDiagnostics" style="-fx-background-color: transparent; -fx-text-fill: white;" />
-            <Button text="⚙ Paramètres" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+        <VBox spacing="25"
+              prefWidth="220"
+              styleClass="sidebar">
+
+            <Label text="🌱 AgriConnect" styleClass="sidebar-title"/>
+
+            <Separator styleClass="sidebar-separator"/>
+
+            <Button text="🏠 Accueil" onAction="#goDashboard" styleClass="sidebar-btn"/>
+            <Button text="🌱 Cultures" onAction="#goCultures" styleClass="sidebar-btn"/>
+            <Button text="💧 Irrigation" styleClass="sidebar-btn"/>
+            <Button text="🩺 Diagnostics" onAction="#goDiagnostics" styleClass="sidebar-btn"/>
+            <Button text="Historique" styleClass="sidebar-btn"/>
+            <Button text="⚙ Paramètres" styleClass="sidebar-btn-logout"/>
+
         </VBox>
     </left>
+
+
 
     <!-- HEADER -->
     <top>
