@@ -12,9 +12,6 @@ import java.io.IOException;
 
 public class HomeController {
 
-    // ═══════════════════════════════════════════════════════════
-    // NAVIGATION VERS LES DIFFÉRENTES PAGES
-    // ═══════════════════════════════════════════════════════════
 
     @FXML
     private void goToProduits() {
@@ -36,9 +33,7 @@ public class HomeController {
         openView("/views/historique-commandes.fxml", "Historique des Commandes");
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MÉTHODE POUR OUVRIR UNE NOUVELLE VUE
-    // ═══════════════════════════════════════════════════════════
+
 
     private void openView(String fxmlPath, String title) {
         try {
@@ -65,9 +60,6 @@ public class HomeController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MÉTHODE POUR FERMER LA FENÊTRE ACTUELLE
-    // ═══════════════════════════════════════════════════════════
 
     private void closeCurrentWindow() {
         for (Window window : Stage.getWindows()) {
@@ -82,9 +74,7 @@ public class HomeController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MÉTHODE POUR AFFICHER LES ERREURS
-    // ═══════════════════════════════════════════════════════════
+
 
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -94,14 +84,8 @@ public class HomeController {
         alert.showAndWait();
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // EFFETS HOVER SUR LES BOUTONS DE LA SIDEBAR
-    // ═══════════════════════════════════════════════════════════
 
-    /**
-     * Effet au survol de la souris (mouse enter)
-     * Change la couleur de fond du bouton
-     */
+
     @FXML
     private void onMouseEntered(javafx.scene.input.MouseEvent event) {
         if (event.getSource() instanceof Button) {
@@ -115,10 +99,7 @@ public class HomeController {
         }
     }
 
-    /**
-     * Effet quand la souris quitte le bouton (mouse exit)
-     * Restaure le style d'origine
-     */
+
     @FXML
     private void onMouseExited(javafx.scene.input.MouseEvent event) {
         if (event.getSource() instanceof Button) {
@@ -131,13 +112,7 @@ public class HomeController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MÉTHODES SUPPLÉMENTAIRES (OPTIONNELLES)
-    // ═══════════════════════════════════════════════════════════
 
-    /**
-     * Méthode de déconnexion (à implémenter)
-     */
     @FXML
     private void handleDeconnexion() {
         try {

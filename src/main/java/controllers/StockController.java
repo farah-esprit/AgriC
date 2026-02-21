@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.utils.MyDatabase;
@@ -24,13 +25,13 @@ public class StockController {
     @FXML private ComboBox<Produit> cbProduit;
     @FXML private TextField tfQuantite, tfSeuilAlerte;
     @FXML private Button btnRetourAccueil;
-    @FXML private TableView<StockData> tableStock;
-    @FXML private TableColumn<StockData, Integer> colIdStock, colIdProduit, colQuantite, colSeuilAlerte;
-    @FXML private TableColumn<StockData, String> colProduit;
+    @FXML private FlowPane cardsContainer;
     @FXML private Label lblStatus;
 
     private Connection conn;
     private StockData currentSelection = null;
+    private VBox selectedCard = null;
+    private ObservableList<StockData> stockList = FXCollections.observableArrayList();
 
     public static class StockData {
         public final IntegerProperty idStock = new SimpleIntegerProperty();
@@ -51,47 +52,177 @@ public class StockController {
     @FXML
     public void initialize() throws SQLException {
         conn = MyDatabase.getInstance().getConnection();
-
-        colIdStock.setCellValueFactory(cd -> cd.getValue().idStock.asObject());
-        colIdProduit.setCellValueFactory(cd -> cd.getValue().idProduit.asObject());
-        colProduit.setCellValueFactory(cd -> cd.getValue().produit);
-        colQuantite.setCellValueFactory(cd -> cd.getValue().quantite.asObject());
-        colSeuilAlerte.setCellValueFactory(cd -> cd.getValue().seuilAlerte.asObject());
-
         chargerProduits();
         chargerStock();
-
-        tableStock.getSelectionModel().selectedItemProperty().addListener((obs, old, newItem) -> {
-            currentSelection = newItem;
-            if (newItem != null) {
-                cbProduit.setValue(getProduitById(newItem.idProduit.get()));
-                tfQuantite.setText(String.valueOf(newItem.quantite.get()));
-                tfSeuilAlerte.setText(String.valueOf(newItem.seuilAlerte.get()));
-            }
-        });
     }
 
-    // ✅ NOUVELLE MÉTHODE : Retour à l'accueil
+    // ✅ Crée une card pour un stock
+    private VBox createCard(StockData s) {
+        VBox card = new VBox(10);
+        card.setPrefWidth(210);
+        card.setMaxWidth(210);
+
+        // Couleur selon niveau stock
+        int qte = s.quantite.get();
+        int seuil = s.seuilAlerte.get();
+        String statut, couleurBadge, emoji;
+        if (qte <= 0) {
+            statut = "Rupture";
+            couleurBadge = "#d9534f";
+            emoji = "🔴";
+        } else if (qte <= seuil) {
+            statut = "Stock bas";
+            couleurBadge = "#f0ad4e";
+            emoji = "🟠";
+        } else {
+            statut = "En stock";
+            couleurBadge = "#5a8c4a";
+            emoji = "🟢";
+        }
+
+        card.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-border-color: " + couleurBadge + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                        "-fx-padding: 15;" +
+                        "-fx-cursor: hand;"
+        );
+
+        // Emoji statut grand
+        Label lblEmoji = new Label(emoji);
+        lblEmoji.setStyle("-fx-font-size: 32px;");
+
+        HBox emojiBox = new HBox(lblEmoji);
+        emojiBox.setStyle("-fx-alignment: center;");
+
+        // Nom produit
+        Label lblNom = new Label(s.produit.get());
+        lblNom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-wrap-text: true;");
+        lblNom.setMaxWidth(185);
+        lblNom.setWrapText(true);
+
+        // Badge statut
+        Label lblStatut = new Label(statut);
+        lblStatut.setStyle(
+                "-fx-background-color: " + couleurBadge + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 11px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 3 10;" +
+                        "-fx-background-radius: 10;"
+        );
+
+        Separator sep = new Separator();
+
+        // Quantité
+        HBox qteBox = new HBox(8);
+        Label qteLabel = new Label("Quantité :");
+        qteLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        Label qteVal = new Label(String.valueOf(qte));
+        qteVal.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: " + couleurBadge + ";");
+        qteBox.getChildren().addAll(qteLabel, qteVal);
+
+        // Seuil
+        HBox seuilBox = new HBox(8);
+        Label seuilLabel = new Label("Seuil alerte :");
+        seuilLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        Label seuilVal = new Label(String.valueOf(seuil));
+        seuilVal.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #888;");
+        seuilBox.getChildren().addAll(seuilLabel, seuilVal);
+
+        card.getChildren().addAll(emojiBox, lblNom, lblStatut, sep, qteBox, seuilBox);
+
+        // Clic
+        card.setOnMouseClicked(e -> selectCard(s, card, couleurBadge));
+
+        // Hover
+        card.setOnMouseEntered(e -> {
+            if (currentSelection == null || currentSelection.idStock.get() != s.idStock.get()) {
+                card.setStyle(
+                        "-fx-background-color: #f9fdf9;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-border-radius: 12;" +
+                                "-fx-border-color: " + couleurBadge + ";" +
+                                "-fx-border-width: 2.5;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 14, 0, 0, 5);" +
+                                "-fx-padding: 15;" +
+                                "-fx-cursor: hand;"
+                );
+            }
+        });
+        card.setOnMouseExited(e -> {
+            if (currentSelection == null || currentSelection.idStock.get() != s.idStock.get()) {
+                card.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-border-radius: 12;" +
+                                "-fx-border-color: " + couleurBadge + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                                "-fx-padding: 15;" +
+                                "-fx-cursor: hand;"
+                );
+            }
+        });
+
+        return card;
+    }
+
+    private void selectCard(StockData s, VBox card, String couleurBadge) {
+        // Désélectionner ancienne
+        if (selectedCard != null) {
+            String oldCouleur = currentSelection != null ?
+                    (currentSelection.quantite.get() <= 0 ? "#d9534f" :
+                            currentSelection.quantite.get() <= currentSelection.seuilAlerte.get() ? "#f0ad4e" : "#5a8c4a")
+                    : "#5a8c4a";
+            selectedCard.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-border-radius: 12;" +
+                            "-fx-border-color: " + oldCouleur + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                            "-fx-padding: 15;" +
+                            "-fx-cursor: hand;"
+            );
+        }
+
+        // Sélectionner nouvelle
+        card.setStyle(
+                "-fx-background-color: #e8f5e9;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-border-color: " + couleurBadge + ";" +
+                        "-fx-border-width: 3;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(74,124,58,0.35), 14, 0, 0, 5);" +
+                        "-fx-padding: 15;" +
+                        "-fx-cursor: hand;"
+        );
+        selectedCard = card;
+        currentSelection = s;
+
+        // Remplir formulaire
+        cbProduit.setValue(getProduitById(s.idProduit.get()));
+        tfQuantite.setText(String.valueOf(s.quantite.get()));
+        tfSeuilAlerte.setText(String.valueOf(s.seuilAlerte.get()));
+    }
+
     @FXML
     private void handleRetourAccueil() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/home.fxml"));
             Parent root = loader.load();
-
             Stage homeStage = new Stage();
             homeStage.setScene(new Scene(root, 1920, 1080));
             homeStage.setTitle("Accueil - AgriConnect");
             homeStage.setMaximized(true);
-
             Stage currentStage = (Stage) tfQuantite.getScene().getWindow();
             currentStage.close();
-
             homeStage.show();
-
-            System.out.println("🏠 Retour à l'accueil depuis Stock");
-
         } catch (IOException e) {
-            e.printStackTrace();
             showError("Erreur de navigation : " + e.getMessage());
         }
     }
@@ -140,10 +271,7 @@ public class StockController {
 
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
-
-        if (cbProduit.getValue() == null)
-            errors.append("• Le produit est obligatoire\n");
-
+        if (cbProduit.getValue() == null) errors.append("• Le produit est obligatoire\n");
         if (tfQuantite.getText().trim().isEmpty()) {
             errors.append("• La quantité est obligatoire\n");
         } else {
@@ -154,7 +282,6 @@ public class StockController {
                 errors.append("• La quantité doit être un nombre entier valide\n");
             }
         }
-
         if (tfSeuilAlerte.getText().trim().isEmpty()) {
             errors.append("• Le seuil d'alerte est obligatoire\n");
         } else {
@@ -165,7 +292,6 @@ public class StockController {
                 errors.append("• Le seuil d'alerte doit être un nombre entier valide\n");
             }
         }
-
         if (errors.length() > 0) {
             showErrorAlert("Champs incomplets ou invalides", errors.toString());
             return false;
@@ -176,12 +302,10 @@ public class StockController {
     @FXML
     private void handleAjouter() {
         if (!validateInput()) return;
-
         try {
             Produit produit = cbProduit.getValue();
             int quantite = Integer.parseInt(tfQuantite.getText().trim());
             int seuil = Integer.parseInt(tfSeuilAlerte.getText().trim());
-
             String sql = "INSERT INTO stock (quantite, disponible, seuilAlert, idProduit) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 pst.setInt(1, quantite);
@@ -189,14 +313,12 @@ public class StockController {
                 pst.setInt(3, seuil);
                 pst.setLong(4, produit.getIdProduit());
                 pst.executeUpdate();
-
                 ResultSet rs = pst.getGeneratedKeys();
                 int id = rs.next() ? rs.getInt(1) : 0;
-                showSuccessAlert("Stock ajouté avec succès !", "Stock ajouté (ID: " + id + ")");
+                showSuccessAlert("Stock ajouté !", "Stock ajouté avec succès (ID: " + id + ")");
                 clearInputs();
                 chargerStock();
             }
-
         } catch (Exception e) {
             showErrorAlert("Erreur lors de l'ajout", e.getMessage());
         }
@@ -205,17 +327,14 @@ public class StockController {
     @FXML
     private void handleModifier() {
         if (currentSelection == null) {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner une ligne dans le tableau.");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner une card.");
             return;
         }
-
         if (!validateInput()) return;
-
         try {
             Produit produit = cbProduit.getValue();
             int quantite = Integer.parseInt(tfQuantite.getText().trim());
             int seuil = Integer.parseInt(tfSeuilAlerte.getText().trim());
-
             String sql = "UPDATE stock SET quantite=?, seuilAlert=?, idProduit=? WHERE idStock=?";
             try (PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setInt(1, quantite);
@@ -224,10 +343,8 @@ public class StockController {
                 pst.setInt(4, currentSelection.idStock.get());
                 pst.executeUpdate();
             }
-
+            showSuccessAlert("Stock modifié !", "Les modifications ont été enregistrées.");
             chargerStock();
-            showSuccessAlert("Stock modifié avec succès !", "Les modifications ont été enregistrées.");
-
         } catch (Exception e) {
             showErrorAlert("Erreur lors de la modification", e.getMessage());
         }
@@ -236,10 +353,9 @@ public class StockController {
     @FXML
     private void handleSupprimer() {
         if (currentSelection == null) {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner une ligne à supprimer.");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner une card.");
             return;
         }
-
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmer la suppression");
         confirm.setHeaderText("Supprimer ce stock ?");
@@ -248,23 +364,18 @@ public class StockController {
                         "Quantité : " + currentSelection.quantite.get() + "\n" +
                         "Cette action est irréversible."
         );
-
         ButtonType btnOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.YES);
         ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirm.getButtonTypes().setAll(btnOui, btnNon);
-
         if (confirm.showAndWait().orElse(btnNon) == btnOui) {
             try {
-                String sql = "DELETE FROM stock WHERE idStock=?";
-                try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                try (PreparedStatement pst = conn.prepareStatement("DELETE FROM stock WHERE idStock=?")) {
                     pst.setInt(1, currentSelection.idStock.get());
                     pst.executeUpdate();
                 }
-
-                chargerStock();
-                showSuccessAlert("Supprimé avec succès", "Le stock a été supprimé de la base.");
+                showSuccessAlert("Supprimé !", "Le stock a été supprimé.");
                 clearInputs();
-
+                chargerStock();
             } catch (Exception e) {
                 showErrorAlert("Erreur suppression", e.getMessage());
             }
@@ -274,117 +385,86 @@ public class StockController {
     @FXML
     public void handleActualiser() {
         chargerStock();
-        showInfoAlert("Liste actualisée", "La liste des stocks a été rafraîchie.\n" + tableStock.getItems().size() + " stock(s) affiché(s).");
+        showInfoAlert("Liste actualisée", stockList.size() + " stock(s) affiché(s).");
     }
 
     private void chargerStock() {
-        ObservableList<StockData> data = FXCollections.observableArrayList();
+        stockList.clear();
+        cardsContainer.getChildren().clear();
+
         String sql = """
             SELECT s.idStock, s.idProduit, s.quantite, s.seuilAlert, p.nom
             FROM stock s
             LEFT JOIN produit p ON p.id_produit = s.idProduit
             ORDER BY s.idStock DESC
             """;
-
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                data.add(new StockData(
+                StockData data = new StockData(
                         rs.getInt("idStock"),
                         rs.getInt("idProduit"),
                         rs.getString("nom") != null ? rs.getString("nom") : "Inconnu",
                         rs.getInt("quantite"),
                         rs.getInt("seuilAlert")
-                ));
+                );
+                stockList.add(data);
+                cardsContainer.getChildren().add(createCard(data));
             }
         } catch (SQLException e) {
             System.err.println("❌ SQL: " + e.getMessage());
         }
 
-        tableStock.setItems(data);
-        if (lblStatus != null) {
-            lblStatus.setText("Liste chargée : " + data.size() + " stock(s)");
-        }
+        if (lblStatus != null)
+            lblStatus.setText("Liste chargée : " + stockList.size() + " stock(s)");
     }
 
     private void clearInputs() {
         tfQuantite.clear();
         tfSeuilAlerte.clear();
         cbProduit.getSelectionModel().clearSelection();
-        tableStock.getSelectionModel().clearSelection();
         currentSelection = null;
+        selectedCard = null;
     }
 
     @FXML
     private void exporterCSV() {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Exporter les stocks en CSV");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
-            fileChooser.setInitialFileName("stocks_" + LocalDate.now() + ".csv");
-            File file = fileChooser.showSaveDialog(tableStock.getScene().getWindow());
-
-            if (file != null) {
-                try (FileWriter writer = new FileWriter(file)) {
-                    writer.write("ID Stock,ID Produit,Produit,Quantité,Seuil Alerte\n");
-                    for (StockData stock : tableStock.getItems()) {
-                        writer.write(String.format("%d,%d,\"%s\",%d,%d\n",
-                                stock.idStock.get(),
-                                stock.idProduit.get(),
-                                stock.produit.get(),
-                                stock.quantite.get(),
-                                stock.seuilAlerte.get()));
-                    }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter les stocks en CSV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+        fileChooser.setInitialFileName("stocks_" + LocalDate.now() + ".csv");
+        File file = fileChooser.showSaveDialog(cardsContainer.getScene().getWindow());
+        if (file != null) {
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write("ID Stock,ID Produit,Produit,Quantité,Seuil Alerte\n");
+                for (StockData s : stockList) {
+                    writer.write(String.format("%d,%d,\"%s\",%d,%d\n",
+                            s.idStock.get(), s.idProduit.get(),
+                            s.produit.get(), s.quantite.get(), s.seuilAlerte.get()));
                 }
-                showSuccessAlert("Export réussi", "Le fichier CSV a été sauvegardé :\n" + file.getAbsolutePath());
+                showSuccessAlert("Export réussi", "Fichier sauvegardé :\n" + file.getAbsolutePath());
+            } catch (IOException e) {
+                showErrorAlert("Erreur d'export", e.getMessage());
             }
-        } catch (Exception e) {
-            showErrorAlert("Erreur d'export", "Impossible de sauvegarder le fichier :\n" + e.getMessage());
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MÉTHODES D'ALERTE HARMONISÉES
-    // ═══════════════════════════════════════════════════════════
-
     private void showSuccessAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Succès"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showErrorAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Erreur"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showWarningAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Attention");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setTitle("Attention"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showInfoAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Information"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
-    // Méthodes deprecated (pour compatibilité)
-    private void showSuccess(String message) {
-        showSuccessAlert("Succès", message);
-    }
-
-    private void showError(String message) {
-        showErrorAlert("Erreur", message);
-    }
+    private void showSuccess(String msg) { showSuccessAlert("Succès", msg); }
+    private void showError(String msg) { showErrorAlert("Erreur", msg); }
 }

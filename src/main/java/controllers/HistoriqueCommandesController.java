@@ -116,10 +116,6 @@ public class HistoriqueCommandesController {
         alert.showAndWait();
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MINI MODEL FOR DISPLAY
-    // ═══════════════════════════════════════════════════════════
-
     public static class CommandeMini {
         public final IntegerProperty id = new SimpleIntegerProperty();
         public final StringProperty date = new SimpleStringProperty();

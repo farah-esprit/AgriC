@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import services.ProduitService;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -32,18 +34,16 @@ public class ProduitController {
     @FXML private Label defaultImageIcon;
     @FXML private ComboBox<String> cbCategorie;
     @FXML private Button btnAjouter, btnModifier, btnSupprimer, btnActualiser;
-    @FXML private TableView<ProduitData> tableProduit;
-    @FXML private TableColumn<ProduitData, Long> colId;
-    @FXML private TableColumn<ProduitData, String> colNom, colDescription, colCategorie;
-    @FXML private TableColumn<ProduitData, Double> colPrix;
+    @FXML private FlowPane cardsContainer;
     @FXML private Label lblStatus;
 
     private ProduitService produitService = new ProduitService();
     private ProduitData currentSelection = null;
+    private VBox selectedCard = null;
     private String selectedImagePath = null;
     private static final String IMAGE_DIRECTORY = "images/produits/";
+    private ObservableList<ProduitData> produitsList = FXCollections.observableArrayList();
 
-    // ✅ Classe ProduitData
     public static class ProduitData {
         public final LongProperty id = new SimpleLongProperty();
         public final StringProperty nom = new SimpleStringProperty();
@@ -65,74 +65,194 @@ public class ProduitController {
     @FXML
     public void initialize() {
         createImageDirectory();
-
         cbCategorie.setItems(FXCollections.observableArrayList(
                 "Légumes", "Fruits", "Céréales", "Huiles", "Épices",
                 "Produits laitiers", "Miel", "Viandes", "Autres"
         ));
+        chargerProduits();
+    }
 
-        colId.setCellValueFactory(cd -> cd.getValue().id.asObject());
-        colNom.setCellValueFactory(cd -> cd.getValue().nom);
-        colDescription.setCellValueFactory(cd -> cd.getValue().description);
-        colPrix.setCellValueFactory(cd -> cd.getValue().prix.asObject());
-        colCategorie.setCellValueFactory(cd -> cd.getValue().categorie);
+    private VBox createCard(ProduitData p) {
+        VBox card = new VBox(10);
+        card.setPrefWidth(200);
+        card.setMaxWidth(200);
+        card.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                        "-fx-padding: 15;" +
+                        "-fx-cursor: hand;"
+        );
 
-        tableProduit.getSelectionModel().selectedItemProperty().addListener((obs, old, newSel) -> {
-            currentSelection = newSel;
-            if (newSel != null) {
-                tfNom.setText(newSel.nom.get());
-                tfDescription.setText(newSel.description.get());
-                tfPrix.setText(String.format(java.util.Locale.US, "%.2f", newSel.prix.get()));
-                cbCategorie.setValue(newSel.categorie.get());
+        // Image circulaire
+        StackPane imageContainer = new StackPane();
+        imageContainer.setPrefSize(100, 100);
+        imageContainer.setMaxSize(100, 100);
 
-                String imgPath = newSel.imagePath.get();
-                System.out.println("🔍 DEBUG - Chemin image du produit : " + imgPath);
+        Circle bgCircle = new Circle(50);
+        bgCircle.setStyle("-fx-fill: #e8f5e9; -fx-stroke: #4a7c3a; -fx-stroke-width: 2;");
 
-                if (imgPath != null && !imgPath.isEmpty()) {
-                    tfImagePath.setText(imgPath);
-                    selectedImagePath = imgPath;
-                    loadImagePreview(imgPath);
-                    System.out.println("✅ Image chargée pour modification");
-                } else {
-                    tfImagePath.setText("");
-                    selectedImagePath = null;
-                    if (imagePreview != null) imagePreview.setImage(null);
-                    if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
-                    System.out.println("⚠️ Pas d'image pour ce produit");
+        ImageView iv = new ImageView();
+        iv.setFitWidth(96);
+        iv.setFitHeight(96);
+        iv.setPreserveRatio(false);
+        Circle clip = new Circle(48, 48, 48);
+        iv.setClip(clip);
+
+        Label iconFallback = new Label("🌿");
+        iconFallback.setStyle("-fx-font-size: 28px;");
+
+        String imgPath = p.imagePath.get();
+        if (imgPath != null && !imgPath.isEmpty()) {
+            File f = new File(imgPath);
+            if (f.exists()) {
+                try {
+                    Image img = new Image(f.toURI().toString(), 96, 96, false, true);
+                    iv.setImage(img);
+                    iconFallback.setVisible(false);
+                } catch (Exception e) {
+                    iv.setImage(null);
                 }
-            } else {
-                clearInputs();
+            }
+        }
+
+        imageContainer.getChildren().addAll(bgCircle, iv, iconFallback);
+
+        HBox imgBox = new HBox(imageContainer);
+        imgBox.setStyle("-fx-alignment: center;");
+
+        // Nom
+        Label lblNom = new Label(p.nom.get());
+        lblNom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-wrap-text: true;");
+        lblNom.setMaxWidth(170);
+        lblNom.setWrapText(true);
+
+        // Badge catégorie
+        Label lblCat = new Label("🏷 " + p.categorie.get());
+        lblCat.setStyle(
+                "-fx-background-color: #e8f5e9;" +
+                        "-fx-text-fill: #4a7c3a;" +
+                        "-fx-font-size: 11px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 3 8;" +
+                        "-fx-background-radius: 10;"
+        );
+
+        // Description tronquée
+        String desc = p.description.get() != null ? p.description.get() : "";
+        Label lblDesc = new Label(desc.length() > 60 ? desc.substring(0, 57) + "..." : desc);
+        lblDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #777; -fx-wrap-text: true;");
+        lblDesc.setMaxWidth(170);
+        lblDesc.setWrapText(true);
+
+        // Prix
+        Label lblPrix = new Label(String.format("%.2f DT", p.prix.get()));
+        lblPrix.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #5a8c4a;");
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: #e0e0e0;");
+
+        card.getChildren().addAll(imgBox, lblNom, lblCat, lblDesc, sep, lblPrix);
+
+        // Clic -> sélection
+        card.setOnMouseClicked(e -> selectCard(p, card));
+
+        // Hover
+        card.setOnMouseEntered(e -> {
+            if (currentSelection == null || currentSelection.id.get() != p.id.get()) {
+                card.setStyle(
+                        "-fx-background-color: #f0faf0;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-border-radius: 12;" +
+                                "-fx-border-color: #5a8c4a;" +
+                                "-fx-border-width: 1.5;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 14, 0, 0, 5);" +
+                                "-fx-padding: 15;" +
+                                "-fx-cursor: hand;"
+                );
+            }
+        });
+        card.setOnMouseExited(e -> {
+            if (currentSelection == null || currentSelection.id.get() != p.id.get()) {
+                card.setStyle(
+                        "-fx-background-color: white;" +
+                                "-fx-background-radius: 12;" +
+                                "-fx-border-radius: 12;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                                "-fx-padding: 15;" +
+                                "-fx-cursor: hand;"
+                );
             }
         });
 
-        chargerProduits();
+        return card;
+    }
+
+    private void selectCard(ProduitData p, VBox card) {
+        // Désélectionner l'ancienne card
+        if (selectedCard != null) {
+            selectedCard.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-border-radius: 12;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                            "-fx-padding: 15;" +
+                            "-fx-cursor: hand;"
+            );
+        }
+
+        // Sélectionner la nouvelle
+        card.setStyle(
+                "-fx-background-color: #e8f5e9;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-border-color: #4a7c3a;" +
+                        "-fx-border-width: 2.5;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(74,124,58,0.3), 14, 0, 0, 5);" +
+                        "-fx-padding: 15;" +
+                        "-fx-cursor: hand;"
+        );
+        selectedCard = card;
+        currentSelection = p;
+
+        // Remplir le formulaire
+        tfNom.setText(p.nom.get());
+        tfDescription.setText(p.description.get());
+        tfPrix.setText(String.format(java.util.Locale.US, "%.2f", p.prix.get()));
+        cbCategorie.setValue(p.categorie.get());
+
+        String imgPath = p.imagePath.get();
+        if (imgPath != null && !imgPath.isEmpty()) {
+            tfImagePath.setText(imgPath);
+            selectedImagePath = imgPath;
+            loadImagePreview(imgPath);
+        } else {
+            tfImagePath.setText("");
+            selectedImagePath = null;
+            if (imagePreview != null) imagePreview.setImage(null);
+            if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
+        }
     }
 
     @FXML
     private void handleParcourir() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Sélectionner une image du produit");
-
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
                 new FileChooser.ExtensionFilter("Tous les fichiers", "*.*")
         );
 
         File selectedFile = fileChooser.showOpenDialog(tfImagePath.getScene().getWindow());
-
         if (selectedFile != null) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + selectedFile.getName();
                 Path destination = Paths.get(IMAGE_DIRECTORY + fileName);
-
                 Files.copy(selectedFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-
                 selectedImagePath = IMAGE_DIRECTORY + fileName;
                 tfImagePath.setText(selectedImagePath);
-
                 loadImagePreview(selectedImagePath);
-                System.out.println("✅ Nouvelle image sélectionnée : " + selectedImagePath);
-
             } catch (IOException e) {
                 showErrorAlert("Erreur de copie", "Impossible de copier l'image : " + e.getMessage());
             }
@@ -144,7 +264,6 @@ public class ProduitController {
             Path path = Paths.get(IMAGE_DIRECTORY);
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
-                System.out.println("✅ Dossier créé : " + IMAGE_DIRECTORY);
             }
         } catch (IOException e) {
             System.err.println("❌ Erreur création dossier images : " + e.getMessage());
@@ -152,52 +271,25 @@ public class ProduitController {
     }
 
     private void loadImagePreview(String imagePath) {
-        if (imagePreview == null) {
-            System.out.println("⚠️ ImageView est null");
-            return;
-        }
-
+        if (imagePreview == null) return;
         if (imagePath != null && !imagePath.isEmpty()) {
             try {
                 File file = new File(imagePath);
-                System.out.println("🔍 Tentative de chargement : " + file.getAbsolutePath());
-
                 if (file.exists()) {
                     Image image = new Image(file.toURI().toString(), 174, 174, false, true);
                     imagePreview.setImage(image);
-
-                    if (defaultImageIcon != null) {
-                        defaultImageIcon.setVisible(false);
-                    }
-
-                    System.out.println("✅ Image affichée avec succès");
+                    if (defaultImageIcon != null) defaultImageIcon.setVisible(false);
                 } else {
                     imagePreview.setImage(null);
-
-                    if (defaultImageIcon != null) {
-                        defaultImageIcon.setVisible(true);
-                    }
-
-                    System.out.println("❌ Fichier image introuvable : " + file.getAbsolutePath());
+                    if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
                 }
             } catch (Exception e) {
                 imagePreview.setImage(null);
-
-                if (defaultImageIcon != null) {
-                    defaultImageIcon.setVisible(true);
-                }
-
-                System.err.println("❌ Erreur chargement image : " + e.getMessage());
-                e.printStackTrace();
+                if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
             }
         } else {
             imagePreview.setImage(null);
-
-            if (defaultImageIcon != null) {
-                defaultImageIcon.setVisible(true);
-            }
-
-            System.out.println("⚠️ Chemin d'image vide");
+            if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
         }
     }
 
@@ -224,7 +316,7 @@ public class ProduitController {
     @FXML
     private void handleModifier() {
         if (currentSelection == null) {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit dans le tableau.");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit.");
             return;
         }
         if (!validateInput()) return;
@@ -255,7 +347,7 @@ public class ProduitController {
     @FXML
     private void handleSupprimer() {
         if (currentSelection == null) {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit dans le tableau.");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit.");
             return;
         }
 
@@ -279,9 +371,9 @@ public class ProduitController {
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == btnOui) {
             try {
                 produitService.supprimer(currentSelection.id.get());
-                tableProduit.getItems().remove(currentSelection);
-                showSuccessAlert("Supprimé avec succès", "Le produit a été supprimé de la base.");
                 clearInputs();
+                chargerProduits();
+                showSuccessAlert("Supprimé avec succès", "Le produit a été supprimé de la base.");
                 lblStatus.setText("Produit supprimé");
             } catch (Exception e) {
                 showErrorAlert("Erreur suppression", e.getMessage());
@@ -293,12 +385,9 @@ public class ProduitController {
     private void handleActualiser() {
         clearInputs();
         chargerProduits();
-        showInfoAlert(
-                "Liste actualisée",
-                "La liste des produits a été rafraîchie.\n" +
-                        tableProduit.getItems().size() + " produit(s) trouvé(s)."
-        );
-        lblStatus.setText("Actualisé : " + tableProduit.getItems().size() + " produits affichés");
+        showInfoAlert("Liste actualisée",
+                "La liste des produits a été rafraîchie.\n" + produitsList.size() + " produit(s) trouvé(s).");
+        lblStatus.setText("Actualisé : " + produitsList.size() + " produits affichés");
     }
 
     @FXML
@@ -308,52 +397,38 @@ public class ProduitController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
         fileChooser.setInitialFileName("produits_" + LocalDate.now() + ".csv");
 
-        File file = fileChooser.showSaveDialog(tableProduit.getScene().getWindow());
-
+        File file = fileChooser.showSaveDialog(cardsContainer.getScene().getWindow());
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                writer.append("ID,Nom,Description,Prix (DT),Catégorie,Actif,Image\n");
-                for (ProduitData p : tableProduit.getItems()) {
-                    writer.append(String.format("%d,\"%s\",\"%s\",%.2f,\"%s\",%b,\"%s\"\n",
+                writer.append("ID,Nom,Description,Prix (DT),Catégorie,Image\n");
+                for (ProduitData p : produitsList) {
+                    writer.append(String.format("%d,\"%s\",\"%s\",%.2f,\"%s\",\"%s\"\n",
                             p.id.get(),
                             escapeCsv(p.nom.get()),
                             escapeCsv(p.description.get()),
                             p.prix.get(),
                             escapeCsv(p.categorie.get()),
-                            true,
                             escapeCsv(p.imagePath.get())));
                 }
-                showSuccessAlert("Export réussi", "Le fichier CSV a été sauvegardé :\n" + file.getAbsolutePath());
+                showSuccessAlert("Export réussi", "Fichier sauvegardé :\n" + file.getAbsolutePath());
             } catch (IOException e) {
-                showErrorAlert("Erreur d'export", "Impossible de sauvegarder le fichier :\n" + e.getMessage());
+                showErrorAlert("Erreur d'export", "Impossible de sauvegarder :\n" + e.getMessage());
             }
         }
     }
 
-    // ✅ NOUVELLE MÉTHODE : Retour à l'accueil
     @FXML
     private void retourAccueil() {
         try {
-            // Charger la page Home
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/home.fxml"));
             Parent root = loader.load();
-
-            // Créer une nouvelle fenêtre
             Stage homeStage = new Stage();
             homeStage.setScene(new Scene(root, 1400, 850));
             homeStage.setTitle("Accueil - AgriConnect");
-
-            // Fermer la fenêtre Produits actuelle
             Stage currentStage = (Stage) tfNom.getScene().getWindow();
             currentStage.close();
-
-            // Afficher la page Home
             homeStage.show();
-
-            System.out.println("🏠 Retour à l'accueil");
-
         } catch (IOException e) {
-            e.printStackTrace();
             showErrorAlert("Erreur de navigation", "Impossible de retourner à l'accueil : " + e.getMessage());
         }
     }
@@ -361,9 +436,7 @@ public class ProduitController {
     private String escapeCsv(String s) {
         if (s == null) return "";
         s = s.replace("\"", "\"\"");
-        if (s.contains(",") || s.contains("\n") || s.contains("\"")) {
-            return "\"" + s + "\"";
-        }
+        if (s.contains(",") || s.contains("\n") || s.contains("\"")) return "\"" + s + "\"";
         return s;
     }
 
@@ -410,25 +483,28 @@ public class ProduitController {
         selectedImagePath = null;
         if (imagePreview != null) imagePreview.setImage(null);
         if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
-        tableProduit.getSelectionModel().clearSelection();
         currentSelection = null;
+        selectedCard = null;
     }
 
     private void chargerProduits() {
-        ObservableList<ProduitData> data = FXCollections.observableArrayList();
+        produitsList.clear();
+        cardsContainer.getChildren().clear();
+
         for (Produit p : produitService.getAllProduits()) {
-            System.out.println("📦 Chargement : " + p.getNom() + " | Image : " + p.getImagePath());
-            data.add(new ProduitData(
+            ProduitData data = new ProduitData(
                     p.getIdProduit(),
                     p.getNom(),
                     p.getDescription(),
                     p.getPrix(),
                     p.getCategorie(),
                     p.getImagePath()
-            ));
+            );
+            produitsList.add(data);
+            cardsContainer.getChildren().add(createCard(data));
         }
-        tableProduit.setItems(data);
-        lblStatus.setText("Liste chargée : " + data.size() + " produits");
+
+        lblStatus.setText("Liste chargée : " + produitsList.size() + " produits");
     }
 
     private void showSuccessAlert(String title, String content) {
@@ -436,9 +512,9 @@ public class ProduitController {
         alert.setTitle("Succès");
         alert.setHeaderText(title);
         alert.setContentText(content);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dialogPane.getStyleClass().add("success-alert");
+        DialogPane dp = alert.getDialogPane();
+        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dp.getStyleClass().add("success-alert");
         alert.showAndWait();
     }
 
@@ -447,9 +523,9 @@ public class ProduitController {
         alert.setTitle("Erreur");
         alert.setHeaderText(title);
         alert.setContentText(content);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dialogPane.getStyleClass().add("error-alert");
+        DialogPane dp = alert.getDialogPane();
+        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dp.getStyleClass().add("error-alert");
         alert.showAndWait();
     }
 
@@ -458,9 +534,9 @@ public class ProduitController {
         alert.setTitle("Attention");
         alert.setHeaderText(title);
         alert.setContentText(content);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dialogPane.getStyleClass().add("warning-alert");
+        DialogPane dp = alert.getDialogPane();
+        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dp.getStyleClass().add("warning-alert");
         alert.showAndWait();
     }
 
