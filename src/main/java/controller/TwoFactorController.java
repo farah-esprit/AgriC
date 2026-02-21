@@ -1,19 +1,22 @@
 package controller;
+
+import entities.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
-import javafx.stage.Stage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import service.TwoFactorAuthService;
 import service.UserService;
-import entities.User;
+
 import java.io.ByteArrayInputStream;
+
 public class TwoFactorController {
+
     @FXML private ImageView qrCodeImage;
     @FXML private TextField codeField;
     @FXML private Label messageLabel;
@@ -24,21 +27,18 @@ public class TwoFactorController {
     private UserService userService;
     private User currentUser;
     private String secret;
+    private ProfilController profilController;
+
+    private AnchorPane contentPane;
+
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
 
     @FXML
     public void initialize() {
         tfaService = new TwoFactorAuthService();
         userService = new UserService();
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) codeField.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            if (scene.getRoot() instanceof Region r) {
-                r.prefWidthProperty().bind(scene.widthProperty());
-                r.prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
     }
 
     public void setUser(User user) {
@@ -47,25 +47,21 @@ public class TwoFactorController {
     }
 
     private void setupTwoFactor() {
-        // Générer secret
         secret = tfaService.generateSecret();
+        System.out.println("🔑 Nouveau secret généré : " + secret); // ← ajoute ça
 
-        // Générer QR Code
         byte[] qrCode = tfaService.generateQRCode(secret, currentUser.getEmail());
 
         if (qrCode != null) {
             Image image = new Image(new ByteArrayInputStream(qrCode));
             qrCodeImage.setImage(image);
 
-            // Afficher le secret (au cas où le QR code ne marche pas)
             if (secretLabel != null) {
                 secretLabel.setText("Code secret : " + secret);
             }
 
             messageLabel.setText("📱 Scannez ce QR avec Google Authenticator");
             messageLabel.setStyle("-fx-text-fill: #388e3c;");
-
-            System.out.println("✅ QR Code généré pour : " + currentUser.getEmail());
         } else {
             messageLabel.setText("❌ Erreur génération QR Code");
             messageLabel.setStyle("-fx-text-fill: red;");
@@ -76,6 +72,9 @@ public class TwoFactorController {
     private void handleVerifyCode() {
         String code = codeField.getText().trim();
 
+        System.out.println("🔍 Code saisi : " + code);
+        System.out.println("🔍 contentPane : " + contentPane); // ← vérifier si null
+
         if (code.isEmpty() || code.length() != 6) {
             messageLabel.setText("❌ Code invalide (6 chiffres requis)");
             messageLabel.setStyle("-fx-text-fill: red;");
@@ -83,21 +82,20 @@ public class TwoFactorController {
         }
 
         boolean valid = tfaService.verifyCode(secret, code);
+        System.out.println("🔍 Code valide : " + valid); // ← vérifier si true ou false
 
         if (valid) {
-            // ✅ Sauvegarder le secret dans la BD
             userService.enable2FA(currentUser.getId(), secret);
-
             messageLabel.setText("✅ 2FA activé avec succès !");
             messageLabel.setStyle("-fx-text-fill: green;");
 
-            System.out.println("✅ 2FA activé pour user ID: " + currentUser.getId());
-
-            // Rediriger vers le profil après 2 secondes
             new Thread(() -> {
                 try {
-                    Thread.sleep(2000);
-                    javafx.application.Platform.runLater(() -> redirectToProfil());
+                    Thread.sleep(1500);
+                    Platform.runLater(() -> {
+                        System.out.println("🔍 Avant redirectToProfil, contentPane = " + contentPane);
+                        redirectToProfil();
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -110,30 +108,33 @@ public class TwoFactorController {
         }
     }
 
-    // ✅ CORRIGÉ : Retour vers le PROFIL (pas le dashboard admin)
     @FXML
     private void handleCancel() {
         redirectToProfil();
     }
 
-    @FXML
-    private void handleBack() {
-        redirectToProfil();
-    }
-
-    // ✅ NOUVELLE MÉTHODE : Redirection vers le profil
     private void redirectToProfil() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
-            Parent root = loader.load();
+            Parent profilContent = loader.load();
+
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
-            Stage stage = (Stage) codeField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Mon Profil");
-            stage.setMaximized(true); // ✅
+
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(profilContent);
+
+            AnchorPane.setTopAnchor(profilContent, 0.0);
+            AnchorPane.setBottomAnchor(profilContent, 0.0);
+            AnchorPane.setLeftAnchor(profilContent, 0.0);
+            AnchorPane.setRightAnchor(profilContent, 0.0);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void handleBack() {
+        redirectToProfil();
     }
 }

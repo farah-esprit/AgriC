@@ -1,7 +1,6 @@
 package controller;
 import entities.Profil;
 import entities.User;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -27,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import utils.MyDataBase;
 public class ProfilController {
+    @FXML private AnchorPane contentPane; // ✅ AJOUTÉ
     @FXML private Label nomLabel;
     @FXML private Label prenomLabel;
     @FXML private Label telephoneLabel;
@@ -42,21 +42,16 @@ public class ProfilController {
     private Profil currentProfil;
     private ProfilService profilService;
     private UserService userService;
+    private DashboardAgriculteurController dashboardAgriculteurController;
+    private DashboardAgriculteurController dashboardController;
+
     @FXML
     public void initialize() {
         profilService = new ProfilService();
         userService = new UserService();
-        if (messageLabel != null) messageLabel.setText("");
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) messageLabel.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            if (scene.getRoot() instanceof Region r) {
-                r.prefWidthProperty().bind(scene.widthProperty());
-                r.prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
+        if (messageLabel != null) {
+            messageLabel.setText("");
+        }
     }
 
     public void setUser(User user) {
@@ -183,6 +178,7 @@ public class ProfilController {
         }
     }
 
+    // ✅ CRÉER PROFIL - Charger dans contentPane
     @FXML
     private void handleCreateProfil() {
         try {
@@ -193,13 +189,17 @@ public class ProfilController {
             controller.setProfilController(this);
             controller.setUser(currentUser);
             controller.setMode(false);
+            controller.setContentPane(contentPane); // 🔥 IMPORTANT
 
-            Stage stage = new Stage();
-            stage.setTitle("Créer mon profil");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.show();
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+
+            System.out.println("✅ EditProfil chargé dans contentPane");
 
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
@@ -223,13 +223,17 @@ public class ProfilController {
             controller.setUser(currentUser);
             controller.setProfil(currentProfil);
             controller.setMode(true);
+            controller.setContentPane(contentPane); // 🔥 IMPORTANT
 
-            Stage stage = new Stage();
-            stage.setTitle("Modifier mon profil");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.show();
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+
+            System.out.println("✅ EditProfil (modification) chargé dans contentPane");
 
         } catch (Exception e) {
             showError("Erreur : " + e.getMessage());
@@ -340,37 +344,32 @@ public class ProfilController {
         }
     }
 
-    // ✅ NOUVELLE MÉTHODE : Gérer 2FA
     @FXML
     private void handleManage2FA(ActionEvent event) {
         boolean is2FAEnabled = userService.is2FAEnabled(currentUser.getId());
 
         if (is2FAEnabled) {
-            // 2FA déjà activé - proposer de désactiver
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Désactiver 2FA");
-            alert.setHeaderText("L'authentification à deux facteurs est actuellement activée");
-            alert.setContentText("Voulez-vous la désactiver ?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                // TODO: Implémenter désactivation
-                showSuccess("✅ 2FA désactivé");
-            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("2FA activé");
+            alert.setHeaderText("L'authentification à deux facteurs est active");
+            alert.setContentText("Votre compte est protégé par 2FA.");
+            alert.showAndWait();
         } else {
-            // 2FA non activé - rediriger vers activation
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactorSetup.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactor.fxml"));
                 Parent root = loader.load();
 
                 TwoFactorController controller = loader.getController();
                 controller.setUser(currentUser);
+                controller.setContentPane(contentPane); // ✅ AJOUTÉ
 
-                Stage stage = new Stage();
-                stage.setTitle("Activer l'authentification à deux facteurs");
-                stage.setScene(new Scene(root));
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.show();
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(root);
+
+                AnchorPane.setTopAnchor(root, 0.0);
+                AnchorPane.setBottomAnchor(root, 0.0);
+                AnchorPane.setLeftAnchor(root, 0.0);
+                AnchorPane.setRightAnchor(root, 0.0);
 
             } catch (Exception e) {
                 showError("❌ Erreur : " + e.getMessage());
@@ -379,6 +378,7 @@ public class ProfilController {
         }
     }
 
+    // ✅ RECHARGER LA VUE PROFIL
     public void refreshProfil() {
         loadProfilData();
         showSuccess("✅ Profil mis à jour !");
@@ -401,30 +401,44 @@ public class ProfilController {
     @FXML
     private void handleBackToDashboard(MouseEvent event) {
         if (currentUser == null) return;
+
         try {
             String fxmlFile = "";
+
             switch (currentUser.getRole()) {
-                case ADMIN:       fxmlFile = "/adminDashboard.fxml"; break;
-                case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
-                case EXPERT:      fxmlFile = "/expertDashboard.fxml"; break;
-                case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
+              
+                case AGRICULTEUR:
+                    fxmlFile = "/agriculteurDashboard.fxml";
+                    break;
+                case EXPERT:
+                    fxmlFile = "/expertDashboard.fxml";
+                    break;
+                case FOURNISSEUR:
+                    fxmlFile = "/fournisseurDashboard.fxml";
+                    break;
             }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
+
             Object controller = loader.getController();
-            if (controller instanceof DashboardAdminController)
+
+            if (controller instanceof DashboardAdminController) {
                 ((DashboardAdminController) controller).setUser(currentUser);
-            else if (controller instanceof DashboardAgriculteurController)
+            } else if (controller instanceof DashboardAgriculteurController) {
                 ((DashboardAgriculteurController) controller).setUser(currentUser);
-            else if (controller instanceof DashboardExpertController)
+            } else if (controller instanceof DashboardExpertController) {
                 ((DashboardExpertController) controller).setUser(currentUser);
-            else if (controller instanceof DashboardFournisseurController)
+            } else if (controller instanceof DashboardFournisseurController) {
                 ((DashboardFournisseurController) controller).setUser(currentUser);
+            }
+
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Dashboard");
-            stage.setMaximized(true); // ✅
+
         } catch (Exception e) {
+            System.err.println("❌ Erreur retour dashboard : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -436,9 +450,16 @@ public class ProfilController {
             Stage stage = (Stage) nomLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
-            stage.setMaximized(true); // ✅
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setDashboardController(DashboardAgriculteurController dashboardController) {
+        this.dashboardController = dashboardController;
+    }
+
+    public DashboardAgriculteurController getDashboardController() {
+        return dashboardController;
     }
 }

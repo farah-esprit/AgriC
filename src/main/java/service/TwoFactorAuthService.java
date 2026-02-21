@@ -12,14 +12,15 @@ import java.util.Random;
 public class TwoFactorAuthService {
 
     private final SecretGenerator secretGenerator = new DefaultSecretGenerator();
-    private final CodeVerifier codeVerifier;
+    private final DefaultCodeVerifier codeVerifier; // ✅ DefaultCodeVerifier au lieu de CodeVerifier
 
     public TwoFactorAuthService() {
         TimeProvider timeProvider = new SystemTimeProvider();
         CodeGenerator codeGenerator = new DefaultCodeGenerator();
-        this.codeVerifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
+        DefaultCodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
+        verifier.setAllowedTimePeriodDiscrepancy(2);
+        this.codeVerifier = verifier;
     }
-
     public String generateSecret() {
         return secretGenerator.generate();
     }
@@ -47,10 +48,4 @@ public class TwoFactorAuthService {
     public boolean verifyCode(String secret, String code) {
         return codeVerifier.isValidCode(secret, code);
     }
-
-    public String generateEmailCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000);
-        return String.valueOf(code);
     }
-}

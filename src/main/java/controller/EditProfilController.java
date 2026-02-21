@@ -3,9 +3,12 @@ import entities.Profil;
 import entities.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -14,6 +17,8 @@ import javafx.stage.Stage;
 import service.ProfilService;
 import utils.ValidationUtils;
 import java.io.File;
+import java.io.IOException;
+
 public class EditProfilController {
     @FXML private TextField nomField;
     @FXML private TextField prenomField;
@@ -25,6 +30,8 @@ public class EditProfilController {
     @FXML private Label messageLabel;
     @FXML private Label titleLabel;
     @FXML private Circle profileCircle;
+    @FXML private AnchorPane contentPane;
+
     private User currentUser;
     private Profil currentProfil;
     private ProfilService profilService;
@@ -48,7 +55,9 @@ public class EditProfilController {
             }
         });
     }
-
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
     // ================= VALIDATION EN TEMPS RÉEL =================
     private void setupRealTimeValidation() {
         nomField.textProperty().addListener((obs, old, newVal) -> {
@@ -258,10 +267,38 @@ public class EditProfilController {
             }
         }
     }
+    private void redirectToProfil() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+            Parent profilContent = loader.load();
 
+            ProfilController controller = loader.getController();
+            controller.setUser(currentUser);
+
+            // Si tu utilises DashboardController pour navigation
+            if (profilController != null) {
+                controller.setDashboardController(profilController.getDashboardController());
+            }
+
+            // Charger dans le même contentPane
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(profilContent);
+
+            AnchorPane.setTopAnchor(profilContent, 0.0);
+            AnchorPane.setBottomAnchor(profilContent, 0.0);
+            AnchorPane.setLeftAnchor(profilContent, 0.0);
+            AnchorPane.setRightAnchor(profilContent, 0.0);
+
+            System.out.println("✅ Retour au profil");
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur retour profil");
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleCancel() {
-        Stage stage = (Stage) nomField.getScene().getWindow();
-        stage.close();
+        redirectToProfil();
     }
+
 }

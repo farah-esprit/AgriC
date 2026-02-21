@@ -7,71 +7,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
     <children>
-        <!-- SIDEBAR -->
-        <AnchorPane style="-fx-background-color: #388e3c;">
+        <!-- ZONE PRINCIPALE AVEC fx:id="contentPane" ✅ -->
+        <AnchorPane fx:id="contentPane" layoutX="0.8" prefHeight="582.0" prefWidth="781.0" style="-fx-background-color: #f5f5f5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
-                    <font>
-                        <Font name="System Bold" size="22.0" />
-                    </font>
-                </Label>
-                <Label fx:id="roleLabel" layoutX="29.0" layoutY="46.0" text="Utilisateur">
-                    <font>
-                        <Font name="System Bold" size="15.0" />
-                    </font>
-                </Label>
-                <Line endX="89.60000610351562" layoutX="93.0" layoutY="90.0" startX="-93.0" stroke="#666666" />
-                <VBox layoutX="9.0" layoutY="110.0" prefHeight="200.0" prefWidth="186.0" spacing="5.0">
-                    <children>
-                        <HBox onMouseClicked="#handleBackToDashboard" prefHeight="40.0" prefWidth="186.0" spacing="8.0" style="-fx-cursor: hand; -fx-background-radius: 5;">
-                            <padding>
-                                <Insets left="5.0" />
-                            </padding>
-                        </HBox>
-                    </children>
-                </VBox>
-                <Line endX="84.79995727539062" layoutX="101.0" layoutY="552.0" startX="-101.0" stroke="#666666" />
-                <HBox layoutX="11.0" layoutY="564.0" prefHeight="36.0" prefWidth="164.0" spacing="8.0" style="-fx-cursor: hand;">
-                    <children>
-                        <Button onAction="#handleLogout"
-                                prefHeight="40.0"
-                                prefWidth="164.0"
-                                text="🚪 Déconnexion"
-                                style="-fx-background-color: #000000; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Button>
-                    </children>
-                </HBox>
-            </children>
-        </AnchorPane>
-
-        <!-- ZONE PRINCIPALE -->
-        <AnchorPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="196.0" AnchorPane.rightAnchor="0.0" style="-fx-background-color: #f5f5f5;">
-            <children>
-                <!-- BOUTON RETOUR (FLÈCHE) -->
-                <Button layoutX="20.0" layoutY="20.0" onMouseClicked="#handleBackToDashboard" prefHeight="40.0" prefWidth="44.0" style="-fx-background-color: #898989; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="⬅" textFill="WHITE">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
-
-                <!-- EN-TÊTE -->
-                <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="70.0" prefHeight="60.0" prefWidth="554.0" spacing="20.0">
-                    <children>
-                        <Label text="👤 Mon Profil" textFill="#388e3c">
-                            <font>
-                                <Font name="System Bold" size="28.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </HBox>
 
                 <!-- MESSAGE -->
                 <Label fx:id="messageLabel" layoutX="30.0" layoutY="130.0" prefHeight="25.0" prefWidth="554.0">
@@ -81,7 +23,7 @@
                 </Label>
 
                 <!-- CARTE PROFIL -->
-                <VBox layoutX="46.0" layoutY="165.0" prefHeight="410.0" prefWidth="519.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <VBox layoutX="131.0" layoutY="85.0" prefHeight="410.0" prefWidth="519.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <children>
                         <!-- PHOTO -->
                         <HBox alignment="CENTER" prefHeight="90.0">
@@ -108,22 +50,20 @@
                                         </Label>
                                     </children>
                                 </HBox>
-
-                                <!-- PRÉNOM -->
-                                <HBox prefHeight="25.0" spacing="10.0">
-                                    <children>
-                                        <Label prefWidth="120.0" text="Prénom :" textFill="#666666">
-                                            <font>
-                                                <Font name="System Bold" size="14.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="prenomLabel" text="Non renseigné" textFill="#333333">
-                                            <font>
-                                                <Font size="14.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </HBox>
+                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" spacing="10.0">
+                           <children>
+                              <Label prefWidth="120.0" text="Prénom :" textFill="#666666">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="prenomLabel" text="Non renseigné" textFill="#333333">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
 
                                 <!-- EMAIL -->
                                 <HBox prefHeight="25.0" spacing="10.0">
@@ -206,16 +146,15 @@
                             </children>
                         </VBox>
 
-                                            <!-- Deuxième ligne : Changer mot de passe (toujours visible) -->
-                          <Button onAction="#handleChangePassword" prefHeight="32.0" prefWidth="187.0" style="-fx-background-color: #acacac; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔑 Changer le mot de passe">
-                              <font>
-                                  <Font name="System Bold" size="13.0" />
-                              </font>
-                          </Button>
-                        <Button fx:id="manage2FAButton" onAction="#handleManage2FA"
-                                prefHeight="40" prefWidth="250"
-                                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;"
-                                text="🔐 Gérer l'authentification 2FA">
+                        <!-- Deuxième ligne : Changer mot de passe -->
+                        <Button onAction="#handleChangePassword" prefHeight="32.0" prefWidth="187.0" style="-fx-background-color: #acacac; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔑 Changer le mot de passe">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
+
+                        <!-- Bouton 2FA -->
+                        <Button fx:id="manage2FAButton" onAction="#handleManage2FA" prefHeight="40" prefWidth="250" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;" text="🔐 Gérer l'authentification 2FA">
                             <font>
                                 <Font name="System Bold" size="13.0" />
                             </font>
@@ -225,6 +164,12 @@
                         <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />
                     </padding>
                 </VBox>
+
+                <Label layoutX="296.0" layoutY="22.0" text="👤 Mon Profil" textFill="#388e3c">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
             </children>
         </AnchorPane>
     </children>

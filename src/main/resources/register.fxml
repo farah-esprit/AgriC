@@ -7,39 +7,21 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.RegisterController">
+<HBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
     <children>
         <!-- Panneau gauche vert -->
-        <StackPane HBox.hgrow="ALWAYS" style="-fx-background-color: #28a745;">
-            <children>
-                <VBox alignment="CENTER" spacing="30.0" StackPane.alignment="CENTER">
-                    <children>
-                        <ImageView fitHeight="350.0" fitWidth="320.0" preserveRatio="true" pickOnBounds="true">
-                            <image><Image url="@images/logo.png" /></image>
-                        </ImageView>
-                        <Label text="Connecter. Cultiver. Réussir." textFill="WHITE" alignment="CENTER">
-                            <font><Font name="System Bold" size="16.0" /></font>
-                        </Label>
-                    </children>
-                </VBox>
-            </children>
-        </StackPane>
+        <StackPane style="-fx-background-color: #28a745;" HBox.hgrow="ALWAYS" />
 
         <!-- Panneau droit - Formulaire -->
-        <StackPane HBox.hgrow="ALWAYS" style="-fx-background-color: white;">
+        <StackPane style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
             <children>
                 <VBox alignment="CENTER" maxWidth="420.0" spacing="8.0" StackPane.alignment="CENTER">
-                    <padding><Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/></padding>
+                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                     <children>
                         <Label text="👤" textFill="#28a745"><font><Font size="70.0" /></font></Label>
                         <Label text="Inscription"><font><Font name="System Bold" size="28.0" /></font></Label>
@@ -47,12 +29,10 @@
                         <VBox spacing="5.0">
                             <children>
                                 <Label text="Nom complet" textFill="#333333"><font><Font size="14.0" /></font></Label>
-                                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
                                         <Label text="✍"><font><Font size="20.0" /></font></Label>
-                                        <TextField fx:id="nomField" promptText="Entrez votre nom"
-                                                   style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                        <TextField fx:id="nomField" promptText="Entrez votre nom" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </TextField>
                                     </children>
@@ -63,12 +43,10 @@
                         <VBox spacing="5.0">
                             <children>
                                 <Label text="Email" textFill="#333333"><font><Font size="14.0" /></font></Label>
-                                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
                                         <Label text="📧"><font><Font size="20.0" /></font></Label>
-                                        <TextField fx:id="emailField" promptText="Entrez votre email"
-                                                   style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                        <TextField fx:id="emailField" promptText="Entrez votre email" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </TextField>
                                     </children>
@@ -79,20 +57,16 @@
                         <VBox spacing="5.0">
                             <children>
                                 <Label text="Mot de passe" textFill="#333333"><font><Font size="14.0" /></font></Label>
-                                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
                                         <Label text="🔒"><font><Font size="18.0" /></font></Label>
-                                        <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe"
-                                                       style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                        <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </PasswordField>
-                                        <TextField fx:id="passwordTextField" managed="false" promptText="Entrez votre mot de passe"
-                                                   style="-fx-background-color: transparent; -fx-border-width: 0;" visible="false" HBox.hgrow="ALWAYS">
+                                        <TextField fx:id="passwordTextField" managed="false" promptText="Entrez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" visible="false" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </TextField>
-                                        <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility"
-                                                style="-fx-background-color: transparent; -fx-cursor: hand; -fx-border-width: 0;" text="👁">
+                                        <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-border-width: 0;" text="👁">
                                             <font><Font size="18.0" /></font>
                                         </Button>
                                     </children>
@@ -106,20 +80,16 @@
                         <VBox spacing="5.0">
                             <children>
                                 <Label text="Confirmer mot de passe" textFill="#333333"><font><Font size="14.0" /></font></Label>
-                                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
                                     <children>
                                         <Label text="🔒"><font><Font size="18.0" /></font></Label>
-                                        <PasswordField fx:id="confirmPasswordField" promptText="Confirmez votre mot de passe"
-                                                       style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
+                                        <PasswordField fx:id="confirmPasswordField" promptText="Confirmez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </PasswordField>
-                                        <TextField fx:id="confirmPasswordTextField" managed="false" promptText="Confirmez votre mot de passe"
-                                                   style="-fx-background-color: transparent; -fx-border-width: 0;" visible="false" HBox.hgrow="ALWAYS">
+                                        <TextField fx:id="confirmPasswordTextField" managed="false" promptText="Confirmez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" visible="false" HBox.hgrow="ALWAYS">
                                             <font><Font size="14.0" /></font>
                                         </TextField>
-                                        <Button fx:id="toggleConfirmPasswordBtn" onAction="#toggleConfirmPasswordVisibility"
-                                                style="-fx-background-color: transparent; -fx-cursor: hand; -fx-border-width: 0;" text="👁">
+                                        <Button fx:id="toggleConfirmPasswordBtn" onAction="#toggleConfirmPasswordVisibility" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-border-width: 0;" text="👁">
                                             <font><Font size="18.0" /></font>
                                         </Button>
                                     </children>
@@ -134,9 +104,7 @@
                             </children>
                         </VBox>
 
-                        <Button fx:id="registerButton" onAction="#handleRegister" prefHeight="45.0" prefWidth="250.0"
-                                style="-fx-background-color: #28a745; -fx-background-radius: 25; -fx-cursor: hand;"
-                                text="S'inscrire" textFill="WHITE">
+                        <Button fx:id="registerButton" onAction="#handleRegister" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #28a745; -fx-background-radius: 25; -fx-cursor: hand;" text="S'inscrire" textFill="WHITE">
                             <font><Font name="System Bold" size="16.0" /></font>
                             <VBox.margin><Insets top="10.0" /></VBox.margin>
                         </Button>

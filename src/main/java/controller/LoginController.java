@@ -10,7 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import service.UserService;
 public class LoginController {
@@ -18,7 +20,8 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
     @FXML private Label errorLabel;
-
+    @FXML
+    StackPane contentPane;
     private UserService userService;
 
     @FXML
@@ -40,13 +43,23 @@ public class LoginController {
     @FXML
     private void handleRegister() {
         try {
+            // Charger le FXML du formulaire d'inscription
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
             Parent root = loader.load();
 
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Inscription");
-            stage.setMaximized(true); // ✅ ajouté
+            // Récupérer le controller de Register pour passer le StackPane
+            RegisterController controller = loader.getController();
+            controller.setContentPane(this.contentPane); // ⚡ Passe le StackPane droit
+
+            // Afficher le formulaire d'inscription dans le StackPane
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            // Ancrer pour occuper tout l'espace
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
 
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement de l'inscription");
@@ -54,23 +67,31 @@ public class LoginController {
             showError("Erreur lors du chargement de la page d'inscription");
         }
     }
-
     @FXML
     private void handleForgotPassword() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/forgotPassword.fxml"));
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Mot de passe oublié");
-            stage.setMaximized(true); // ✅ ajouté
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/forgotPassword.fxml"));
+            Parent root = loader.load();
+
+            // Passer le StackPane contentPane au controller du ForgotPassword si besoin
+            ForgotPasswordController controller = loader.getController();
+            controller.setContentPane(contentPane); // ⚡ Assure-toi d'ajouter un setter dans ForgotPasswordController
+
+            // Afficher dans le côté blanc
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            // Ancrer pour occuper tout l'espace
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur chargement forgotPassword");
             e.printStackTrace();
-            showError("Erreur lors du chargement");
+            showError("Erreur lors du chargement de la page Mot de passe oublié");
         }
     }
-
     // ================= LOGIN AVEC VÉRIFICATION 2FA =================
     @FXML
     private void handleLogin() {
@@ -125,21 +146,21 @@ public class LoginController {
 
             Verify2FAController controller = loader.getController();
             controller.setUser(user);
+            controller.setContentPane(contentPane); // ⚡ Passe le StackPane droit
 
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("AgriConnect - Vérification 2FA");
-            stage.setMaximized(true); // ✅ manquait ici
+            // Afficher 2FA dans le StackPane droit
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
 
-            System.out.println("✅ Page verify2FA chargée avec succès");
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur chargement verify2FA : " + e.getMessage());
             e.printStackTrace();
-            showError("❌ Erreur de chargement de la vérification 2FA");
         }
     }
-
     // ================= MESSAGES =================
     private void showError(String message) {
         errorLabel.setText(message);
@@ -161,10 +182,10 @@ public class LoginController {
             String fxmlFile = "";
 
             switch (user.getRole()) {
-                case ADMIN:      fxmlFile = "/adminDashboard.fxml"; break;
                 case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
-                case EXPERT:     fxmlFile = "/expertDashboard.fxml"; break;
+                case EXPERT:      fxmlFile = "/expertDashboard.fxml"; break;
                 case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
+                case ADMIN:       fxmlFile = "/adminDashboard.fxml"; break;
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -182,11 +203,20 @@ public class LoginController {
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Scene scene = new Scene(root);
+
+            // ✅ LIER LES DIMENSIONS AVANT DE CHANGER LA SCENE
+            if (root instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+
             stage.setScene(scene);
             stage.setTitle("AgriConnect - Dashboard " + user.getRole());
 
-            // ✅ ICI c'est le bon endroit !
-            stage.setMaximized(true);
+            // ✅ MAXIMISER APRÈS
+            javafx.application.Platform.runLater(() -> {
+                stage.setMaximized(true);
+            });
 
             System.out.println("✅ Redirection réussie vers " + fxmlFile);
 
