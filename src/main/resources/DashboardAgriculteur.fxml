@@ -37,7 +37,8 @@
                     onAction="#handleWeather"
                     styleClass="sidebar-btn"/>
 
-            <Button text="📊 Statistiques"
+            <Button text="Diagnostic"
+                    onAction="#handleDiagnostic"
                     styleClass="sidebar-btn"/>
             <!-- Bouton pour scanner une plante -->
             <Button text="📷 Scanner une plante"

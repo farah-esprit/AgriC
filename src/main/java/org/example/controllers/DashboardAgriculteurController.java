@@ -37,6 +37,9 @@ public class DashboardAgriculteurController {
     public void handleAccueil() {
         loadPage("/DashboardHome.fxml");
     }
+    public void handleDiagnostic() {
+        loadPage("/DiagnosticForm.fxml");
+    }
     @FXML
     public void handleScanPlant() {
         loadPage("/PlantNetView.fxml"); // chemin vers ton FXML de scan
