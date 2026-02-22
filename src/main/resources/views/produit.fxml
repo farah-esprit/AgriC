@@ -143,7 +143,12 @@
                                         style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                                 <Button text="📤 Exporter CSV" onAction="#exporterCSV"
                                         prefWidth="175" prefHeight="45"
+
                                         style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                                <Button text="📱 Générer QR Code" onAction="#handleGenererQR"
+                                        maxWidth="Infinity" prefHeight="45"
+                                        style="-fx-background-color: #4a7c3a; -fx-text-fill: white; -fx-font-weight: bold;
+               -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                             </HBox>
                         </VBox>
                     </VBox>

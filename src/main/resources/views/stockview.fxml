@@ -102,6 +102,12 @@
                                         style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                             </HBox>
                         </VBox>
+                        <Button text="🤖 Assistant IA" onAction="#handleAssistantIA"
+                                maxWidth="Infinity" prefHeight="42"
+                                style="-fx-background-color: #7b68ee; -fx-text-fill: white;
+               -fx-font-size: 13px; -fx-font-weight: bold;
+               -fx-background-radius: 10; -fx-cursor: hand;
+               -fx-border-color: #6a5acd; -fx-border-width: 1; -fx-border-radius: 10;"/>
                     </VBox>
                 </VBox>
             </ScrollPane>
@@ -140,5 +146,6 @@
                    style="-fx-text-fill: #c8e6c9; -fx-font-size: 12px;"/>
         </HBox>
     </bottom>
+
 
 </BorderPane>

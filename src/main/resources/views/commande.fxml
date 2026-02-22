@@ -10,18 +10,16 @@
             prefWidth="1600" prefHeight="900"
             style="-fx-background-color: #f5f5dc;">
 
-    <!-- HEADER VERT AGRICONNECT -->
+    <!-- HEADER -->
     <top>
         <VBox style="-fx-background-color: linear-gradient(to right, #5a8c4a, #4a7c3a);">
             <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 20 30;">
-                <!-- ✅ BOUTON RETOUR -->
-                <Button text="🏠 Retour à l'accueil"
-                        onAction="#retourAccueil"
+                <Button text="🏠 Retour à l'accueil" onAction="#retourAccueil"
                         prefHeight="40" prefWidth="180"
-                        style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 20;"/>
-
+                        style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white;
+                               -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 20;
+                               -fx-cursor: hand; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 20;"/>
                 <Region prefWidth="20"/>
-
                 <Label text="🛒" style="-fx-font-size: 32px;"/>
                 <VBox spacing="2">
                     <Label text="AgriConnect - Gestion des Commandes"
@@ -30,126 +28,235 @@
                            style="-fx-text-fill: #e8f5e9; -fx-font-size: 13px;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="lblStatus"
-                       text="Prêt"
-                       style="-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color: rgba(0,0,0,0.2); -fx-padding: 8 15; -fx-background-radius: 15;"/>
+
+                <!-- Stats header -->
+                <HBox spacing="8">
+                    <VBox alignment="CENTER" prefWidth="90"
+                          style="-fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 10; -fx-padding: 7 12;">
+                        <Label text="TOTAL" style="-fx-text-fill: #e8f5e9; -fx-font-size: 9px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="lblTotal" text="0" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" prefWidth="90"
+                          style="-fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 10; -fx-padding: 7 12;">
+                        <Label text="EN COURS" style="-fx-text-fill: #e8f5e9; -fx-font-size: 9px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="lblEnCours" text="0" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" prefWidth="90"
+                          style="-fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 10; -fx-padding: 7 12;">
+                        <Label text="ANNULÉES" style="-fx-text-fill: #e8f5e9; -fx-font-size: 9px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="lblAnnulees" text="0" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+
+                <Label fx:id="lblStatus" text="Prêt"
+                       style="-fx-text-fill: white; -fx-font-size: 13px;
+                              -fx-background-color: rgba(0,0,0,0.2); -fx-padding: 8 15; -fx-background-radius: 15;"/>
             </HBox>
         </VBox>
     </top>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <center>
-        <SplitPane dividerPositions="0.45" style="-fx-background-color: #f5f5dc;">
+        <SplitPane dividerPositions="0.28" style="-fx-background-color: #f5f5dc;">
 
-            <!-- LEFT - FORM -->
+            <!-- LEFT - FORMULAIRE -->
             <ScrollPane fitToWidth="true" fitToHeight="true"
                         hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <VBox spacing="15" style="-fx-padding: 25;">
 
-                    <!-- Titre formulaire -->
-                    <HBox alignment="CENTER" spacing="10"
-                          style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                        <Label text="📝 Nouvelle / Modifier Commande"
-                               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
+                    <HBox alignment="CENTER"
+                          style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                        <Label text="📝 Nouvelle / Modifier"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
                     </HBox>
 
-                    <!-- Formulaire -->
-                    <VBox spacing="20"
-                          style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <VBox spacing="18"
+                          style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
 
-                        <!-- Champs du formulaire -->
-                        <GridPane hgap="15" vgap="22">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="RIGHT" minWidth="100" prefWidth="120"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
-                            </columnConstraints>
-
-                            <!-- Produit -->
-                            <Label text="Produit :" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
-                            <ComboBox fx:id="cbProduit" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                      prefHeight="40" maxWidth="Infinity"
+                        <VBox spacing="5">
+                            <Label text="Produit" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
+                            <ComboBox fx:id="cbProduit" maxWidth="Infinity" prefHeight="40"
                                       promptText="Sélectionnez un produit..."
-                                      style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5;"/>
+                                      style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a;
+                                             -fx-border-radius: 5; -fx-background-radius: 5;"/>
+                        </VBox>
 
-                            <!-- Quantité -->
-                            <Label text="Quantité :" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
-                            <TextField fx:id="tfQuantite" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                                       prefHeight="40" promptText="Ex: 150"
-                                       style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;"/>
+                        <VBox spacing="5">
+                            <Label text="Quantité" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
+                            <TextField fx:id="tfQuantite" prefHeight="40" promptText="Ex: 50"
+                                       style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a;
+                                              -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;"/>
+                        </VBox>
 
-                            <!-- Statut -->
-                            <Label text="Statut :" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
-                            <ComboBox fx:id="cbStatut" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                                      prefHeight="40" maxWidth="Infinity"
+                        <VBox spacing="5">
+                            <Label text="Statut" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
+                            <ComboBox fx:id="cbStatut" maxWidth="Infinity" prefHeight="40"
                                       promptText="Sélectionnez le statut..."
-                                      style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5;"/>
-                        </GridPane>
+                                      style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a;
+                                             -fx-border-radius: 5; -fx-background-radius: 5;"/>
+                        </VBox>
 
                         <Separator style="-fx-background-color: #e0e0e0;"/>
 
-                        <!-- Boutons d'action -->
-                        <VBox spacing="15" alignment="CENTER">
-                            <HBox spacing="12" alignment="CENTER">
-                                <Button fx:id="btnAjouter" text="➕ Ajouter" onAction="#handleAjouter"
-                                        prefWidth="115" prefHeight="45"
-                                        style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                                <Button fx:id="btnModifier" text="✏️ Modifier" onAction="#handleModifier"
-                                        prefWidth="115" prefHeight="45"
-                                        style="-fx-background-color: #f0ad4e; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                                <Button fx:id="btnSupprimer" text="🗑️ Supprimer" onAction="#handleSupprimer"
-                                        prefWidth="115" prefHeight="45"
-                                        style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                            </HBox>
+                        <Button text="➕ Ajouter" onAction="#handleAjouter"
+                                maxWidth="Infinity" prefHeight="44"
+                                style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        <Button text="✏️ Modifier Statut" onAction="#handleModifier"
+                                maxWidth="Infinity" prefHeight="40"
+                                style="-fx-background-color: #f0ad4e; -fx-text-fill: white; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        <Button text="🗑️ Supprimer" onAction="#handleSupprimer"
+                                maxWidth="Infinity" prefHeight="40"
+                                style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 13px;
+                                       -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
 
-                            <HBox spacing="12" alignment="CENTER">
-                                <Button fx:id="btnActualiser" text="🔄 Actualiser" onAction="#handleActualiser"
-                                        prefWidth="175" prefHeight="45"
-                                        style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                                <Button text="💳 Payer Carte" onAction="#handlePayerStripe"
-                                        prefWidth="175" prefHeight="45"
-                                        style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                            </HBox>
+                        <Separator style="-fx-background-color: #e0e0e0;"/>
 
-                            <Button text="📤 Exporter CSV" onAction="#exporterCSV"
-                                    prefWidth="180" prefHeight="45"
-                                    style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
-                        </VBox>
+                        <HBox spacing="8">
+                            <Button text="🔄 Actualiser" onAction="#handleActualiser"
+                                    prefHeight="38" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                    style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-size: 11px;
+                                           -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="💳 Stripe" onAction="#handlePayerStripe"
+                                    prefHeight="38" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                    style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-size: 11px;
+                                           -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                        <Button text="📤 Exporter CSV" onAction="#exporterCSV"
+                                maxWidth="Infinity" prefHeight="38"
+                                style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-size: 12px;
+                                       -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
                     </VBox>
                 </VBox>
             </ScrollPane>
 
-            <!-- RIGHT - TABLE -->
-            <VBox spacing="15" style="-fx-padding: 25;">
+            <!-- RIGHT - KANBAN -->
+            <ScrollPane fitToHeight="true" HBox.hgrow="ALWAYS"
+                        hbarPolicy="AS_NEEDED" vbarPolicy="NEVER"
+                        style="-fx-background-color: #f0f4e8; -fx-background: #f0f4e8; -fx-border-color: transparent;">
+                <HBox spacing="12" style="-fx-padding: 20; -fx-background-color: #f0f4e8;">
 
-                <!-- Titre tableau -->
-                <HBox alignment="CENTER" spacing="10"
-                      style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <Label text="📊 Liste des Commandes"
-                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
+                    <!-- Colonne EN_COURS -->
+                    <VBox prefWidth="240" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8"
+                              style="-fx-padding: 14 16; -fx-background-color: #5bc0de;
+                                     -fx-background-radius: 12 12 0 0;">
+                            <Label text="⏳" style="-fx-font-size: 14px;"/>
+                            <Label text="EN COURS"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="badgeEnCours" text="0"
+                                   style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white;
+                                          -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 2 8; -fx-background-radius: 10;"/>
+                        </HBox>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                            <VBox fx:id="colEnCours" spacing="8" style="-fx-padding: 10; -fx-background-color: transparent;"/>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- Colonne VALIDEE -->
+                    <VBox prefWidth="240" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8"
+                              style="-fx-padding: 14 16; -fx-background-color: #5a8c4a;
+                                     -fx-background-radius: 12 12 0 0;">
+                            <Label text="✅" style="-fx-font-size: 14px;"/>
+                            <Label text="VALIDÉE"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="badgeValidee" text="0"
+                                   style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white;
+                                          -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 2 8; -fx-background-radius: 10;"/>
+                        </HBox>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                            <VBox fx:id="colValidee" spacing="8" style="-fx-padding: 10; -fx-background-color: transparent;"/>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- Colonne EXPEDIEE -->
+                    <VBox prefWidth="240" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8"
+                              style="-fx-padding: 14 16; -fx-background-color: #7b68ee;
+                                     -fx-background-radius: 12 12 0 0;">
+                            <Label text="🚚" style="-fx-font-size: 14px;"/>
+                            <Label text="EXPÉDIÉE"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="badgeExpediee" text="0"
+                                   style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white;
+                                          -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 2 8; -fx-background-radius: 10;"/>
+                        </HBox>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                            <VBox fx:id="colExpediee" spacing="8" style="-fx-padding: 10; -fx-background-color: transparent;"/>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- Colonne LIVREE -->
+                    <VBox prefWidth="240" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8"
+                              style="-fx-padding: 14 16; -fx-background-color: #f0ad4e;
+                                     -fx-background-radius: 12 12 0 0;">
+                            <Label text="📦" style="-fx-font-size: 14px;"/>
+                            <Label text="LIVRÉE"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="badgeLivree" text="0"
+                                   style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white;
+                                          -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 2 8; -fx-background-radius: 10;"/>
+                        </HBox>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                            <VBox fx:id="colLivree" spacing="8" style="-fx-padding: 10; -fx-background-color: transparent;"/>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- Colonne ANNULEE -->
+                    <VBox prefWidth="240" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8"
+                              style="-fx-padding: 14 16; -fx-background-color: #d9534f;
+                                     -fx-background-radius: 12 12 0 0;">
+                            <Label text="❌" style="-fx-font-size: 14px;"/>
+                            <Label text="ANNULÉE"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="badgeAnnulee" text="0"
+                                   style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white;
+                                          -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 2 8; -fx-background-radius: 10;"/>
+                        </HBox>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                            <VBox fx:id="colAnnulee" spacing="8" style="-fx-padding: 10; -fx-background-color: transparent;"/>
+                        </ScrollPane>
+                    </VBox>
+
                 </HBox>
-
-                <!-- Tableau -->
-                <VBox VBox.vgrow="ALWAYS"
-                      style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2); -fx-padding: 15;">
-                    <TableView fx:id="tableCommande" VBox.vgrow="ALWAYS"
-                               style="-fx-background-color: transparent; -fx-table-cell-border-color: #e0e0e0;">
-                        <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="60" minWidth="50"/>
-                            <TableColumn fx:id="colDate" text="Date" prefWidth="160" minWidth="140"/>
-                            <TableColumn fx:id="colStatut" text="Statut" prefWidth="130" minWidth="110"/>
-                            <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="100" minWidth="80"/>
-                            <TableColumn fx:id="colProduit" text="Produit" prefWidth="200" minWidth="160"/>
-                            <TableColumn fx:id="colClient" text="Client" prefWidth="150" minWidth="120"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-            </VBox>
-
+            </ScrollPane>
         </SplitPane>
     </center>
 

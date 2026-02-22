@@ -6,16 +6,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import services.ProduitService;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import org.example.utils.QRCodeGenerator;
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,7 +57,8 @@ public class ProduitController {
         public final StringProperty categorie = new SimpleStringProperty();
         public final StringProperty imagePath = new SimpleStringProperty();
 
-        public ProduitData(long id, String nom, String description, double prix, String categorie, String imagePath) {
+        public ProduitData(long id, String nom, String description, double prix,
+                           String categorie, String imagePath) {
             this.id.set(id);
             this.nom.set(nom);
             this.description.set(description);
@@ -71,6 +77,10 @@ public class ProduitController {
         ));
         chargerProduits();
     }
+
+    // ═══════════════════════════════════════════════════════
+    // CARDS
+    // ═══════════════════════════════════════════════════════
 
     private VBox createCard(ProduitData p) {
         VBox card = new VBox(10);
@@ -118,7 +128,6 @@ public class ProduitController {
         }
 
         imageContainer.getChildren().addAll(bgCircle, iv, iconFallback);
-
         HBox imgBox = new HBox(imageContainer);
         imgBox.setStyle("-fx-alignment: center;");
 
@@ -139,7 +148,7 @@ public class ProduitController {
                         "-fx-background-radius: 10;"
         );
 
-        // Description tronquée
+        // Description
         String desc = p.description.get() != null ? p.description.get() : "";
         Label lblDesc = new Label(desc.length() > 60 ? desc.substring(0, 57) + "..." : desc);
         lblDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #777; -fx-wrap-text: true;");
@@ -155,21 +164,15 @@ public class ProduitController {
 
         card.getChildren().addAll(imgBox, lblNom, lblCat, lblDesc, sep, lblPrix);
 
-        // Clic -> sélection
         card.setOnMouseClicked(e -> selectCard(p, card));
-
-        // Hover
         card.setOnMouseEntered(e -> {
             if (currentSelection == null || currentSelection.id.get() != p.id.get()) {
                 card.setStyle(
                         "-fx-background-color: #f0faf0;" +
-                                "-fx-background-radius: 12;" +
-                                "-fx-border-radius: 12;" +
-                                "-fx-border-color: #5a8c4a;" +
-                                "-fx-border-width: 1.5;" +
+                                "-fx-background-radius: 12; -fx-border-radius: 12;" +
+                                "-fx-border-color: #5a8c4a; -fx-border-width: 1.5;" +
                                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 14, 0, 0, 5);" +
-                                "-fx-padding: 15;" +
-                                "-fx-cursor: hand;"
+                                "-fx-padding: 15; -fx-cursor: hand;"
                 );
             }
         });
@@ -177,11 +180,9 @@ public class ProduitController {
             if (currentSelection == null || currentSelection.id.get() != p.id.get()) {
                 card.setStyle(
                         "-fx-background-color: white;" +
-                                "-fx-background-radius: 12;" +
-                                "-fx-border-radius: 12;" +
+                                "-fx-background-radius: 12; -fx-border-radius: 12;" +
                                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
-                                "-fx-padding: 15;" +
-                                "-fx-cursor: hand;"
+                                "-fx-padding: 15; -fx-cursor: hand;"
                 );
             }
         });
@@ -190,33 +191,24 @@ public class ProduitController {
     }
 
     private void selectCard(ProduitData p, VBox card) {
-        // Désélectionner l'ancienne card
         if (selectedCard != null) {
             selectedCard.setStyle(
                     "-fx-background-color: white;" +
-                            "-fx-background-radius: 12;" +
-                            "-fx-border-radius: 12;" +
+                            "-fx-background-radius: 12; -fx-border-radius: 12;" +
                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
-                            "-fx-padding: 15;" +
-                            "-fx-cursor: hand;"
+                            "-fx-padding: 15; -fx-cursor: hand;"
             );
         }
-
-        // Sélectionner la nouvelle
         card.setStyle(
                 "-fx-background-color: #e8f5e9;" +
-                        "-fx-background-radius: 12;" +
-                        "-fx-border-radius: 12;" +
-                        "-fx-border-color: #4a7c3a;" +
-                        "-fx-border-width: 2.5;" +
+                        "-fx-background-radius: 12; -fx-border-radius: 12;" +
+                        "-fx-border-color: #4a7c3a; -fx-border-width: 2.5;" +
                         "-fx-effect: dropshadow(gaussian, rgba(74,124,58,0.3), 14, 0, 0, 5);" +
-                        "-fx-padding: 15;" +
-                        "-fx-cursor: hand;"
+                        "-fx-padding: 15; -fx-cursor: hand;"
         );
         selectedCard = card;
         currentSelection = p;
 
-        // Remplir le formulaire
         tfNom.setText(p.nom.get());
         tfDescription.setText(p.description.get());
         tfPrix.setText(String.format(java.util.Locale.US, "%.2f", p.prix.get()));
@@ -235,6 +227,106 @@ public class ProduitController {
         }
     }
 
+    // ═══════════════════════════════════════════════════════
+    // QR CODE — SANS SWING
+    // ═══════════════════════════════════════════════════════
+
+    @FXML
+    private void handleGenererQR() {
+        if (currentSelection == null) {
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit pour générer son QR Code.");
+            return;
+        }
+        try {
+            String contenu = QRCodeGenerator.formatProduit(
+                    currentSelection.nom.get(),
+                    currentSelection.categorie.get(),
+                    currentSelection.prix.get(),
+                    currentSelection.description.get()
+            );
+            WritableImage qrImage = QRCodeGenerator.genererFX(contenu, 300, 300);
+            afficherPopupQR(qrImage, currentSelection.nom.get());
+        } catch (Exception e) {
+            showErrorAlert("Erreur QR Code", e.getMessage());
+        }
+    }
+
+    private void afficherPopupQR(WritableImage fxImage, String nomProduit) {
+        Stage popupStage = new Stage();
+        popupStage.setTitle("QR Code - " + nomProduit);
+
+        VBox root = new VBox(20);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #f5f5dc; -fx-padding: 30;");
+
+        Label titre = new Label("📱 QR Code Produit");
+        titre.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;");
+
+        Label sousTitre = new Label(nomProduit);
+        sousTitre.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-style: italic;");
+
+        ImageView qrView = new ImageView(fxImage);
+        qrView.setFitWidth(280);
+        qrView.setFitHeight(280);
+        qrView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);");
+
+        Label info = new Label("Scannez ce QR code pour voir les détails du produit");
+        info.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+
+        HBox boutons = new HBox(15);
+        boutons.setAlignment(Pos.CENTER);
+
+        Button btnSauvegarder = new Button("💾 Sauvegarder PNG");
+        btnSauvegarder.setStyle(
+                "-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-weight: bold;" +
+                        "-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px; -fx-padding: 10 20;"
+        );
+        btnSauvegarder.setOnAction(e -> sauvegarderQR(fxImage, nomProduit, popupStage));
+
+        Button btnFermer = new Button("✕ Fermer");
+        btnFermer.setStyle(
+                "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold;" +
+                        "-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px; -fx-padding: 10 20;"
+        );
+        btnFermer.setOnAction(e -> popupStage.close());
+
+        boutons.getChildren().addAll(btnSauvegarder, btnFermer);
+        root.getChildren().addAll(titre, sousTitre, qrView, info, boutons);
+
+        Scene scene = new Scene(root, 400, 480);
+        popupStage.setScene(scene);
+        popupStage.setResizable(false);
+        popupStage.show();
+    }
+
+    private void sauvegarderQR(WritableImage image, String nomProduit, Stage parentStage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sauvegarder le QR Code");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image PNG", "*.png"));
+        fileChooser.setInitialFileName("QR_" + nomProduit.replaceAll("[^a-zA-Z0-9]", "_") + ".png");
+        File file = fileChooser.showSaveDialog(parentStage);
+        if (file != null) {
+            try {
+                int w = (int) image.getWidth();
+                int h = (int) image.getHeight();
+                int[] pixels = new int[w * h];
+                image.getPixelReader().getPixels(0, 0, w, h,
+                        javafx.scene.image.PixelFormat.getIntArgbInstance(), pixels, 0, w);
+                java.awt.image.BufferedImage bi = new java.awt.image.BufferedImage(
+                        w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                bi.setRGB(0, 0, w, h, pixels, 0, w);
+                ImageIO.write(bi, "PNG", file);
+                showSuccessAlert("QR Code sauvegardé !", "Fichier : " + file.getAbsolutePath());
+            } catch (IOException e) {
+                showErrorAlert("Erreur sauvegarde", e.getMessage());
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // IMAGE
+    // ═══════════════════════════════════════════════════════
+
     @FXML
     private void handleParcourir() {
         FileChooser fileChooser = new FileChooser();
@@ -243,7 +335,6 @@ public class ProduitController {
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
                 new FileChooser.ExtensionFilter("Tous les fichiers", "*.*")
         );
-
         File selectedFile = fileChooser.showOpenDialog(tfImagePath.getScene().getWindow());
         if (selectedFile != null) {
             try {
@@ -262,9 +353,7 @@ public class ProduitController {
     private void createImageDirectory() {
         try {
             Path path = Paths.get(IMAGE_DIRECTORY);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-            }
+            if (!Files.exists(path)) Files.createDirectories(path);
         } catch (IOException e) {
             System.err.println("❌ Erreur création dossier images : " + e.getMessage());
         }
@@ -293,6 +382,10 @@ public class ProduitController {
         }
     }
 
+    // ═══════════════════════════════════════════════════════
+    // CRUD
+    // ═══════════════════════════════════════════════════════
+
     @FXML
     private void handleAjouter() {
         if (!validateInput()) return;
@@ -305,7 +398,7 @@ public class ProduitController {
                     selectedImagePath
             );
             produitService.ajouter(p);
-            showSuccessAlert("Produit ajouté avec succès !", "Le produit a bien été enregistré.");
+            showSuccessAlert("Produit ajouté !", "Le produit a bien été enregistré.");
             clearInputs();
             chargerProduits();
         } catch (Exception e) {
@@ -321,23 +414,18 @@ public class ProduitController {
         }
         if (!validateInput()) return;
         try {
-            currentSelection.nom.set(tfNom.getText().trim());
-            currentSelection.description.set(tfDescription.getText().trim());
-            currentSelection.prix.set(Double.parseDouble(tfPrix.getText().trim()));
-            currentSelection.categorie.set(cbCategorie.getValue());
-            currentSelection.imagePath.set(selectedImagePath);
-
             Produit p = new Produit(
                     currentSelection.id.get(),
-                    currentSelection.nom.get(),
-                    currentSelection.description.get(),
-                    currentSelection.prix.get(),
-                    currentSelection.categorie.get(),
+                    tfNom.getText().trim(),
+                    tfDescription.getText().trim(),
+                    Double.parseDouble(tfPrix.getText().trim()),
+                    cbCategorie.getValue(),
                     true,
                     selectedImagePath
             );
             produitService.modifier(p);
-            showSuccessAlert("Produit modifié avec succès !", "Les modifications ont été enregistrées.");
+            showSuccessAlert("Produit modifié !", "Les modifications ont été enregistrées.");
+            clearInputs();
             chargerProduits();
         } catch (Exception e) {
             showErrorAlert("Erreur lors de la modification", e.getMessage());
@@ -350,7 +438,6 @@ public class ProduitController {
             showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit.");
             return;
         }
-
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmer la suppression");
         confirm.setHeaderText("Supprimer ce produit ?");
@@ -359,22 +446,15 @@ public class ProduitController {
                         "Catégorie : " + currentSelection.categorie.get() + "\n" +
                         "Cette action est irréversible."
         );
-
         ButtonType btnOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.YES);
         ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirm.getButtonTypes().setAll(btnOui, btnNon);
-
-        DialogPane dialogPane = confirm.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dialogPane.getStyleClass().add("delete-confirmation-alert");
-
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == btnOui) {
             try {
                 produitService.supprimer(currentSelection.id.get());
                 clearInputs();
                 chargerProduits();
-                showSuccessAlert("Supprimé avec succès", "Le produit a été supprimé de la base.");
-                lblStatus.setText("Produit supprimé");
+                showSuccessAlert("Supprimé !", "Le produit a été supprimé.");
             } catch (Exception e) {
                 showErrorAlert("Erreur suppression", e.getMessage());
             }
@@ -385,34 +465,27 @@ public class ProduitController {
     private void handleActualiser() {
         clearInputs();
         chargerProduits();
-        showInfoAlert("Liste actualisée",
-                "La liste des produits a été rafraîchie.\n" + produitsList.size() + " produit(s) trouvé(s).");
-        lblStatus.setText("Actualisé : " + produitsList.size() + " produits affichés");
+        lblStatus.setText("Actualisé : " + produitsList.size() + " produits");
     }
 
     @FXML
     private void exporterCSV() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Exporter les produits en CSV");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         fileChooser.setInitialFileName("produits_" + LocalDate.now() + ".csv");
-
         File file = fileChooser.showSaveDialog(cardsContainer.getScene().getWindow());
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                writer.append("ID,Nom,Description,Prix (DT),Catégorie,Image\n");
+                writer.append("Nom,Description,Prix (DT),Catégorie\n");
                 for (ProduitData p : produitsList) {
-                    writer.append(String.format("%d,\"%s\",\"%s\",%.2f,\"%s\",\"%s\"\n",
-                            p.id.get(),
-                            escapeCsv(p.nom.get()),
-                            escapeCsv(p.description.get()),
-                            p.prix.get(),
-                            escapeCsv(p.categorie.get()),
-                            escapeCsv(p.imagePath.get())));
+                    writer.append(String.format("\"%s\",\"%s\",%.2f,\"%s\"\n",
+                            escapeCsv(p.nom.get()), escapeCsv(p.description.get()),
+                            p.prix.get(), escapeCsv(p.categorie.get())));
                 }
-                showSuccessAlert("Export réussi", "Fichier sauvegardé :\n" + file.getAbsolutePath());
+                showSuccessAlert("Export réussi", "Fichier : " + file.getAbsolutePath());
             } catch (IOException e) {
-                showErrorAlert("Erreur d'export", "Impossible de sauvegarder :\n" + e.getMessage());
+                showErrorAlert("Erreur export", e.getMessage());
             }
         }
     }
@@ -429,9 +502,13 @@ public class ProduitController {
             currentStage.close();
             homeStage.show();
         } catch (IOException e) {
-            showErrorAlert("Erreur de navigation", "Impossible de retourner à l'accueil : " + e.getMessage());
+            showErrorAlert("Erreur de navigation", e.getMessage());
         }
     }
+
+    // ═══════════════════════════════════════════════════════
+    // UTILITAIRES
+    // ═══════════════════════════════════════════════════════
 
     private String escapeCsv(String s) {
         if (s == null) return "";
@@ -442,14 +519,10 @@ public class ProduitController {
 
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
-
         String nom = tfNom.getText().trim();
         if (nom.isEmpty()) errors.append("• Le nom est obligatoire.\n");
-        else if (nom.length() < 3 || nom.length() > 50) errors.append("• Le nom doit contenir entre 3 et 50 caractères.\n");
-
-        String desc = tfDescription.getText().trim();
-        if (desc.length() > 250) errors.append("• La description ne peut pas dépasser 250 caractères.\n");
-
+        else if (nom.length() < 3 || nom.length() > 50)
+            errors.append("• Le nom doit contenir entre 3 et 50 caractères.\n");
         String prixText = tfPrix.getText().trim();
         if (prixText.isEmpty()) errors.append("• Le prix est obligatoire.\n");
         else {
@@ -457,29 +530,17 @@ public class ProduitController {
                 double prix = Double.parseDouble(prixText);
                 if (prix <= 0) errors.append("• Le prix doit être supérieur à 0.\n");
             } catch (NumberFormatException e) {
-                errors.append("• Le prix doit être un nombre valide (ex: 28.50).\n");
+                errors.append("• Le prix doit être un nombre valide.\n");
             }
         }
-
         if (cbCategorie.getValue() == null) errors.append("• La catégorie est obligatoire.\n");
-
-        if (selectedImagePath == null || selectedImagePath.isEmpty()) {
-            errors.append("• L'image est recommandée pour une meilleure présentation.\n");
-        }
-
-        if (errors.length() > 0) {
-            showErrorAlert("Champs incomplets ou invalides", errors.toString());
-            return false;
-        }
+        if (errors.length() > 0) { showErrorAlert("Champs invalides", errors.toString()); return false; }
         return true;
     }
 
     private void clearInputs() {
-        tfNom.clear();
-        tfDescription.clear();
-        tfPrix.clear();
-        cbCategorie.setValue(null);
-        tfImagePath.clear();
+        tfNom.clear(); tfDescription.clear(); tfPrix.clear();
+        cbCategorie.setValue(null); tfImagePath.clear();
         selectedImagePath = null;
         if (imagePreview != null) imagePreview.setImage(null);
         if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
@@ -490,61 +551,39 @@ public class ProduitController {
     private void chargerProduits() {
         produitsList.clear();
         cardsContainer.getChildren().clear();
-
         for (Produit p : produitService.getAllProduits()) {
             ProduitData data = new ProduitData(
-                    p.getIdProduit(),
-                    p.getNom(),
-                    p.getDescription(),
-                    p.getPrix(),
-                    p.getCategorie(),
-                    p.getImagePath()
+                    p.getIdProduit(), p.getNom(), p.getDescription(),
+                    p.getPrix(), p.getCategorie(), p.getImagePath()
             );
             produitsList.add(data);
             cardsContainer.getChildren().add(createCard(data));
         }
-
-        lblStatus.setText("Liste chargée : " + produitsList.size() + " produits");
+        if (lblStatus != null)
+            lblStatus.setText("Liste chargée : " + produitsList.size() + " produits");
     }
 
+    // ═══════════════════════════════════════════════════════
+    // ALERTES
+    // ═══════════════════════════════════════════════════════
+
     private void showSuccessAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        DialogPane dp = alert.getDialogPane();
-        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dp.getStyleClass().add("success-alert");
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Succès"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
 
     private void showErrorAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        DialogPane dp = alert.getDialogPane();
-        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dp.getStyleClass().add("error-alert");
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Erreur"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
 
     private void showWarningAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Attention");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        DialogPane dp = alert.getDialogPane();
-        dp.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        dp.getStyleClass().add("warning-alert");
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setTitle("Attention"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
 
     private void showInfoAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Info"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
 }
