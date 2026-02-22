@@ -12,50 +12,56 @@ import org.json.JSONObject;
 
 public class PlantDiseaseAPI {
 
-    private static final String API_KEY = "2b10RB9HZ7W4Vt0kEgqDBKuD6e";
-    private static final String API_URL = "https://api.plant.id/v2/identify";
+    private static final String API_KEY = "HiATwd4KSfRGV3nVcTr9Kp0fpyTj3RRpFdUpHEvGBjSL2B7DID";
+    private static final String API_URL = "https://api.plant.id/v2/health_assessment";
 
     public static String detectDisease(String imagePath) throws Exception {
+
         byte[] imageBytes = Files.readAllBytes(Path.of(imagePath));
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
         JSONObject requestJson = new JSONObject();
-        requestJson.put("api_key", API_KEY);
         requestJson.put("images", new String[]{base64Image});
-        requestJson.put("modifiers", new String[]{"disease_similar_images"});
-        requestJson.put("plant_language", "en");
-        requestJson.put("plant_details", new String[]{"common_names", "wiki_description", "disease"});
+        requestJson.put("language", "en");
 
         HttpClient client = HttpClient.newHttpClient();
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL))
                 .header("Content-Type", "application/json")
+                .header("Api-Key", API_KEY)
                 .POST(HttpRequest.BodyPublishers.ofString(requestJson.toString()))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response =
+                client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Response code: " + response.statusCode());
+        System.out.println("Response body: " + response.body());
+
         JSONObject jsonResponse = new JSONObject(response.body());
 
-        // Extraction des infos principales
-        JSONArray suggestions = jsonResponse.getJSONArray("suggestions");
-        if (suggestions.length() > 0) {
-            JSONObject topSuggestion = suggestions.getJSONObject(0);
-            String plantName = topSuggestion.getJSONArray("plant_details")
-                    .optJSONObject(0)
-                    .optJSONArray("common_names") != null
-                    ? topSuggestion.getJSONArray("plant_details")
-                    .getJSONObject(0)
-                    .getJSONArray("common_names")
-                    .optString(0)
-                    : "Unknown";
+        JSONObject healthAssessment = jsonResponse.getJSONObject("health_assessment");
 
-            JSONObject disease = topSuggestion.optJSONObject("disease");
-            String diseaseName = (disease != null) ? disease.optString("name", "No disease detected") : "No disease detected";
-            String recommendation = (disease != null) ? disease.optString("treatment", "No recommendation") : "No recommendation";
+        boolean isHealthy = healthAssessment.getBoolean("is_healthy");
 
-            return "Plante: " + plantName + "\nMaladie: " + diseaseName + "\nRecommandation: " + recommendation;
-        } else {
-            return "Aucune plante ou maladie détectée.";
+        if (isHealthy) {
+            return "✅ La plante est saine.";
         }
+
+        JSONArray diseases = healthAssessment.getJSONArray("diseases");
+
+        if (diseases.length() > 0) {
+
+            JSONObject topDisease = diseases.getJSONObject(0);
+
+            String diseaseName = topDisease.getString("name");
+            String probability = topDisease.getDouble("probability") * 100 + "%";
+
+            return "🌿 Maladie détectée : " + diseaseName +
+                    "\n📊 Probabilité : " + probability;
+        }
+
+        return "Aucune maladie détectée.";
     }
 }

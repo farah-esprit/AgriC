@@ -6,16 +6,32 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="PlantDiseaseController"
-      spacing="10" alignment="CENTER" padding="15">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.Diagnostic.PlantDiseaseController"
+      spacing="10"
+      alignment="CENTER">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
 
     <!-- Bouton pour choisir l'image -->
-    <Button fx:id="btnChooseImage" text="Choisir une image de plante" prefWidth="200"/>
+    <Button fx:id="btnChooseImage"
+            text="Choisir une image de plante"
+            prefWidth="200"/>
 
     <!-- Affichage de l'image sélectionnée -->
-    <ImageView fx:id="imageView" fitHeight="300" fitWidth="400" preserveRatio="true" />
+    <ImageView fx:id="imageView"
+               fitHeight="300"
+               fitWidth="400"
+               preserveRatio="true" />
 
-    <!-- Zone de texte pour afficher le résultat de l'analyse -->
-    <TextArea fx:id="resultArea" editable="false" wrapText="true" prefHeight="200" prefWidth="400"/>
+    <!-- Zone de texte pour afficher le résultat -->
+    <TextArea fx:id="resultArea"
+              editable="false"
+              wrapText="true"
+              prefHeight="200"
+              prefWidth="400"/>
+
 </VBox>

@@ -51,6 +51,10 @@ public class MainLayoutController {
         System.out.println("Lancement du scanner...");
          loadPage("/PlantNetView.fxml");
     }
+    public void goAnalyse(ActionEvent event) {
+        System.out.println("Lancement du scanner...");
+        loadPage("/PlantDiseaseApp.fxml");
+    }
 
     @FXML
     public void goIrrigation(ActionEvent event) {

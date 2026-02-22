@@ -31,7 +31,7 @@
                 <Button text="🌦  Météo" onAction="#handleWeather"
                         style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
 
-                <Button text="💧  Irrigation"
+                <Button text="💧 Analyse" onAction="#goAnalyse"
                         style="-fx-background-color: transparent; -fx-text-fill: #E0E0E0; -fx-alignment: CENTER_LEFT; -fx-background-radius: 12; -fx-padding: 12 15; -fx-pref-width: 210;"/>
 
                 <Button text="🩺  Diagnostics IA" onAction="#goDiagnostics"
