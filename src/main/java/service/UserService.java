@@ -8,6 +8,7 @@ import utils.MyDataBase;
 import java.sql.*;
 import java.time.LocalDateTime;
 
+
 public class UserService implements IService<User> {
 
     private Connection connection;
@@ -22,20 +23,24 @@ public class UserService implements IService<User> {
     }
 
     // ================= AJOUT =================
+    // ================= AJOUT =================
     @Override
     public void ajouter(User user) {
-        String sql = "INSERT INTO user(nom, email, motDePasse, role, etatCompte, date_creation) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user(nom, email, motDePasse, role, etatCompte, date_creation, verification_code, code_expiration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             ps.setString(1, user.getNom());
             ps.setString(2, user.getEmail());
-            // ✅ HASHER LE MOT DE PASSE
             ps.setString(3, PasswordService.hashPassword(user.getMotDePasse()));
             ps.setString(4, user.getRole().name());
             ps.setString(5, user.getEtatCompte().name());
             ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+
+            // ✅ Ajouter code et expiration
+            ps.setString(7, user.getVerificationCode());
+            ps.setTimestamp(8, user.getCodeExpiration());
 
             ps.executeUpdate();
 
@@ -44,7 +49,7 @@ public class UserService implements IService<User> {
                 user.setId(rs.getInt(1));
             }
 
-            System.out.println("✅ User ajouté avec mot de passe hashé");
+            System.out.println("✅ User ajouté avec mot de passe hashé et code de vérification");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,10 +75,12 @@ public class UserService implements IService<User> {
                             rs.getInt("user_id"),
                             rs.getString("nom"),
                             rs.getString("email"),
-                            hashedPassword,
+                            rs.getString("motDePasse"),
                             Role.valueOf(rs.getString("role")),
                             EtatCompte.valueOf(rs.getString("etatCompte")),
-                            rs.getTimestamp("date_creation").toLocalDateTime()
+                            rs.getTimestamp("date_creation") != null ? rs.getTimestamp("date_creation").toLocalDateTime() : null,
+                            rs.getString("verification_code"),
+                            rs.getTimestamp("code_expiration")
                     );
                 }
             }
@@ -84,6 +91,7 @@ public class UserService implements IService<User> {
 
         return null;
     }
+
     // ================= VÉRIFIER SI EMAIL EXISTE =================
     public boolean emailExiste(String email) {
         String sql = "SELECT COUNT(*) as total FROM user WHERE email = ?";
@@ -183,7 +191,9 @@ public class UserService implements IService<User> {
                         rs.getString("motDePasse"),
                         Role.valueOf(rs.getString("role")),
                         EtatCompte.valueOf(rs.getString("etatCompte")),
-                        dateCreation
+                        rs.getTimestamp("date_creation") != null ? rs.getTimestamp("date_creation").toLocalDateTime() : null,
+                        rs.getString("verification_code"),
+                        rs.getTimestamp("code_expiration")
                 );
             }
 
@@ -197,7 +207,7 @@ public class UserService implements IService<User> {
     // ================= MODIFIER =================
     @Override
     public void modifier(User user) {
-        String sql = "UPDATE user SET nom=?, email=?, motDePasse=?, role=?, etatCompte=? WHERE user_id=?";
+        String sql = "UPDATE user SET nom=?, email=?, motDePasse=?, role=?, etatCompte=?, verification_code=?, code_expiration=? WHERE user_id=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -207,7 +217,9 @@ public class UserService implements IService<User> {
             ps.setString(3, user.getMotDePasse());
             ps.setString(4, user.getRole().name());
             ps.setString(5, user.getEtatCompte().name());
-            ps.setInt(6, user.getId());
+            ps.setString(6, user.getVerificationCode());
+            ps.setTimestamp(7, user.getCodeExpiration());
+            ps.setInt(8, user.getId());
 
             int rowsAffected = ps.executeUpdate();
 
@@ -409,22 +421,26 @@ public class UserService implements IService<User> {
             System.out.println("❌ Erreur fermeture connexion : " + e.getMessage());
         }
     }
+    // ================= FIND BY EMAIL =================
     public User findByEmail(String email) {
         try {
-            Connection conn = MyDataBase.getConnection();
             String sql = "SELECT * FROM user WHERE email = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
+                Timestamp codeExp = rs.getTimestamp("code_expiration");
                 return new User(
                         rs.getInt("user_id"),
                         rs.getString("nom"),
                         rs.getString("email"),
                         rs.getString("motDePasse"),
                         Role.valueOf(rs.getString("role")),
-                        EtatCompte.valueOf(rs.getString("etatCompte"))
+                        EtatCompte.valueOf(rs.getString("etatCompte")),
+                        rs.getTimestamp("date_creation") != null ? rs.getTimestamp("date_creation").toLocalDateTime() : null,
+                        rs.getString("verification_code"),
+                        rs.getTimestamp("code_expiration")
                 );
             }
 
@@ -433,7 +449,24 @@ public class UserService implements IService<User> {
         }
         return null;
     }
+    // ================= VERIFY ACCOUNT =================
+    public boolean verifyAccount(String email, String code) {
+        User user = findByEmail(email);
 
+        if (user != null &&
+                user.getVerificationCode() != null &&
+                user.getVerificationCode().trim().equals(code.trim()) &&
+                user.getCodeExpiration() != null &&
+                user.getCodeExpiration().after(new Timestamp(System.currentTimeMillis()))) {
+
+            user.setEtatCompte(EtatCompte.ACTIF);
+            user.setVerificationCode(null);
+            user.setCodeExpiration(null);
+            modifier(user);
+            return true;
+        }
+        return false;
+    }
     /**
      * Met à jour le mot de passe d'un utilisateur
      */

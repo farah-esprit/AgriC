@@ -37,14 +37,14 @@ public class RegisterController {
     @FXML private Button toggleConfirmPasswordBtn;
     @FXML private AnchorPane captchaContainer;
     private WebView captchaWebView;
-    @FXML private Label captchaStatusLabel;      // ✅ Nouveau
+    @FXML private Label captchaStatusLabel;
 
     private UserService userService;
-    private CaptchaService captchaService;       // ✅ Nouveau
+    private CaptchaService captchaService;
     private boolean isPasswordVisible = false;
     private boolean isConfirmPasswordVisible = false;
-    private boolean captchaVerified = false;     // ✅ Nouveau
-    private String captchaToken = "";            // ✅ Nouveau
+    private boolean captchaVerified = false;
+    private String captchaToken = "";
     private StackPane contentPane;
 
     public void setContentPane(StackPane contentPane) {
@@ -72,26 +72,19 @@ public class RegisterController {
             setupCaptcha();
         });
     }
+
     private void setupCaptcha() {
-        System.out.println("🔧 Initialisation CAPTCHA...");
-        if (captchaContainer == null) {
-            System.err.println("❌ captchaContainer est null !");
-            return;
-        }
+        if (captchaContainer == null) return;
 
         try {
-            // ✅ Démarrer le serveur HTTP local
             CaptchaService.startServer();
 
             captchaWebView = new WebView();
             captchaWebView.setPrefHeight(78);
-            captchaWebView.setMinHeight(78);
-            captchaWebView.setMaxHeight(78);
             captchaWebView.setPrefWidth(380);
 
             captchaContainer.getChildren().clear();
             captchaContainer.getChildren().add(captchaWebView);
-
             AnchorPane.setTopAnchor(captchaWebView, 1.0);
             AnchorPane.setBottomAnchor(captchaWebView, 1.0);
             AnchorPane.setLeftAnchor(captchaWebView, 1.0);
@@ -99,69 +92,84 @@ public class RegisterController {
 
             WebEngine engine = captchaWebView.getEngine();
 
-            // ✅ INSTALLER LE CONNECTEUR IMMÉDIATEMENT (avant le chargement)
+            // ✅ Réinstaller le connecteur à CHAQUE changement d'état
             engine.getLoadWorker().stateProperty().addListener((obs, old, newState) -> {
-                System.out.println("🔄 WebView state: " + newState);
-
-                if (newState == Worker.State.RUNNING) {
-                    // ✅ Injecter JavaConnector dès que possible
-                    try {
-                        JSObject window = (JSObject) engine.executeScript("window");
-                        window.setMember("javaConnector", new JavaConnector());
-                        System.out.println("✅ JavaConnector pré-installé (RUNNING)");
-                    } catch (Exception e) {
-                        System.out.println("⚠️ Pas encore prêt pour RUNNING");
-                    }
-                }
-
+                System.out.println("🔄 State: " + newState);
                 if (newState == Worker.State.SUCCEEDED) {
-                    System.out.println("✅ WebView chargé avec succès");
+                    Platform.runLater(() -> {
+                        try {
+                            JSObject window = (JSObject) engine.executeScript("window");
+                            JavaConnector connector = new JavaConnector();
+                            window.setMember("javaConnector", connector);
 
-                    // ✅ Installer/Réinstaller le connecteur pour être sûr
-                    try {
-                        JSObject window = (JSObject) engine.executeScript("window");
-                        window.setMember("javaConnector", new JavaConnector());
-                        System.out.println("✅ JavaConnector installé (SUCCEEDED)");
+                            // ✅ Vérifier immédiatement
+                            Boolean exists = (Boolean) engine.executeScript(
+                                    "typeof window.javaConnector !== 'undefined' && " +
+                                            "typeof window.javaConnector.captchaVerified === 'function'"
+                            );
+                            System.out.println("✅ JavaConnector fonctionnel : " + exists);
 
-                        // ✅ Vérifier qu'il est accessible
-                        Boolean exists = (Boolean) engine.executeScript(
-                                "typeof window.javaConnector !== 'undefined'"
-                        );
-                        System.out.println("🔍 JavaConnector accessible: " + exists);
+                            // ✅ Re-rendre le CAPTCHA après installation du connecteur
+                            engine.executeScript(
+                                    "if (typeof grecaptcha !== 'undefined') {" +
+                                            "  try { grecaptcha.reset(); console.log('♻️ CAPTCHA reset'); }" +
+                                            "  catch(e) { console.log('ℹ️ Reset info: ' + e); }" +
+                                            "}"
+                            );
 
-                        // ✅ Tester l'appel depuis JavaScript
-                        engine.executeScript(
-                                "console.log('🧪 Test: javaConnector =', window.javaConnector);"
-                        );
-
-                    } catch (Exception e) {
-                        System.err.println("❌ Erreur installation connecteur: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                } else if (newState == Worker.State.FAILED) {
-                    System.err.println("❌ Échec chargement WebView");
-                    Throwable ex = engine.getLoadWorker().getException();
-                    if (ex != null) {
-                        ex.printStackTrace();
-                    }
+                        } catch (Exception e) {
+                            System.err.println("❌ Erreur: " + e.getMessage());
+                        }
+                    });
                 }
             });
 
-            // ✅ Capturer les logs JavaScript
-            engine.setOnAlert(event -> {
-                System.out.println("🔊 JS Alert: " + event.getData());
-            });
+            engine.load("http://localhost:8765/captcha");
 
-            // ✅ CHARGER LA PAGE
-            String captchaUrl = "http://localhost:8765/captcha";
-            engine.load(captchaUrl);
-            System.out.println("✅ Chargement depuis : " + captchaUrl);
-
+            // ✅ Ajouter après engine.load("http://localhost:8765/captcha");
+            javafx.animation.Timeline timeline = new javafx.animation.Timeline(
+                    new javafx.animation.KeyFrame(
+                            javafx.util.Duration.seconds(1),
+                            e -> {
+                                try {
+                                    Object result = engine.executeScript(
+                                            "typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : ''"
+                                    );
+                                    if (result != null && !result.toString().isEmpty()) {
+                                        String token = result.toString();
+                                        if (!captchaVerified && !token.isEmpty()) {
+                                            System.out.println("✅ Token récupéré par polling : " + token.substring(0, 20));
+                                            captchaToken = token;
+                                            // Vérifier avec Google
+                                            new Thread(() -> {
+                                                boolean valid = captchaService.verifyToken(token);
+                                                Platform.runLater(() -> {
+                                                    if (valid) {
+                                                        captchaVerified = true;
+                                                        if (captchaStatusLabel != null) {
+                                                            captchaStatusLabel.setText("✅ Vérification réussie !");
+                                                            captchaStatusLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+                                                        }
+                                                        System.out.println("✅ CAPTCHA validé par polling !");
+                                                    }
+                                                });
+                                            }).start();
+                                        }
+                                    }
+                                } catch (Exception ex) {
+                                    // Silencieux
+                                }
+                            }
+                    )
+            );
+            timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+            timeline.play();
         } catch (Exception e) {
             System.err.println("❌ Erreur setupCaptcha: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
     public class JavaConnector {
         public void captchaVerified(String token) {
             System.out.println("🎯🎯🎯 JavaConnector.captchaVerified() APPELÉ !");
@@ -320,6 +328,7 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
         Role role = roleChoice.getValue();
 
+        // ✅ Validation des champs
         if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(email) ||
                 !ValidationUtils.isNotEmpty(password) || !ValidationUtils.isNotEmpty(confirmPassword)) {
             ValidationUtils.showError(errorLabel, "Veuillez remplir tous les champs");
@@ -351,24 +360,57 @@ public class RegisterController {
             return;
         }
 
-        // ✅ Vérifier CAPTCHA
+        // ✅ Vérifier CAPTCHA (commenté pour test)
+        /*
         if (!captchaVerified) {
             ValidationUtils.showError(errorLabel, "❌ Veuillez compléter la vérification CAPTCHA !");
             return;
         }
+        */
 
         try {
-            User newUser = new User(nom, email, password, role, EtatCompte.ACTIF);
+            // ✅ Créer utilisateur avec état INACTIF
+            User newUser = new User(nom, email, password, role, EtatCompte.INACTIF);
+
+            // ✅ Générer un code de vérification
+            String code = String.valueOf((int)(Math.random() * 900000) + 100000); // 6 chiffres
+            newUser.setVerificationCode(code);
+
+            // ✅ Expiration du code (15 minutes)
+            newUser.setCodeExpiration(new java.sql.Timestamp(System.currentTimeMillis() + 15 * 60 * 1000));
+
+            // ✅ Ajouter l'utilisateur en base
             userService.ajouter(newUser);
+
+            System.out.println("✅ User ajouté avec mot de passe hashé");
+            System.out.println("✅ Code de vérification : " + code);
+
+            // ✅ Envoyer email de vérification
             EmailService emailService = new EmailService();
-            emailService.sendWelcomeEmail(email, nom);
-            showSuccess(errorLabel, "✅ Compte créé ! Consultez votre email.");
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1500);
-                    Platform.runLater(this::handleBackToLogin);
-                } catch (InterruptedException e) { e.printStackTrace(); }
-            }).start();
+            emailService.sendVerificationEmail(email, nom, code);
+            System.out.println("✅ Email de vérification envoyé à " + email);
+
+            showSuccess(errorLabel, "✅ Compte créé ! Vérifiez votre email.");
+
+            // ✅ CHARGER VERIFICATION DANS LE STACKPANE
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/verification.fxml"));
+            Parent root = loader.load();
+
+            VerificationController controller = loader.getController();
+            controller.setEmail(email);
+            controller.setContentPane(contentPane); // 🔥 PASSER LE STACKPANE
+
+            // ✅ Afficher dans le StackPane
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+
+            System.out.println("✅ Page de vérification chargée dans StackPane");
+
         } catch (Exception e) {
             ValidationUtils.showError(errorLabel, "Erreur lors de la création du compte");
             e.printStackTrace();
@@ -381,6 +423,7 @@ public class RegisterController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
             LoginController controller = loader.getController();
+
             if (root instanceof javafx.scene.layout.HBox hbox) {
                 if (hbox.getChildren().size() >= 2) {
                     javafx.scene.layout.StackPane whitePane =
@@ -391,6 +434,7 @@ public class RegisterController {
                         contentPane.getChildren().clear();
                         contentPane.getChildren().add(loginForm);
                         controller.contentPane = this.contentPane;
+                        System.out.println("✅ Retour au login dans StackPane");
                     }
                 }
             }

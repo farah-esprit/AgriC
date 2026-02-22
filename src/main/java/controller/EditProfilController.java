@@ -1,4 +1,5 @@
 package controller;
+
 import entities.Profil;
 import entities.User;
 import javafx.application.Platform;
@@ -9,12 +10,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import service.ProfilService;
+import service.SmsService;
 import utils.ValidationUtils;
 import java.io.File;
 
@@ -30,20 +31,21 @@ public class EditProfilController {
     @FXML private Label titleLabel;
     @FXML private Circle profileCircle;
     @FXML private AnchorPane contentPane;
-
+    public ProfilController profilController;
+    public Profil currentProfil;
     private User currentUser;
-    private Profil currentProfil;
     private ProfilService profilService;
-    private ProfilController profilController;
     private String selectedImagePath = "";
     private boolean isEditMode = false;
+    private SmsService smsService;
+    private boolean smsVerified = false;
 
     @FXML
     public void initialize() {
         profilService = new ProfilService();
+        smsService = new SmsService();
         if (messageLabel != null) ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
-        // ✅ Supprimé Platform.runLater avec setMaximized — inutile dans contentPane
     }
 
     public void setContentPane(AnchorPane contentPane) {
@@ -167,11 +169,79 @@ public class EditProfilController {
             return;
         }
 
+        // ✅ VÉRIFIER SI LE NUMÉRO A CHANGÉ
+        boolean phoneChanged = false;
+        if (currentProfil != null) {
+            phoneChanged = !telephone.equals(currentProfil.getTelephone());
+        } else {
+            phoneChanged = true;
+        }
+
+        // ✅ SI LE NUMÉRO A CHANGÉ → VÉRIFICATION SMS
+        if (phoneChanged && !smsVerified) {
+            ValidationUtils.showInfo(messageLabel, "📲 Envoi du code de vérification...");
+
+            // ✅ Envoyer SMS
+            boolean sent = smsService.sendVerificationCode(telephone, currentUser.getId());
+
+            if (!sent) {
+                ValidationUtils.showError(messageLabel, "❌ Erreur envoi SMS !");
+                return;
+            }
+
+            // ✅ Ouvrir popup de vérification
+            openSmsVerificationDialog(telephone);
+            return;
+        }
+
+        // ✅ SI SMS VÉRIFIÉ OU NUMÉRO INCHANGÉ → SAUVEGARDER
+        saveProfil(nom, prenom, telephone, bio);
+    }
+
+    private void openSmsVerificationDialog(String phone) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/verifySms.fxml"));
+            Parent root = loader.load();
+
+            VerifySmsController controller = loader.getController();
+            controller.setUser(currentUser);
+            controller.setPhoneNumber(phone);
+            controller.setEditProfilController(this);
+            controller.setContentPane(contentPane); // ✅ Passer le contentPane
+
+            // ✅ Charger dans le contentPane au lieu d'une nouvelle fenêtre
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(root);
+
+            AnchorPane.setTopAnchor(root, 0.0);
+            AnchorPane.setBottomAnchor(root, 0.0);
+            AnchorPane.setLeftAnchor(root, 0.0);
+            AnchorPane.setRightAnchor(root, 0.0);
+
+            System.out.println("✅ Vérification SMS chargée dans contentPane");
+
+        } catch (Exception e) {
+            ValidationUtils.showError(messageLabel, "❌ Erreur : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void onSmsVerified() {
+        smsVerified = true;
+
+        String nom = ValidationUtils.sanitize(nomField.getText());
+        String prenom = ValidationUtils.sanitize(prenomField.getText());
+        String telephone = ValidationUtils.sanitize(telephoneField.getText());
+        String bio = ValidationUtils.sanitize(bioField.getText());
+
+        saveProfil(nom, prenom, telephone, bio);
+    }
+
+    private void saveProfil(String nom, String prenom, String telephone, String bio) {
         try {
             if (!isEditMode || currentProfil == null) {
                 Profil newProfil = new Profil(bio, telephone, nom, prenom, selectedImagePath, currentUser);
                 profilService.ajouter(newProfil);
-                ValidationUtils.showSuccess(messageLabel, "Profil créé avec succès !");
+                ValidationUtils.showSuccess(messageLabel, "✅ Profil créé avec succès !");
             } else {
                 currentProfil.setNom(nom);
                 currentProfil.setPrenom(prenom);
@@ -179,14 +249,14 @@ public class EditProfilController {
                 currentProfil.setBio(bio);
                 currentProfil.setImage(selectedImagePath);
                 profilService.modifier(currentProfil);
-                ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
+                ValidationUtils.showSuccess(messageLabel, "✅ Profil modifié avec succès !");
             }
 
             if (profilController != null) profilController.refreshProfil();
 
             new Thread(() -> {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1500);
                     Platform.runLater(this::handleCancel);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -194,7 +264,7 @@ public class EditProfilController {
             }).start();
 
         } catch (Exception e) {
-            ValidationUtils.showError(messageLabel, "Erreur : " + e.getMessage());
+            ValidationUtils.showError(messageLabel, "❌ Erreur : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -225,7 +295,6 @@ public class EditProfilController {
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
 
-            // ✅ Passer le bon dashboardController selon le rôle
             if (profilController != null) {
                 if (profilController.getDashboardAgriculteurController() != null) {
                     controller.setDashboardController(profilController.getDashboardAgriculteurController());

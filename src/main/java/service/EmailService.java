@@ -6,124 +6,120 @@ import java.util.Properties;
 
 public class EmailService {
 
-    private static final String FROM_EMAIL = "agriconnect3a6@gmail.com\n";
-    private static final String PASSWORD = "ofhd nvdm stky rifc"; //
+    private static final String FROM_EMAIL = "agriconnect3a6@gmail.com";
+    private static final String PASSWORD = "ofhd nvdm stky rifc";
 
+    // 🔹 Méthode commune pour créer la session
+    private Session createSession() {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-    public boolean sendPasswordResetEmail(String toEmail, String userName, String resetCode) {
+        return Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
+            }
+        });
+    }
+
+    // 🔐 EMAIL VERIFICATION
+    public boolean sendVerificationEmail(String toEmail, String userName, String code) {
         try {
-            // Configuration SMTP Gmail
-            Properties props = new Properties();
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-            // Authentification
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
-                }
-            });
-
-            // Debug mode (optionnel - pour voir les logs détaillés)
-            session.setDebug(true);
-
-            // Créer le message
+            Session session = createSession();
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(FROM_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject("🔐 AgriConnect - Réinitialisation de mot de passe");
 
-            // Contenu HTML
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(toEmail));
+            message.setSubject("🔐 Activation de votre compte AgriConnect");
+
             String htmlContent =
-                    "<html>" +
-                            "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                            "<div style='background-color: #f5f5f5; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto;'>" +
-                            "<h2 style='color: #388e3c; text-align: center;'>🌱 AgriConnect</h2>" +
-                            "<h3>Bonjour " + userName + ",</h3>" +
-                            "<p style='font-size: 16px;'>Vous avez demandé la réinitialisation de votre mot de passe.</p>" +
-                            "<p style='font-size: 16px;'>Voici votre code de réinitialisation :</p>" +
-                            "<div style='background-color: white; padding: 25px; border-radius: 8px; text-align: center; margin: 25px 0; border: 2px solid #388e3c;'>" +
-                            "<h1 style='color: #388e3c; letter-spacing: 8px; margin: 0; font-size: 40px;'>" + resetCode + "</h1>" +
-                            "</div>" +
-                            "<p style='font-size: 14px; color: #d32f2f;'><strong>⚠️ Ce code est valable pendant 30 minutes.</strong></p>" +
-                            "<p style='font-size: 14px; color: #666;'>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>" +
-                            "<hr style='margin-top: 30px; border: none; border-top: 1px solid #ddd;'>" +
-                            "<p style='color: #999; font-size: 12px; text-align: center;'>© 2026 AgriConnect - Votre plateforme agricole</p>" +
-                            "</div>" +
-                            "</body>" +
-                            "</html>";
+                    "<html><body style='font-family: Arial; padding:20px;'>" +
+                            "<h2 style='color:#388e3c;'>🌱 Activation du compte</h2>" +
+                            "<p>Bonjour " + userName + ",</p>" +
+                            "<p>Voici votre code d'activation :</p>" +
+                            "<h1 style='color:#388e3c; letter-spacing:6px;'>" + code + "</h1>" +
+                            "<p>⏳ Valide 15 minutes</p>" +
+                            "</body></html>";
 
             message.setContent(htmlContent, "text/html; charset=utf-8");
 
-            // Envoyer
             Transport.send(message);
-
-            System.out.println("✅ Email envoyé avec succès à " + toEmail);
+            System.out.println("✅ Email de vérification envoyé à " + toEmail);
             return true;
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors de l'envoi de l'email : " + e.getMessage());
+            System.err.println("❌ Erreur email vérification : " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
+
+    // 🔐 RESET PASSWORD
+    public boolean sendPasswordResetEmail(String toEmail, String userName, String resetCode) {
+        try {
+            Session session = createSession();
+            Message message = new MimeMessage(session);
+
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(toEmail));
+            message.setSubject("🔐 AgriConnect - Réinitialisation de mot de passe");
+
+            String htmlContent =
+                    "<html><body style='font-family: Arial; padding:20px;'>" +
+                            "<h2 style='color:#388e3c;'>🌱 AgriConnect</h2>" +
+                            "<p>Bonjour " + userName + ",</p>" +
+                            "<p>Voici votre code de réinitialisation :</p>" +
+                            "<h1 style='color:#388e3c; letter-spacing:6px;'>" + resetCode + "</h1>" +
+                            "<p style='color:#d32f2f;'>⚠️ Valide 30 minutes</p>" +
+                            "</body></html>";
+
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+
+            Transport.send(message);
+            System.out.println("✅ Email reset envoyé à " + toEmail);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur reset email : " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 🌱 WELCOME EMAIL
     public boolean sendWelcomeEmail(String toEmail, String userName) {
         try {
-            Properties props = new Properties();
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
-                }
-            });
-
+            Session session = createSession();
             Message message = new MimeMessage(session);
+
             message.setFrom(new InternetAddress(FROM_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(toEmail));
             message.setSubject("🌱 Bienvenue sur AgriConnect !");
 
             String htmlContent =
-                    "<html>" +
-                            "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                            "<div style='background-color: #f5f5f5; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto;'>" +
-                            "<h2 style='color: #388e3c; text-align: center;'>🌱 Bienvenue sur AgriConnect</h2>" +
-                            "<h3>Bonjour " + userName + ",</h3>" +
-                            "<p style='font-size: 16px;'>Nous sommes ravis de vous accueillir sur <strong>AgriConnect</strong>, votre plateforme agricole !</p>" +
-                            "<div style='background-color: white; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #388e3c;'>" +
-                            "<h4 style='color: #388e3c; margin-top: 0;'>✅ Votre compte a été créé avec succès</h4>" +
-                            "<p>Vous pouvez maintenant :</p>" +
-                            "<ul>" +
-                            "<li>Gérer vos cultures</li>" +
-                            "<li>Consulter des experts</li>" +
-                            "<li>Commander des produits agricoles</li>" +
-                            "<li>Accéder à nos ressources</li>" +
-                            "</ul>" +
-                            "</div>" +
-                            "<p style='color: #999; font-size: 12px; text-align: center;'>© 2026 AgriConnect - Cultivons l'avenir ensemble 🌾</p>" +
-                            "</div>" +
-                            "</body>" +
-                            "</html>";
+                    "<html><body style='font-family: Arial; padding:20px;'>" +
+                            "<h2 style='color:#388e3c;'>Bienvenue " + userName + " 🌱</h2>" +
+                            "<p>Votre compte a été créé avec succès.</p>" +
+                            "<p>Nous sommes ravis de vous accueillir sur AgriConnect !</p>" +
+                            "</body></html>";
 
             message.setContent(htmlContent, "text/html; charset=utf-8");
-            Transport.send(message);
 
+            Transport.send(message);
             System.out.println("✅ Email de bienvenue envoyé à " + toEmail);
             return true;
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur email : " + e.getMessage());
+            System.err.println("❌ Erreur email bienvenue : " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

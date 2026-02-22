@@ -1,5 +1,6 @@
 package entities;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class User {
@@ -11,7 +12,8 @@ public class User {
     private Role role;
     private EtatCompte etatCompte;
     private LocalDateTime dateCreation;
-
+    private String verificationCode;
+    private java.sql.Timestamp codeExpiration;
     // ================= CONSTRUCTEURS =================
 
     public User() {}
@@ -37,7 +39,8 @@ public class User {
     }
 
     // Constructeur complet avec date
-    public User(int id, String nom, String email, String motDePasse, Role role, EtatCompte etatCompte, LocalDateTime dateCreation) {
+    public User(int id, String nom, String email, String motDePasse, Role role, EtatCompte etatCompte,
+                LocalDateTime dateCreation, String verificationCode, Timestamp codeExpiration) {
         this.id = id;
         this.nom = nom;
         this.email = email;
@@ -45,6 +48,8 @@ public class User {
         this.role = role;
         this.etatCompte = etatCompte;
         this.dateCreation = dateCreation;
+        this.verificationCode = verificationCode;
+        this.codeExpiration = codeExpiration;
     }
 
     // ================= GETTERS =================
@@ -106,7 +111,21 @@ public class User {
     public void setDateCreation(LocalDateTime dateCreation) {
         this.dateCreation = dateCreation;
     }
+    public String getVerificationCode() {
+        return verificationCode;
+    }
 
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public java.sql.Timestamp getCodeExpiration() {
+        return codeExpiration;
+    }
+
+    public void setCodeExpiration(java.sql.Timestamp codeExpiration) {
+        this.codeExpiration = codeExpiration;
+    }
     // ================= MÉTHODES UTILITAIRES =================
 
     @Override

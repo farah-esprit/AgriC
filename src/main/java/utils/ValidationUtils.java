@@ -1,17 +1,20 @@
 package utils;
+
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Label;
 import java.util.regex.Pattern;
+
 public class ValidationUtils {
     // Patterns de validation
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     );
 
+    // ✅ CORRIGÉ : Format tunisien +216XXXXXXXX
     private static final Pattern PHONE_PATTERN = Pattern.compile(
-            "^\\+?[0-9]{8,8}$"
+            "^\\+216[0-9]{8}$"
     );
 
     private static final Pattern NAME_PATTERN = Pattern.compile(
@@ -119,6 +122,14 @@ public class ValidationUtils {
         if (label != null) {
             label.setText("⚠️ " + message);
             label.setStyle("-fx-text-fill: #ff9800; -fx-font-weight: bold;");
+        }
+    }
+
+    // ✅ AJOUTÉ
+    public static void showInfo(Label label, String message) {
+        if (label != null) {
+            label.setText("ℹ️ " + message);
+            label.setStyle("-fx-text-fill: #2196f3; -fx-font-weight: bold;");
         }
     }
 

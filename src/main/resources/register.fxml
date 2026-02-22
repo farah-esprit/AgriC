@@ -15,8 +15,6 @@
 
 <HBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
     <children>
-        <!-- Panneau gauche vert -->
-        <StackPane style="-fx-background-color: #28a745;" HBox.hgrow="ALWAYS" />
 
         <!-- Panneau droit - Formulaire -->
         <StackPane style="-fx-background-color: white;" HBox.hgrow="ALWAYS">

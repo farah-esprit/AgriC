@@ -1,32 +1,51 @@
 package controller;
 import entities.User;
 import entities.EtatCompte;
+import entities.Role;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import service.GoogleAuthService;
 import service.UserService;
+
 public class LoginController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
     @FXML private Label errorLabel;
-    @FXML
-    StackPane contentPane;
+    @FXML StackPane contentPane;
+
+    // ✅ NOUVEAUX ÉLÉMENTS POUR GOOGLE AUTH
+    @FXML private VBox loginFormBox;           // Le formulaire de login normal
+    @FXML private VBox googleRoleBox;          // Le formulaire de sélection de rôle
+    @FXML private Label googleNameLabel;
+    @FXML private Label googleEmailLabel;
+    @FXML private ChoiceBox<Role> googleRoleChoice;
+    @FXML private Label googleErrorLabel;
+
     private UserService userService;
+    private GoogleAuthService googleAuthService;
+    private GoogleAuthService.GoogleUserInfo currentGoogleUser; // ✅ Stocker l'utilisateur Google
 
     @FXML
     public void initialize() {
         userService = new UserService();
+        googleAuthService = new GoogleAuthService();
+
+        // ✅ Initialiser le ChoiceBox des rôles
+        if (googleRoleChoice != null) {
+            googleRoleChoice.getItems().addAll(Role.AGRICULTEUR, Role.EXPERT, Role.FOURNISSEUR);
+            googleRoleChoice.setValue(Role.AGRICULTEUR);
+        }
+
         if (errorLabel != null) errorLabel.setText("");
 
         Platform.runLater(() -> {
@@ -40,22 +59,127 @@ public class LoginController {
         });
     }
 
+    // ✅ MÉTHODE : Authentification Google
+    @FXML
+    private void handleGoogleLogin() {
+        try {
+            showSuccess("🔄 Connexion avec Google en cours...");
+
+            new Thread(() -> {
+                GoogleAuthService.GoogleUserInfo googleUser = googleAuthService.authenticate();
+
+                if (googleUser != null) {
+                    Platform.runLater(() -> {
+                        // Vérifier si l'utilisateur existe déjà
+                        User existingUser = userService.findByEmail(googleUser.getEmail());
+
+                        if (existingUser != null) {
+                            // ✅ Utilisateur existe → Connexion directe
+                            showSuccess("✅ Connexion réussie ! Bienvenue " + existingUser.getNom());
+                            redirectToDashboard(existingUser);
+
+                        } else {
+                            // ❌ Utilisateur n'existe pas → 🔥 AFFICHER LE CHOICEBOX
+                            currentGoogleUser = googleUser;
+                            showGoogleRoleSelection(googleUser);
+                        }
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        showError("❌ Authentification Google annulée ou échouée");
+                    });
+                }
+            }).start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("❌ Erreur lors de l'authentification Google");
+        }
+    }
+
+    // ✅ MÉTHODE : Afficher le formulaire de sélection de rôle
+    private void showGoogleRoleSelection(GoogleAuthService.GoogleUserInfo googleUser) {
+        // Cacher le formulaire de login
+        loginFormBox.setVisible(false);
+        loginFormBox.setManaged(false);
+
+        // Afficher le formulaire de sélection de rôle
+        googleRoleBox.setVisible(true);
+        googleRoleBox.setManaged(true);
+
+        // Remplir les informations
+        googleNameLabel.setText(googleUser.getName());
+        googleEmailLabel.setText(googleUser.getEmail());
+
+        System.out.println("✅ Formulaire de sélection de rôle affiché");
+    }
+
+    // ✅ MÉTHODE : Continuer avec le rôle sélectionné
+    @FXML
+    private void handleGoogleRoleContinue() {
+        Role selectedRole = googleRoleChoice.getValue();
+
+        if (selectedRole == null) {
+            showGoogleError("❌ Veuillez sélectionner un type de compte");
+            return;
+        }
+
+        try {
+            // Créer le nouvel utilisateur
+            User newUser = new User();
+            newUser.setNom(currentGoogleUser.getName());
+            newUser.setEmail(currentGoogleUser.getEmail());
+            newUser.setMotDePasse("GOOGLE_AUTH_" + currentGoogleUser.getGoogleId());
+            newUser.setRole(selectedRole);
+            newUser.setEtatCompte(EtatCompte.ACTIF);
+
+            // Ajouter en base de données
+            userService.ajouter(newUser);
+
+            System.out.println("✅ Compte créé avec rôle : " + selectedRole);
+
+            // Rediriger vers le dashboard
+            redirectToDashboard(newUser);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showGoogleError("❌ Erreur lors de la création du compte");
+        }
+    }
+
+    // ✅ MÉTHODE : Retour au formulaire de login
+    @FXML
+    private void handleBackToLoginForm() {
+        // Afficher le formulaire de login
+        loginFormBox.setVisible(true);
+        loginFormBox.setManaged(true);
+
+        // Cacher le formulaire de sélection de rôle
+        googleRoleBox.setVisible(false);
+        googleRoleBox.setManaged(false);
+
+        // Réinitialiser
+        currentGoogleUser = null;
+        errorLabel.setText("");
+        googleErrorLabel.setText("");
+
+        System.out.println("✅ Retour au formulaire de login");
+    }
+
+    // ================= RESTE DU CODE (handleRegister, handleForgotPassword, etc.) =================
+
     @FXML
     private void handleRegister() {
         try {
-            // Charger le FXML du formulaire d'inscription
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
             Parent root = loader.load();
 
-            // Récupérer le controller de Register pour passer le StackPane
             RegisterController controller = loader.getController();
-            controller.setContentPane(this.contentPane); // ⚡ Passe le StackPane droit
+            controller.setContentPane(this.contentPane);
 
-            // Afficher le formulaire d'inscription dans le StackPane
             contentPane.getChildren().clear();
             contentPane.getChildren().add(root);
 
-            // Ancrer pour occuper tout l'espace
             AnchorPane.setTopAnchor(root, 0.0);
             AnchorPane.setBottomAnchor(root, 0.0);
             AnchorPane.setLeftAnchor(root, 0.0);
@@ -67,21 +191,19 @@ public class LoginController {
             showError("Erreur lors du chargement de la page d'inscription");
         }
     }
+
     @FXML
     private void handleForgotPassword() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/forgotPassword.fxml"));
             Parent root = loader.load();
 
-            // Passer le StackPane contentPane au controller du ForgotPassword si besoin
             ForgotPasswordController controller = loader.getController();
-            controller.setContentPane(contentPane); // ⚡ Assure-toi d'ajouter un setter dans ForgotPasswordController
+            controller.setContentPane(contentPane);
 
-            // Afficher dans le côté blanc
             contentPane.getChildren().clear();
             contentPane.getChildren().add(root);
 
-            // Ancrer pour occuper tout l'espace
             AnchorPane.setTopAnchor(root, 0.0);
             AnchorPane.setBottomAnchor(root, 0.0);
             AnchorPane.setLeftAnchor(root, 0.0);
@@ -92,6 +214,7 @@ public class LoginController {
             showError("Erreur lors du chargement de la page Mot de passe oublié");
         }
     }
+
     // ================= LOGIN AVEC VÉRIFICATION 2FA =================
     @FXML
     private void handleLogin() {
@@ -108,7 +231,6 @@ public class LoginController {
             return;
         }
 
-        // Authentification
         User user = userService.authenticate(email, password);
 
         if (user == null) {
@@ -116,29 +238,24 @@ public class LoginController {
             return;
         }
 
-        // Vérification de l'état du compte
         if (user.getEtatCompte() == EtatCompte.BLOQUE) {
             showError("❌ Votre compte est bloqué. Contactez l'administrateur.");
             return;
         }
 
-        // ✅ VÉRIFIER SI 2FA EST ACTIVÉ
         boolean twoFactorEnabled = userService.is2FAEnabled(user.getId());
 
         System.out.println("🔐 2FA activé pour " + user.getEmail() + " : " + twoFactorEnabled);
 
         if (twoFactorEnabled) {
-            // ✅ REDIRIGER VERS PAGE DE VÉRIFICATION 2FA
             System.out.println("🔐 Redirection vers vérification 2FA...");
             redirectToTwoFactorVerification(user);
         } else {
-            // Connexion réussie sans 2FA
             showSuccess("✅ Connexion réussie ! Bienvenue " + user.getNom());
             redirectToDashboard(user);
         }
     }
 
-    // ✅ NOUVELLE MÉTHODE : Redirection vers vérification 2FA
     private void redirectToTwoFactorVerification(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/verify2FA.fxml"));
@@ -146,9 +263,8 @@ public class LoginController {
 
             Verify2FAController controller = loader.getController();
             controller.setUser(user);
-            controller.setContentPane(contentPane); // ⚡ Passe le StackPane droit
+            controller.setContentPane(contentPane);
 
-            // Afficher 2FA dans le StackPane droit
             contentPane.getChildren().clear();
             contentPane.getChildren().add(root);
 
@@ -161,6 +277,7 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
     // ================= MESSAGES =================
     private void showError(String message) {
         errorLabel.setText(message);
@@ -172,7 +289,11 @@ public class LoginController {
         errorLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
     }
 
-    // ================= VALIDATION EMAIL =================
+    private void showGoogleError(String message) {
+        googleErrorLabel.setText(message);
+        googleErrorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+    }
+
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
@@ -204,7 +325,6 @@ public class LoginController {
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Scene scene = new Scene(root);
 
-            // ✅ LIER LES DIMENSIONS AVANT DE CHANGER LA SCENE
             if (root instanceof Region r) {
                 r.prefWidthProperty().bind(scene.widthProperty());
                 r.prefHeightProperty().bind(scene.heightProperty());
@@ -213,7 +333,6 @@ public class LoginController {
             stage.setScene(scene);
             stage.setTitle("AgriConnect - Dashboard " + user.getRole());
 
-            // ✅ MAXIMISER APRÈS
             javafx.application.Platform.runLater(() -> {
                 stage.setMaximized(true);
             });
