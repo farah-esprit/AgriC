@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 public class PlantDiseaseAPI {
 
-    private static final String API_KEY = "VOTRE_API_KEY_PLANTID";
+    private static final String API_KEY = "2b10RB9HZ7W4Vt0kEgqDBKuD6e";
     private static final String API_URL = "https://api.plant.id/v2/identify";
 
     public static String detectDisease(String imagePath) throws Exception {
