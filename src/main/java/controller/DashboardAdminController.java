@@ -142,24 +142,20 @@ public class DashboardAdminController {
     private void handleToggleTheme() {
         isDarkMode = !isDarkMode;
         if (isDarkMode) {
-            sidebar.setStyle("-fx-background-color: #1a1a1a;");
-            if (dashboardPane != null) dashboardPane.setStyle("-fx-background-color: #121212;");
-            if (contentPane != null) contentPane.setStyle("-fx-background-color: #121212;");
-            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);");
+            contentPane.setStyle("-fx-background-color: #1e1e1e;");
             if (themeModeText != null) themeModeText.setText("Sombre");
             if (themeToggle != null) {
-                themeToggle.setText("☀️");
-                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+                themeToggle.setText("☀");
+                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 15; -fx-cursor: hand;");
             }
         } else {
-            sidebar.setStyle("-fx-background-color: #388e3c;");
-            if (dashboardPane != null) dashboardPane.setStyle("");
-            if (contentPane != null) contentPane.setStyle("-fx-background-color: #f5f5f5;");
-            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #f7f8fc 0%, #1b5e20 100%);");
+            contentPane.setStyle("-fx-background-color: #f7f8fc;");
             if (themeModeText != null) themeModeText.setText("Clair");
             if (themeToggle != null) {
                 themeToggle.setText("🌙");
-                themeToggle.setStyle("-fx-background-color: #81c784; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15; -fx-cursor: hand;");
             }
         }
     }

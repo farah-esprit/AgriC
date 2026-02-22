@@ -1,312 +1,299 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">
+<AnchorPane minHeight="700.0" minWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">
     <children>
-        <!-- SIDEBAR -->
-        <AnchorPane fx:id="sidebar" prefWidth="250.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-background-color: #388e3c;">
+
+        <!-- ==================== SIDEBAR VERTE FIXE ==================== -->
+        <AnchorPane fx:id="sidebar" prefWidth="280.0" style="-fx-background-color: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <!-- HEADER -->
-                <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="🌱AgriConnect" textFill="#f2f2f2">
-                    <font>
-                        <Font name="System Bold" size="24.0" />
-                    </font>
-                </Label>
-                <Label layoutX="29.0" layoutY="48.0" text="Agriculteur">
-                    <font>
-                        <Font name="System Bold" size="15.0" />
-                    </font>
-                </Label>
-                <Line endX="129.6000213623047" endY="7.62939453125E-6" layoutX="115.0" layoutY="90.0" startX="-115.0" stroke="#666666" strokeWidth="2.0" />
+
+                <!-- LOGO ET TITRE -->
+                <VBox layoutX="30.0" layoutY="30.0" spacing="5.0">
+                    <children>
+                        <Label text="AgriConnect" textFill="#388e3c">
+                            <font><Font name="System Bold" size="26.0" /></font>
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="47.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/logo1.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                        </Label>
+                        <Label text="Agriculteur" textFill="#000000d9">
+                            <font><Font name="System Bold" size="15.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <Line endX="132.79998779296875" endY="7.62939453125E-6" layoutX="141.0" layoutY="105.0" startX="-140.00001525878906" startY="7.62939453125E-6" stroke="#a6a5a533" strokeWidth="1.5" />
 
                 <!-- MENU NAVIGATION -->
-                <VBox layoutX="10.0" layoutY="110.0" prefHeight="350.0" prefWidth="230.0" spacing="5.0">
+                <VBox layoutX="20.0" layoutY="120.0" prefWidth="240.0" spacing="8.0">
                     <children>
+
                         <!-- Accueil -->
-                        <HBox fx:id="menuHome" onMouseClicked="#handleShowHome" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;">
+                        <HBox fx:id="menuHome" alignment="CENTER_LEFT" onMouseClicked="#handleShowHome" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand; -fx-background-color: #e7e3e3; -fx-background-radius: 12; -fx-padding: 0 20;">
                             <children>
-                                <Label text="🏠" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="🏠" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label prefHeight="33.0" prefWidth="51.0" text="Accueil" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="15.0" />
-                                    </font>
+                                <Label text="Accueil" textFill="#388e3c">
+                                    <font><Font name="System Bold" size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
 
                         <!-- Ma culture -->
-                        <HBox fx:id="menuCulture" onMouseClicked="#handleShowCulture" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 8;">
+                        <HBox fx:id="menuCulture" alignment="CENTER_LEFT" onMouseClicked="#handleShowCulture" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                                      -fx-background-radius: 12;                                      -fx-padding: 0 20;">
                             <children>
-                                <Label text="🌾" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="🌾" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label prefHeight="38.0" prefWidth="71.0" text="Ma culture" textFill="WHITE">
-                                    <font>
-                                        <Font size="15.0" />
-                                    </font>
+                                <Label text="Ma culture" textFill="#388e3cf2">
+                                    <font><Font size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
 
                         <!-- Problèmes -->
-                        <HBox fx:id="menuProblems" onMouseClicked="#handleShowProblems" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 8;">
+                        <HBox fx:id="menuProblemes" alignment="CENTER_LEFT" onMouseClicked="#handleShowProblems" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                                      -fx-background-radius: 12;                                      -fx-padding: 0 20;">
                             <children>
-                                <Label text="⚠" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="⚠" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label prefHeight="38.0" prefWidth="70.0" text="Problèmes" textFill="WHITE">
-                                    <font>
-                                        <Font size="15.0" />
-                                    </font>
+                                <Label text="Problèmes" textFill="#388e3cf2">
+                                    <font><Font size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
 
                         <!-- Forum -->
-                        <HBox fx:id="menuForum" onMouseClicked="#handleShowForum" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 8;">
+                        <HBox fx:id="menuForum" alignment="CENTER_LEFT" onMouseClicked="#handleShowForum" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                                      -fx-background-radius: 12;                                      -fx-padding: 0 20;">
                             <children>
-                                <Label text="💬" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="💬" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label prefHeight="32.0" prefWidth="43.0" text="Forum" textFill="WHITE">
-                                    <font>
-                                        <Font size="15.0" />
-                                    </font>
+                                <Label text="Forum" textFill="#388e3cf2">
+                                    <font><Font size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
 
                         <!-- Réclamation -->
-                        <HBox fx:id="menuReclamation" onMouseClicked="#handleShowReclamation" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 8;">
+                        <HBox fx:id="menuReclamation" alignment="CENTER_LEFT" onMouseClicked="#handleShowReclamation" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                                      -fx-background-radius: 12;                                      -fx-padding: 0 20;">
                             <children>
-                                <Label text="📝" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="🐾" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label prefHeight="36.0" prefWidth="82.0" text="Réclamation" textFill="WHITE">
-                                    <font>
-                                        <Font size="15.0" />
-                                    </font>
+                                <Label text="Réclamation" textFill="#388e3cf2">
+                                    <font><Font size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
 
                         <!-- Boutique -->
-                        <HBox fx:id="menuBoutique" onMouseClicked="#handleShowBoutique" prefHeight="45.0" prefWidth="220.0" spacing="10.0" style="-fx-cursor: hand; -fx-background-radius: 8;">
+                        <HBox fx:id="menuBoutique" alignment="CENTER_LEFT" onMouseClicked="#handleShowBoutique" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                                      -fx-background-radius: 12;                                      -fx-padding: 0 20;">
                             <children>
-                                <Label text="🛒" textFill="WHITE">
-                                    <font>
-                                        <Font size="22.0" />
-                                    </font>
+                                <Label text="🛒" textFill="#388e3c">
+                                    <font><Font size="22.0" /></font>
                                 </Label>
-                                <Label text="Boutique" textFill="WHITE">
-                                    <font>
-                                        <Font size="15.0" />
-                                    </font>
+                                <Label text="Boutique" textFill="#388e3cf2">
+                                    <font><Font size="14.0" /></font>
                                 </Label>
                             </children>
-                            <padding>
-                                <Insets left="12.0" />
-                            </padding>
                         </HBox>
+
                     </children>
                 </VBox>
 
-                <!-- LIGNE SÉPARATION BAS -->
-                <Line endX="135.40000915527344" layoutX="115.0" layoutY="530.0" startX="-115.0" stroke="#666666" strokeWidth="2.0" />
+                <Line endX="149.04995727539062" layoutX="123.0" layoutY="602.0" startX="-120.0" stroke="#a6a5a533" strokeWidth="1.5" />
 
-                <!-- ZONE INFÉRIEURE : DARK MODE + PROFIL + DÉCONNEXION -->
-                <VBox alignment="CENTER" layoutX="10.0" layoutY="545.0" prefHeight="145.0" prefWidth="230.0" spacing="8.0">
+                <!-- PROFIL + DÉCONNEXION (EN BAS) -->
+                <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
                     <children>
-                        <!-- DARK/LIGHT MODE TOGGLE -->
-                        <HBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 20; -fx-padding: 8;">
+      
+                        <!-- Profil -->
+                        <HBox alignment="CENTER_LEFT" onMouseClicked="#handleGoToProfil" prefHeight="58.0" prefWidth="240.0" spacing="12.0" style="-fx-cursor: hand;                                      -fx-background-color: rgba(255,255,255,0.15);                                      -fx-background-radius: 12;                                      -fx-padding: 12;">
                             <children>
-                                <Label fx:id="themeModeIcon" text="☀" textFill="WHITE">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
-                                <ToggleButton fx:id="themeToggle" onAction="#handleToggleTheme" prefHeight="30.0" prefWidth="55.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;" text="🌙">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </ToggleButton>
-                                <Label fx:id="themeModeText" text="Clair" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="11.0" />
-                                    </font>
-                                </Label>
+                        <ImageView fitHeight="43.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/hm.png" />
+                           </image>
+                        </ImageView>
+                                <VBox>
+                                    <children>
+                                        <Label fx:id="userNameLabel" text="Agriculteur">
+                                            <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                                        </Label>
+                                        <Label text="Profil" textFill="#000000bf">
+                                            <font>
+                                    <Font size="10.0" />
+                                 </font>
+                                        </Label>
+                                    </children>
+                                </VBox>
                             </children>
                         </HBox>
 
-                        <!-- BOUTON PROFIL -->
-                        <Button onAction="#handleGoToProfil" prefHeight="40.0" prefWidth="210.0" style="-fx-background-color: rgba(255,255,255,0.3); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: white; -fx-border-width: 1; -fx-border-radius: 8;" text="👤 Mon Profil">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Button>
-
-                        <!-- BOUTON DÉCONNEXION -->
-                        <Button onAction="#handleLogout" prefHeight="40.0" prefWidth="210.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="🚪 Déconnexion" textFill="WHITE">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Button>
                     </children>
                 </VBox>
+
             </children>
         </AnchorPane>
 
-        <!-- ZONE PRINCIPALE -->
-        <AnchorPane fx:id="contentPane" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" style="-fx-background-color: #f5f5f5;">
+        <!-- ==================== CONTENT PANE DYNAMIQUE ==================== -->
+        <AnchorPane fx:id="contentPane" style="-fx-background-color: #e7e3e3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="280.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <!-- HEADER -->
-                <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="20.0" prefHeight="70.0" prefWidth="790.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+
+                <!-- HEADER BAR -->
+                <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="25.0" spacing="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="25.0">
                     <children>
-                        <VBox>
+
+                        <!-- Titre avec date -->
+                        <VBox HBox.hgrow="ALWAYS">
                             <children>
-                                <Label fx:id="welcomeLabel" text="Bienvenue, Agriculteur !" textFill="#2e7d32">
-                                    <font>
-                                        <Font name="System Bold" size="20.0" />
-                                    </font>
+                                <Label fx:id="welcomeLabel" text="Bienvenue, Agriculteur !" textFill="#1e293b">
+                                    <font><Font name="System Bold" size="28.0" /></font>
                                 </Label>
-                                <Label fx:id="dateLabel" text="Lundi 17 Février 2026" textFill="#757575">
-                                    <font>
-                                        <Font size="13.0" />
-                                    </font>
+                                <Label fx:id="dateLabel" text="samedi 21 février 2026" textFill="#64748b">
+                                    <font><Font size="13.0" /></font>
                                 </Label>
                             </children>
                         </VBox>
-                    </children>
-                    <padding>
-                        <Insets left="25.0" />
-                    </padding>
-                </HBox>
 
-                <!-- CONTENU PRINCIPAL -->
-                <VBox alignment="CENTER" layoutX="30.0" layoutY="120.0" prefHeight="550.0" prefWidth="790.0" spacing="25.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3);">
-                    <children>
-                        <Label text="👨‍🌾">
-                            <font>
-                                <Font size="70.0" />
-                            </font>
-                        </Label>
-                        <Label text="Votre Espace Agricole" textFill="#2e7d32">
-                            <font>
-                                <Font name="System Bold" size="28.0" />
-                            </font>
-                        </Label>
-                        <Label text="Gérez vos cultures, consultez des experts et commandez vos produits" textAlignment="CENTER" textFill="#757575" wrapText="true">
-                            <font>
-                                <Font size="15.0" />
-                            </font>
-                        </Label>
-
-                        <!-- STATISTIQUES -->
-                        <HBox alignment="CENTER" spacing="25.0">
+                        <!-- Recherche -->
+                        <HBox alignment="CENTER" prefWidth="300.0" spacing="10.0" style="-fx-background-color: white;                                      -fx-background-radius: 25;                                      -fx-padding: 10 20;                                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
                             <children>
-                                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="180.0" spacing="8.0" style="-fx-background-color: linear-gradient(to bottom right, #66bb6a, #43a047); -fx-background-radius: 12;">
-                                    <children>
-                                        <Label text="🌾">
-                                            <font>
-                                                <Font size="30.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Mes Cultures">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="0 actives" textFill="#000000cc">
-                                            <font>
-                                                <Font size="12.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-
-                                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="180.0" spacing="8.0" style="-fx-background-color: #acacac; -fx-background-radius: 12;">
-                                    <children>
-                                        <Label text="⚠">
-                                            <font>
-                                                <Font size="30.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Problèmes">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="0 signalés" textFill="#000000cc">
-                                            <font>
-                                                <Font size="12.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
-
-                                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="180.0" spacing="8.0" style="-fx-background-color: #f5f5dc; -fx-background-radius: 12;">
-                                    <children>
-                                        <Label text="🛒">
-                                            <font>
-                                                <Font size="30.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="Commandes">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                        <Label text="0 en cours" textFill="#000000cc">
-                                            <font>
-                                                <Font size="12.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </VBox>
+                                <Label text="🔍" textFill="#94a3b8">
+                                    <font><Font size="16.0" /></font>
+                                </Label>
+                                <Label text="Rechercher..." textFill="#cbd5e1">
+                                    <font><Font size="13.0" /></font>
+                                </Label>
                             </children>
                         </HBox>
+
+                        <!-- Icônes notifications -->
+                        <HBox alignment="CENTER" spacing="15.0">
+                            <children>
+                              <ToggleButton fx:id="themeToggle" onAction="#handleToggleTheme" prefHeight="45.0" prefWidth="46.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-min-width: 45; -fx-min-height: 45; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);" text="🌙">
+                                  <font>
+                              <Font size="14.0" />
+                           </font>
+                              </ToggleButton>
+                                <Button style="-fx-background-color: white;                                                -fx-cursor: hand;                                                -fx-background-radius: 50%;                                                -fx-min-width: 45;                                                -fx-min-height: 45;                                                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);" text="🔔">
+                                    <font><Font size="18.0" /></font>
+                                </Button>
+      
+                              <!-- Déconnexion -->
+                              <Button onMouseClicked="#handleLogout" prefHeight="45.0" prefWidth="42.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 12;" text="⏻">
+                                  <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                              </Button>
+                            </children>
+                        </HBox>
+
                     </children>
-                    <padding>
-                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
-                    </padding>
+                </HBox>
+
+                <!-- MESSAGE LABEL -->
+                <Label fx:id="messageLabel" layoutX="30.0" layoutY="115.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="115.0">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Label>
+
+                <!-- ==================== CONTENU PRINCIPAL ==================== -->
+
+                <!-- CARTE CENTRALE "VOTRE ESPACE AGRICOLE" -->
+                <VBox alignment="CENTER" layoutX="38.0" layoutY="103.0" spacing="30.0" style="-fx-background-color: white;                              -fx-background-radius: 20;                              -fx-padding: 50;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 5);" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="22.799999999999955" AnchorPane.topAnchor="103.0">
+                    <children>
+
+                        <!-- Icône agriculteur -->
+                        <Label text="👨‍🌾" textFill="#2e7d32">
+                            <font><Font size="80.0" /></font>
+                        </Label>
+
+                        <!-- Titre -->
+                        <Label text="Votre Espace Agricole" textFill="#388e3c">
+                            <font><Font name="System Bold" size="32.0" /></font>
+                        </Label>
+
+                        <!-- Description -->
+                        <Label text="Gérez vos cultures, consultez des experts et commandez vos produits" textAlignment="CENTER" textFill="#64748b">
+                            <font><Font size="15.0" /></font>
+                        </Label>
+
+                        <!-- CARTES D'ACTION -->
+                        <HBox alignment="CENTER" spacing="20.0">
+                            <children>
+
+                                <!-- Mes Cultures -->
+                                <VBox alignment="CENTER" prefWidth="200.0" spacing="15.0" style="-fx-background-color: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);                                              -fx-background-radius: 15;                                              -fx-padding: 30;                                              -fx-cursor: hand;                                              -fx-effect: dropshadow(gaussian, rgba(76, 175, 80, 0.3), 12, 0, 0, 5);">
+                                    <children>
+                                        <Label text="🌾" textFill="#388e3c">
+                                            <font><Font size="45.0" /></font>
+                                        </Label>
+                                        <Label text="Mes Cultures" textAlignment="CENTER">
+                                            <font><Font name="System Bold" size="16.0" /></font>
+                                        </Label>
+                                        <Label fx:id="culturesCountLabel" text="0 actives" textFill="#000000e5">
+                                            <font><Font size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+
+                                <!-- Problèmes -->
+                                <VBox alignment="CENTER" prefWidth="200.0" spacing="15.0" style="-fx-background-color: linear-gradient(135deg, #9e9e9e 0%, #616161 100%);                                              -fx-background-radius: 15;                                              -fx-padding: 30;                                              -fx-cursor: hand;                                              -fx-effect: dropshadow(gaussian, rgba(97, 97, 97, 0.3), 12, 0, 0, 5);">
+                                    <children>
+                                        <Label text="⚠" textFill="#a19e6e">
+                                            <font><Font size="45.0" /></font>
+                                        </Label>
+                                        <Label text="Problèmes" textAlignment="CENTER">
+                                            <font><Font name="System Bold" size="16.0" /></font>
+                                        </Label>
+                                        <Label fx:id="problemsCountLabel" text="0 signalés" textFill="#000000e5">
+                                            <font><Font size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+
+                                <!-- Commandes -->
+                                <VBox alignment="CENTER" prefWidth="200.0" spacing="15.0" style="-fx-background-color: linear-gradient(135deg, #fdd835 0%, #f9a825 100%);                                              -fx-background-radius: 15;                                              -fx-padding: 30;                                              -fx-cursor: hand;                                              -fx-effect: dropshadow(gaussian, rgba(249, 168, 37, 0.3), 12, 0, 0, 5);">
+                                    <children>
+                                        <Label text="🛒" textFill="#b16e6e">
+                                            <font><Font size="45.0" /></font>
+                                        </Label>
+                                        <Label text="Commandes" textAlignment="CENTER">
+                                            <font><Font name="System Bold" size="16.0" /></font>
+                                        </Label>
+                                        <Label fx:id="ordersCountLabel" text="0 en cours" textFill="#000000e5">
+                                            <font><Font size="12.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+
+                            </children>
+                        </HBox>
+
+                    </children>
                 </VBox>
+
             </children>
         </AnchorPane>
+
     </children>
 </AnchorPane>

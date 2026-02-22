@@ -8,102 +8,90 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.LoginController">
+<HBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
 
     <!-- Côté gauche vert fixe -->
-    <StackPane HBox.hgrow="ALWAYS" style="-fx-background-color: #28a745;">
+    <StackPane style="-fx-background-color: #e7e3e3;" HBox.hgrow="ALWAYS">
         <VBox alignment="CENTER" spacing="30.0">
             <ImageView fitHeight="350.0" fitWidth="320.0" preserveRatio="true">
                 <image>
                     <Image url="@images/logo.png" />
                 </image>
             </ImageView>
-            <Label text="Connecter. Cultiver. Réussir." textFill="WHITE" alignment="CENTER">
-                <font><Font name="System Bold" size="18.0"/></font>
+            <Label alignment="CENTER" text="Connecter. Cultiver. Réussir.">
+                <font>
+               <Font name="System Bold" size="18.0" />
+            </font>
             </Label>
         </VBox>
     </StackPane>
 
     <!-- Côté droit blanc dynamique -->
-    <StackPane fx:id="contentPane" HBox.hgrow="ALWAYS" style="-fx-background-color: white;">
-        <VBox alignment="CENTER" spacing="22.0" maxWidth="360.0">
+    <StackPane fx:id="contentPane" style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" maxWidth="360.0" spacing="22.0">
             <padding>
-                <Insets top="40.0" bottom="40.0" left="20.0" right="20.0"/>
+                <Insets bottom="40.0" left="20.0" right="20.0" top="40.0" />
             </padding>
 
             <!-- Icône utilisateur -->
-            <Label text="👤" textFill="#28a745" alignment="CENTER">
-                <font><Font size="80.0"/></font>
+            <Label alignment="CENTER" text="👤">
+                <font><Font size="80.0" /></font>
             </Label>
 
             <!-- Titre -->
-            <Label text="Connexion" alignment="CENTER">
-                <font><Font name="System Bold" size="28.0"/></font>
+            <Label alignment="CENTER" text="Sign In">
+                <font><Font name="System Bold" size="28.0" /></font>
             </Label>
 
             <!-- Champ Email -->
             <VBox spacing="6.0">
                 <Label text="Email" textFill="#333333">
-                    <font><Font size="14.0"/></font>
+                    <font><Font size="14.0" /></font>
                 </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
-                    <Label text="📧"><font><Font size="18.0"/></font></Label>
-                    <TextField fx:id="emailField" promptText="Entrez votre email"
-                               style="-fx-background-color: transparent; -fx-border-width: 0;"
-                               HBox.hgrow="ALWAYS"><font><Font size="14.0"/></font></TextField>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                    <Label text="📧"><font><Font size="18.0" /></font></Label>
+                    <TextField fx:id="emailField" promptText="Entrez votre email" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"><font><Font size="14.0" /></font></TextField>
                 </HBox>
             </VBox>
 
             <!-- Champ Mot de passe -->
             <VBox spacing="6.0">
                 <Label text="Mot de passe" textFill="#333333">
-                    <font><Font size="14.0"/></font>
+                    <font><Font size="14.0" /></font>
                 </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0"
-                      style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
-                    <Label text="🔒"><font><Font size="18.0"/></font></Label>
-                    <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe"
-                                   style="-fx-background-color: transparent; -fx-border-width: 0;"
-                                   HBox.hgrow="ALWAYS"><font><Font size="14.0"/></font></PasswordField>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #28a745; -fx-border-width: 0 0 2 0; -fx-padding: 8;">
+                    <Label text="🔒"><font><Font size="18.0" /></font></Label>
+                    <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"><font><Font size="14.0" /></font></PasswordField>
                 </HBox>
             </VBox>
 
+            <!-- Mot de passe oublié -->
+            <Button onAction="#handleForgotPassword" style="-fx-background-color: transparent; -fx-text-fill: #388e3c; -fx-cursor: hand; -fx-underline: true;" text="Mot de passe oublié ?">
+                <font><Font size="13.0" /></font>
+            </Button>
+
             <!-- Bouton Se connecter -->
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin"
-                    prefHeight="50.0" prefWidth="220.0" text="Se connecter" textFill="WHITE"
-                    style="-fx-background-color: #28a745; -fx-background-radius: 25; -fx-cursor: hand;">
-                <font><Font name="System Bold" size="16.0"/></font>
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: #28a745; -fx-background-radius: 25; -fx-cursor: hand;" text="Login" textFill="WHITE">
+                <font><Font name="System Bold" size="16.0" /></font>
             </Button>
 
             <!-- Label erreur -->
-            <Label fx:id="errorLabel" alignment="CENTER" prefWidth="300.0"
-                   textAlignment="CENTER" textFill="RED" wrapText="true">
-                <font><Font size="12.0"/></font>
+            <Label fx:id="errorLabel" alignment="CENTER" prefWidth="300.0" textAlignment="CENTER" textFill="RED" wrapText="true">
+                <font><Font size="12.0" /></font>
             </Label>
 
             <!-- Lien inscription -->
             <HBox alignment="CENTER" spacing="5.0">
                 <Label text="Vous n'avez pas de compte ?" textFill="#666666">
-                    <font><Font size="13.0"/></font>
+                    <font><Font size="13.0" /></font>
                 </Label>
-                <Hyperlink onAction="#handleRegister" text="Créer un compte" textFill="#28a745"
-                           style="-fx-underline: true;"><font><Font size="13.0"/></font></Hyperlink>
+                <Hyperlink onAction="#handleRegister" style="-fx-underline: true;" text="Créer un compte" textFill="#28a745"><font><Font size="13.0" /></font></Hyperlink>
             </HBox>
-
-            <!-- Mot de passe oublié -->
-            <Button onAction="#handleForgotPassword" text="Mot de passe oublié ?"
-                    style="-fx-background-color: transparent; -fx-text-fill: #388e3c; -fx-cursor: hand; -fx-underline: true;">
-                <font><Font size="13.0"/></font>
-            </Button>
         </VBox>
     </StackPane>
 

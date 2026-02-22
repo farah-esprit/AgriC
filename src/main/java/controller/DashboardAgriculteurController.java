@@ -1,9 +1,10 @@
 package controller;
 
 import entities.User;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -11,25 +12,31 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class DashboardAgriculteurController {
 
     @FXML private Label welcomeLabel;
     @FXML private Label dateLabel;
-    @FXML private Label themeModeIcon;
+    @FXML private Label userNameLabel;
     @FXML private Label themeModeText;
+    @FXML private Label messageLabel;
+    @FXML private Label culturesCountLabel;
+    @FXML private Label problemsCountLabel;
+    @FXML private Label ordersCountLabel;
     @FXML private AnchorPane contentPane;
     @FXML private AnchorPane sidebar;
     @FXML private ToggleButton themeToggle;
-
     @FXML private HBox menuHome;
     @FXML private HBox menuCulture;
-    @FXML private HBox menuProblems;
+    @FXML private HBox menuProblemes;
     @FXML private HBox menuForum;
     @FXML private HBox menuReclamation;
     @FXML private HBox menuBoutique;
@@ -37,7 +44,9 @@ public class DashboardAgriculteurController {
     private User currentUser;
     private boolean isDarkMode = false;
 
-    // ================= INITIALISATION =================
+    // ✅ Sauvegarder le contenu original
+    private List<Node> originalDashboardContent;
+
     @FXML
     public void initialize() {
         System.out.println("✅ DashboardAgriculteurController initialisé");
@@ -48,157 +57,143 @@ public class DashboardAgriculteurController {
             dateLabel.setText(today.format(formatter));
         }
 
-        if (menuHome != null) {
-            setActiveMenu(menuHome);
-        }
+        if (menuHome != null) setActiveMenu(menuHome);
 
-        // ✅ LIER LES DIMENSIONS À LA SCENE (COMME DANS LOGIN)
-        javafx.application.Platform.runLater(() -> {
+        if (culturesCountLabel != null) culturesCountLabel.setText("0 actives");
+        if (problemsCountLabel != null) problemsCountLabel.setText("0 signalés");
+        if (ordersCountLabel != null) ordersCountLabel.setText("0 en cours");
+
+        Platform.runLater(() -> {
             try {
-                // Récupérer l'AnchorPane racine
                 AnchorPane root = (AnchorPane) sidebar.getParent();
-
                 if (root != null && root.getScene() != null) {
                     Stage stage = (Stage) root.getScene().getWindow();
                     Scene scene = root.getScene();
-
-                    // ✅ MAXIMISER LA FENÊTRE
                     stage.setMaximized(true);
-
-                    // ✅ LIER LES DIMENSIONS (COMME DANS LOGIN)
-                    if (scene.getRoot() instanceof javafx.scene.layout.Region r) {
+                    if (scene.getRoot() instanceof Region r) {
                         r.prefWidthProperty().bind(scene.widthProperty());
                         r.prefHeightProperty().bind(scene.heightProperty());
                     }
-
-                    System.out.println("✅ Dashboard étendu à la fenêtre maximisée");
                 }
+
+                // ✅ Sauvegarder le contenu original du contentPane
+                if (contentPane != null) {
+                    originalDashboardContent = new ArrayList<>(contentPane.getChildren());
+                    System.out.println("✅ Contenu original sauvegardé : " + originalDashboardContent.size() + " éléments");
+                }
+
             } catch (Exception e) {
-                System.err.println("⚠️ Erreur : " + e.getMessage());
-                e.printStackTrace();
+                System.err.println("⚠️ Erreur initialisation : " + e.getMessage());
             }
         });
     }
 
-    // ================= DÉFINIR L'UTILISATEUR =================
     public void setUser(User user) {
         this.currentUser = user;
-        if (welcomeLabel != null) {
-            welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
-        }
+        if (welcomeLabel != null) welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
+        if (userNameLabel != null) userNameLabel.setText(user.getNom());
         System.out.println("✅ Utilisateur : " + user.getNom());
     }
 
-    // ================= DARK MODE =================
     @FXML
     private void handleToggleTheme() {
         isDarkMode = !isDarkMode;
-
         if (isDarkMode) {
-            sidebar.setStyle("-fx-background-color: #1a1a1a;");
-            contentPane.setStyle("-fx-background-color: #121212;");
-
-            if (themeModeIcon != null) themeModeIcon.setText("🌙");
+            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);");
+            contentPane.setStyle("-fx-background-color: #1e1e1e;");
             if (themeModeText != null) themeModeText.setText("Sombre");
             if (themeToggle != null) {
-                themeToggle.setText("☀️");
-                themeToggle.setStyle("-fx-background-color: #424242; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white;");
+                themeToggle.setText("☀");
+                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 15; -fx-cursor: hand;");
             }
         } else {
-            sidebar.setStyle("-fx-background-color: #388e3c;");
-            contentPane.setStyle("-fx-background-color: #f5f5f5;");
-
-            if (themeModeIcon != null) themeModeIcon.setText("☀️");
+            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);");
+            contentPane.setStyle("-fx-background-color: #f7f8fc;");
             if (themeModeText != null) themeModeText.setText("Clair");
             if (themeToggle != null) {
                 themeToggle.setText("🌙");
-                themeToggle.setStyle("-fx-background-color: white; -fx-background-radius: 15; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #388e3c;");
+                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15; -fx-cursor: hand;");
             }
         }
     }
 
-    // ================= MENU ACTIF =================
     private void setActiveMenu(HBox activeMenuItem) {
-        if (menuHome != null) menuHome.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-        if (menuCulture != null) menuCulture.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-        if (menuProblems != null) menuProblems.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-        if (menuForum != null) menuForum.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-        if (menuReclamation != null) menuReclamation.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-        if (menuBoutique != null) menuBoutique.setStyle("-fx-background-radius: 8; -fx-cursor: hand;");
-
-        if (activeMenuItem != null) {
-            activeMenuItem.setStyle("-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8; -fx-cursor: hand;");
-        }
+        String defaultStyle = "-fx-cursor: hand; -fx-background-radius: 12; -fx-padding: 0 20;";
+        String activeStyle = "-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.25); -fx-background-radius: 12; -fx-padding: 0 20;";
+        if (menuHome != null) menuHome.setStyle(defaultStyle);
+        if (menuCulture != null) menuCulture.setStyle(defaultStyle);
+        if (menuProblemes != null) menuProblemes.setStyle(defaultStyle);
+        if (menuForum != null) menuForum.setStyle(defaultStyle);
+        if (menuReclamation != null) menuReclamation.setStyle(defaultStyle);
+        if (menuBoutique != null) menuBoutique.setStyle(defaultStyle);
+        if (activeMenuItem != null) activeMenuItem.setStyle(activeStyle);
     }
 
-    // ================= NAVIGATION MENU =================
     @FXML
     private void handleShowHome(MouseEvent event) {
         setActiveMenu(menuHome);
+        reloadDashboardContent();
         System.out.println("📍 Accueil");
     }
 
     @FXML
     private void handleShowCulture(MouseEvent event) {
         setActiveMenu(menuCulture);
+        showMessage("🌾 Fonctionnalité Ma culture en développement");
         System.out.println("📍 Ma culture");
     }
 
     @FXML
     private void handleShowProblems(MouseEvent event) {
-        setActiveMenu(menuProblems);
+        setActiveMenu(menuProblemes);
+        showMessage("⚠️ Fonctionnalité Problèmes en développement");
         System.out.println("📍 Problèmes");
     }
 
     @FXML
     private void handleShowForum(MouseEvent event) {
         setActiveMenu(menuForum);
+        showMessage("💬 Fonctionnalité Forum en développement");
         System.out.println("📍 Forum");
     }
 
     @FXML
     private void handleShowReclamation(MouseEvent event) {
         setActiveMenu(menuReclamation);
+        showMessage("🐾 Fonctionnalité Réclamation en développement");
         System.out.println("📍 Réclamation");
     }
 
     @FXML
     private void handleShowBoutique(MouseEvent event) {
         setActiveMenu(menuBoutique);
+        showMessage("🛒 Fonctionnalité Boutique en développement");
         System.out.println("📍 Boutique");
     }
 
-    // ================= PROFIL =================
     @FXML
-    private void handleGoToProfil(ActionEvent event) {
+    private void handleGoToProfil(MouseEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
             Parent profilContent = loader.load();
-
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
-            controller.setDashboardController(this);
-
-            // ✅ CHARGER DANS LE CONTENTPANE (pas changer de Stage)
+            controller.setDashboardController(this); // ✅ passe le bon controller
             contentPane.getChildren().clear();
             contentPane.getChildren().add(profilContent);
-
             AnchorPane.setTopAnchor(profilContent, 0.0);
             AnchorPane.setBottomAnchor(profilContent, 0.0);
             AnchorPane.setLeftAnchor(profilContent, 0.0);
             AnchorPane.setRightAnchor(profilContent, 0.0);
-
             System.out.println("✅ Profil chargé dans contentPane");
-
         } catch (Exception e) {
             System.err.println("❌ Erreur chargement profil");
             e.printStackTrace();
         }
     }
 
-    // ================= DÉCONNEXION =================
     @FXML
-    private void handleLogout(ActionEvent event) {
+    private void handleLogout(MouseEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
             Stage stage = (Stage) contentPane.getScene().getWindow();
@@ -214,20 +209,30 @@ public class DashboardAgriculteurController {
         }
     }
 
-    // ================= RECHARGER L'ACCUEIL =================
-    public void reloadDashboard() {
-        // Vider le contentPane pour afficher le contenu par défaut du dashboard
-        if (contentPane != null && contentPane.getChildren().size() > 5) {
-            // Si on a chargé du contenu externe, on le vide
-            while (contentPane.getChildren().size() > 5) {
-                contentPane.getChildren().remove(contentPane.getChildren().size() - 1);
-            }
+
+    // ✅ Restaurer le contenu original du dashboard
+    public void reloadDashboardContent() {
+        if (contentPane != null && originalDashboardContent != null) {
+            contentPane.getChildren().clear();
+            contentPane.getChildren().addAll(originalDashboardContent);
+            System.out.println("✅ Dashboard agriculteur restauré");
         }
         setActiveMenu(menuHome);
-        System.out.println("✅ Dashboard rechargé");
+        if (messageLabel != null) messageLabel.setText("");
     }
 
-    // ================= GETTERS =================
+    // Garde l'ancienne méthode pour compatibilité
+    public void reloadDashboard() {
+        reloadDashboardContent();
+    }
+
+    private void showMessage(String message) {
+        if (messageLabel != null) {
+            messageLabel.setText(message);
+            messageLabel.setStyle("-fx-text-fill: #2e7d32; -fx-font-weight: bold;");
+        }
+    }
+
     public User getCurrentUser() {
         return currentUser;
     }

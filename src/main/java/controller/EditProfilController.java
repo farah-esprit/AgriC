@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import service.ProfilService;
 import utils.ValidationUtils;
 import java.io.File;
-import java.io.IOException;
 
 public class EditProfilController {
     @FXML private TextField nomField;
@@ -42,81 +41,60 @@ public class EditProfilController {
     @FXML
     public void initialize() {
         profilService = new ProfilService();
-        ValidationUtils.clearMessage(messageLabel);
+        if (messageLabel != null) ValidationUtils.clearMessage(messageLabel);
         setupRealTimeValidation();
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) messageLabel.getScene().getWindow();
-            stage.setMaximized(true);
-            Scene scene = stage.getScene();
-            if (scene.getRoot() instanceof Region r) {
-                r.prefWidthProperty().bind(scene.widthProperty());
-                r.prefHeightProperty().bind(scene.heightProperty());
-            }
-        });
+        // ✅ Supprimé Platform.runLater avec setMaximized — inutile dans contentPane
     }
+
     public void setContentPane(AnchorPane contentPane) {
         this.contentPane = contentPane;
     }
-    // ================= VALIDATION EN TEMPS RÉEL =================
+
     private void setupRealTimeValidation() {
-        nomField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidName(newVal)) {
-                    ValidationUtils.setFieldSuccess(nomField);
-                } else {
-                    ValidationUtils.setFieldError(nomField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(nomField);
-            }
-        });
+        if (nomField != null) {
+            nomField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.trim().isEmpty()) {
+                    if (ValidationUtils.isValidName(newVal)) ValidationUtils.setFieldSuccess(nomField);
+                    else ValidationUtils.setFieldError(nomField);
+                } else ValidationUtils.resetFieldStyle(nomField);
+            });
+        }
 
-        prenomField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidName(newVal)) {
-                    ValidationUtils.setFieldSuccess(prenomField);
-                } else {
-                    ValidationUtils.setFieldError(prenomField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(prenomField);
-            }
-        });
+        if (prenomField != null) {
+            prenomField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.trim().isEmpty()) {
+                    if (ValidationUtils.isValidName(newVal)) ValidationUtils.setFieldSuccess(prenomField);
+                    else ValidationUtils.setFieldError(prenomField);
+                } else ValidationUtils.resetFieldStyle(prenomField);
+            });
+        }
 
-        telephoneField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidPhone(newVal)) {
-                    ValidationUtils.setFieldSuccess(telephoneField);
-                } else {
-                    ValidationUtils.setFieldError(telephoneField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(telephoneField);
-            }
-        });
+        if (telephoneField != null) {
+            telephoneField.textProperty().addListener((obs, old, newVal) -> {
+                if (!newVal.trim().isEmpty()) {
+                    if (ValidationUtils.isValidPhone(newVal)) ValidationUtils.setFieldSuccess(telephoneField);
+                    else ValidationUtils.setFieldError(telephoneField);
+                } else ValidationUtils.resetFieldStyle(telephoneField);
+            });
+        }
     }
 
     public void setProfilController(ProfilController controller) {
-
         this.profilController = controller;
     }
 
     public void setUser(User user) {
-
         this.currentUser = user;
     }
 
     public void setProfil(Profil profil) {
         this.currentProfil = profil;
-
         if (profil != null) {
-            nomField.setText(profil.getNom());
-            prenomField.setText(profil.getPrenom());
-            telephoneField.setText(profil.getTelephone());
-            bioField.setText(profil.getBio());
+            if (nomField != null) nomField.setText(profil.getNom());
+            if (prenomField != null) prenomField.setText(profil.getPrenom());
+            if (telephoneField != null) telephoneField.setText(profil.getTelephone());
+            if (bioField != null) bioField.setText(profil.getBio());
             selectedImagePath = profil.getImage();
-
             if (selectedImagePath != null && !selectedImagePath.isEmpty()) {
                 loadProfileImage(selectedImagePath);
             }
@@ -125,7 +103,6 @@ public class EditProfilController {
 
     public void setMode(boolean isEdit) {
         this.isEditMode = isEdit;
-
         if (isEdit) {
             if (titleLabel != null) titleLabel.setText("✏️ Modifier mon profil");
             if (saveButton != null) saveButton.setText("💾 Enregistrer");
@@ -144,9 +121,7 @@ public class EditProfilController {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
-
         File file = fileChooser.showOpenDialog(uploadButton.getScene().getWindow());
-
         if (file != null) {
             selectedImagePath = file.getAbsolutePath();
             loadProfileImage(selectedImagePath);
@@ -161,7 +136,7 @@ public class EditProfilController {
                 profileCircle.setFill(new ImagePattern(image));
             }
         } catch (Exception e) {
-            ValidationUtils.showError(messageLabel, "Erreur de chargement de l'image");
+            if (messageLabel != null) ValidationUtils.showError(messageLabel, "Erreur de chargement de l'image");
         }
     }
 
@@ -172,24 +147,20 @@ public class EditProfilController {
         String telephone = ValidationUtils.sanitize(telephoneField.getText());
         String bio = ValidationUtils.sanitize(bioField.getText());
 
-        // Validation
         if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(prenom) || !ValidationUtils.isNotEmpty(telephone)) {
             ValidationUtils.showError(messageLabel, "Veuillez remplir tous les champs obligatoires (*)");
             return;
         }
-
         if (!ValidationUtils.isValidName(nom)) {
             ValidationUtils.showError(messageLabel, "Format de nom invalide");
             ValidationUtils.setFieldError(nomField);
             return;
         }
-
         if (!ValidationUtils.isValidName(prenom)) {
             ValidationUtils.showError(messageLabel, "Format de prénom invalide");
             ValidationUtils.setFieldError(prenomField);
             return;
         }
-
         if (!ValidationUtils.isValidPhone(telephone)) {
             ValidationUtils.showError(messageLabel, "Format de téléphone invalide (ex: +216XXXXXXXX)");
             ValidationUtils.setFieldError(telephoneField);
@@ -198,40 +169,25 @@ public class EditProfilController {
 
         try {
             if (!isEditMode || currentProfil == null) {
-                // CRÉATION
-                Profil newProfil = new Profil(
-                        bio,
-                        telephone,
-                        nom,
-                        prenom,
-                        selectedImagePath,
-                        currentUser
-                );
-
+                Profil newProfil = new Profil(bio, telephone, nom, prenom, selectedImagePath, currentUser);
                 profilService.ajouter(newProfil);
                 ValidationUtils.showSuccess(messageLabel, "Profil créé avec succès !");
-
             } else {
-                // MODIFICATION
                 currentProfil.setNom(nom);
                 currentProfil.setPrenom(prenom);
                 currentProfil.setTelephone(telephone);
                 currentProfil.setBio(bio);
                 currentProfil.setImage(selectedImagePath);
-
                 profilService.modifier(currentProfil);
                 ValidationUtils.showSuccess(messageLabel, "Profil modifié avec succès !");
             }
 
-            if (profilController != null) {
-                profilController.refreshProfil();
-            }
+            if (profilController != null) profilController.refreshProfil();
 
-            // Fermer après 1 seconde
             new Thread(() -> {
                 try {
                     Thread.sleep(1000);
-                    javafx.application.Platform.runLater(() -> handleCancel());
+                    Platform.runLater(this::handleCancel);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -246,27 +202,21 @@ public class EditProfilController {
     @FXML
     private void handleDeleteProfil() {
         if (currentProfil == null) return;
-
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
         confirmation.setHeaderText("Supprimer le profil ?");
         confirmation.setContentText("Cette action est irréversible.");
-
         if (confirmation.showAndWait().get() == ButtonType.OK) {
             try {
                 profilService.supprimer(currentProfil.getId());
-
-                if (profilController != null) {
-                    profilController.refreshProfil();
-                }
-
+                if (profilController != null) profilController.refreshProfil();
                 handleCancel();
-
             } catch (Exception e) {
                 ValidationUtils.showError(messageLabel, "Erreur : " + e.getMessage());
             }
         }
     }
+
     private void redirectToProfil() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
@@ -275,30 +225,35 @@ public class EditProfilController {
             ProfilController controller = loader.getController();
             controller.setUser(currentUser);
 
-            // Si tu utilises DashboardController pour navigation
+            // ✅ Passer le bon dashboardController selon le rôle
             if (profilController != null) {
-                controller.setDashboardController(profilController.getDashboardController());
+                if (profilController.getDashboardAgriculteurController() != null) {
+                    controller.setDashboardController(profilController.getDashboardAgriculteurController());
+                } else if (profilController.getDashboardExpertController() != null) {
+                    controller.setDashboardController(profilController.getDashboardExpertController());
+                } else if (profilController.getDashboardFournisseurController() != null) {
+                    controller.setDashboardController(profilController.getDashboardFournisseurController());
+                }
             }
 
-            // Charger dans le même contentPane
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(profilContent);
-
-            AnchorPane.setTopAnchor(profilContent, 0.0);
-            AnchorPane.setBottomAnchor(profilContent, 0.0);
-            AnchorPane.setLeftAnchor(profilContent, 0.0);
-            AnchorPane.setRightAnchor(profilContent, 0.0);
-
-            System.out.println("✅ Retour au profil");
+            if (contentPane != null) {
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(profilContent);
+                AnchorPane.setTopAnchor(profilContent, 0.0);
+                AnchorPane.setBottomAnchor(profilContent, 0.0);
+                AnchorPane.setLeftAnchor(profilContent, 0.0);
+                AnchorPane.setRightAnchor(profilContent, 0.0);
+                System.out.println("✅ Retour au profil");
+            }
 
         } catch (Exception e) {
             System.err.println("❌ Erreur retour profil");
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleCancel() {
         redirectToProfil();
     }
-
 }

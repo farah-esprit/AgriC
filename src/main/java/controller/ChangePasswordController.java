@@ -18,8 +18,13 @@ public class ChangePasswordController {
 
     private User currentUser;
     private UserService userService;
-    private DashboardAdminController dashboardController;
     private AnchorPane contentPane;
+
+    // ✅ Pour admin
+    private DashboardAdminController dashboardController;
+
+    // ✅ Pour agriculteur/expert/fournisseur
+    private ProfilController profilController;
 
     @FXML
     public void initialize() {
@@ -31,12 +36,18 @@ public class ChangePasswordController {
         this.currentUser = user;
     }
 
+    public void setContentPane(AnchorPane contentPane) {
+        this.contentPane = contentPane;
+    }
+
+    // ✅ Setter admin
     public void setDashboardController(DashboardAdminController controller) {
         this.dashboardController = controller;
     }
 
-    public void setContentPane(AnchorPane contentPane) {
-        this.contentPane = contentPane;
+    // ✅ Setter utilisateur normal
+    public void setProfilController(ProfilController controller) {
+        this.profilController = controller;
     }
 
     @FXML
@@ -61,7 +72,6 @@ public class ChangePasswordController {
         boolean success = userService.changerMotDePasse(currentUser.getId(), ancien, nouveau);
         if (success) {
             showSuccess("✅ Mot de passe changé avec succès !");
-            // Retour au profil après 1.5 secondes
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
@@ -82,30 +92,60 @@ public class ChangePasswordController {
 
     private void retournerAuProfil() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
-            Parent root = loader.load();
-            ProfilAdminController controller = loader.getController();
-            controller.setUser(currentUser);
-            controller.setDashboardController(dashboardController);
+            if (dashboardController != null) {
+                // ✅ Cas ADMIN → retour profilAdmin.fxml
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+                Parent root = loader.load();
+                ProfilAdminController controller = loader.getController();
+                controller.setUser(currentUser);
+                controller.setDashboardController(dashboardController);
+                chargerDansContentPane(root);
 
+            } else if (profilController != null) {
+                // ✅ Cas AGRICULTEUR/EXPERT/FOURNISSEUR → retour profil.fxml
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+                Parent root = loader.load();
+                ProfilController controller = loader.getController();
+                controller.setUser(currentUser);
+
+                // ✅ Passer le bon dashboardController selon le rôle
+                if (profilController.getDashboardAgriculteurController() != null) {
+                    controller.setDashboardController(profilController.getDashboardAgriculteurController());
+                } else if (profilController.getDashboardExpertController() != null) {
+                    controller.setDashboardController(profilController.getDashboardExpertController());
+                } else if (profilController.getDashboardFournisseurController() != null) {
+                    controller.setDashboardController(profilController.getDashboardFournisseurController());
+                }
+
+                chargerDansContentPane(root);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void chargerDansContentPane(Parent root) {
+        if (contentPane != null) {
             contentPane.getChildren().clear();
             contentPane.getChildren().add(root);
             AnchorPane.setTopAnchor(root, 0.0);
             AnchorPane.setBottomAnchor(root, 0.0);
             AnchorPane.setLeftAnchor(root, 0.0);
             AnchorPane.setRightAnchor(root, 0.0);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void showError(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        if (messageLabel != null) {
+            messageLabel.setText(message);
+            messageLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        }
     }
 
     private void showSuccess(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+        if (messageLabel != null) {
+            messageLabel.setText(message);
+            messageLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+        }
     }
 }

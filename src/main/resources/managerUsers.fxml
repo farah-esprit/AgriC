@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane style="-fx-background-color: #f8f9fa;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ManageUsersController">
+<AnchorPane style="-fx-background-color: #e7e3e3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ManageUsersController">
     <children>
 
         <!-- ==================== EN-TÊTE MODERNE ==================== -->
@@ -33,7 +33,7 @@
                 <Label HBox.hgrow="ALWAYS" />
 
                 <!-- Bouton Ajouter -->
-                <Button onAction="#handleAddUser" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: linear-gradient(to right, #6366f1, #8b5cf6);                                -fx-text-fill: white;                                -fx-cursor: hand;                                -fx-background-radius: 10;                                -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 10, 0, 0, 4);" text="➕ Nouvel utilisateur">
+                <Button onAction="#handleAddUser" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: linear-gradient(to right, #6366f1, #8b5cf6);                                -fx-text-fill: white;                                -fx-cursor: hand;                                -fx-background-radius: 10;                                -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 10, 0, 0, 4);" text="Nouvel utilisateur">
                     <font><Font name="System Bold" size="13.0" /></font>
                 </Button>
             </children>

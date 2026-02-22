@@ -3,6 +3,7 @@ import entities.EtatCompte;
 import entities.Role;
 import entities.User;
 import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,11 +12,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
+import service.CaptchaService;
 import service.EmailService;
 import service.UserService;
 import utils.ValidationUtils;
-
 import static utils.ValidationUtils.showSuccess;
 
 public class RegisterController {
@@ -31,17 +35,26 @@ public class RegisterController {
     @FXML private Button registerButton;
     @FXML private Button togglePasswordBtn;
     @FXML private Button toggleConfirmPasswordBtn;
+    @FXML private AnchorPane captchaContainer;
+    private WebView captchaWebView;
+    @FXML private Label captchaStatusLabel;      // ✅ Nouveau
+
     private UserService userService;
+    private CaptchaService captchaService;       // ✅ Nouveau
     private boolean isPasswordVisible = false;
     private boolean isConfirmPasswordVisible = false;
+    private boolean captchaVerified = false;     // ✅ Nouveau
+    private String captchaToken = "";            // ✅ Nouveau
     private StackPane contentPane;
 
     public void setContentPane(StackPane contentPane) {
         this.contentPane = contentPane;
     }
+
     @FXML
     public void initialize() {
         userService = new UserService();
+        captchaService = new CaptchaService();
         roleChoice.getItems().addAll(Role.AGRICULTEUR, Role.EXPERT, Role.FOURNISSEUR);
         roleChoice.setValue(Role.AGRICULTEUR);
         bindPasswordFields();
@@ -55,53 +68,163 @@ public class RegisterController {
                 r.prefWidthProperty().bind(scene.widthProperty());
                 r.prefHeightProperty().bind(scene.heightProperty());
             }
+            // ✅ Charger le CAPTCHA après initialisation
+            setupCaptcha();
         });
     }
-    // ================= SYNCHRONISATION MOT DE PASSE =================
+    private void setupCaptcha() {
+        System.out.println("🔧 Initialisation CAPTCHA...");
+        if (captchaContainer == null) {
+            System.err.println("❌ captchaContainer est null !");
+            return;
+        }
+
+        try {
+            // ✅ Démarrer le serveur HTTP local
+            CaptchaService.startServer();
+
+            captchaWebView = new WebView();
+            captchaWebView.setPrefHeight(78);
+            captchaWebView.setMinHeight(78);
+            captchaWebView.setMaxHeight(78);
+            captchaWebView.setPrefWidth(380);
+
+            captchaContainer.getChildren().clear();
+            captchaContainer.getChildren().add(captchaWebView);
+
+            AnchorPane.setTopAnchor(captchaWebView, 1.0);
+            AnchorPane.setBottomAnchor(captchaWebView, 1.0);
+            AnchorPane.setLeftAnchor(captchaWebView, 1.0);
+            AnchorPane.setRightAnchor(captchaWebView, 1.0);
+
+            WebEngine engine = captchaWebView.getEngine();
+
+            // ✅ INSTALLER LE CONNECTEUR IMMÉDIATEMENT (avant le chargement)
+            engine.getLoadWorker().stateProperty().addListener((obs, old, newState) -> {
+                System.out.println("🔄 WebView state: " + newState);
+
+                if (newState == Worker.State.RUNNING) {
+                    // ✅ Injecter JavaConnector dès que possible
+                    try {
+                        JSObject window = (JSObject) engine.executeScript("window");
+                        window.setMember("javaConnector", new JavaConnector());
+                        System.out.println("✅ JavaConnector pré-installé (RUNNING)");
+                    } catch (Exception e) {
+                        System.out.println("⚠️ Pas encore prêt pour RUNNING");
+                    }
+                }
+
+                if (newState == Worker.State.SUCCEEDED) {
+                    System.out.println("✅ WebView chargé avec succès");
+
+                    // ✅ Installer/Réinstaller le connecteur pour être sûr
+                    try {
+                        JSObject window = (JSObject) engine.executeScript("window");
+                        window.setMember("javaConnector", new JavaConnector());
+                        System.out.println("✅ JavaConnector installé (SUCCEEDED)");
+
+                        // ✅ Vérifier qu'il est accessible
+                        Boolean exists = (Boolean) engine.executeScript(
+                                "typeof window.javaConnector !== 'undefined'"
+                        );
+                        System.out.println("🔍 JavaConnector accessible: " + exists);
+
+                        // ✅ Tester l'appel depuis JavaScript
+                        engine.executeScript(
+                                "console.log('🧪 Test: javaConnector =', window.javaConnector);"
+                        );
+
+                    } catch (Exception e) {
+                        System.err.println("❌ Erreur installation connecteur: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else if (newState == Worker.State.FAILED) {
+                    System.err.println("❌ Échec chargement WebView");
+                    Throwable ex = engine.getLoadWorker().getException();
+                    if (ex != null) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            // ✅ Capturer les logs JavaScript
+            engine.setOnAlert(event -> {
+                System.out.println("🔊 JS Alert: " + event.getData());
+            });
+
+            // ✅ CHARGER LA PAGE
+            String captchaUrl = "http://localhost:8765/captcha";
+            engine.load(captchaUrl);
+            System.out.println("✅ Chargement depuis : " + captchaUrl);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur setupCaptcha: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public class JavaConnector {
+        public void captchaVerified(String token) {
+            System.out.println("🎯🎯🎯 JavaConnector.captchaVerified() APPELÉ !");
+            System.out.println("📥 Token reçu : " + token.substring(0, 30) + "...");
+
+            Platform.runLater(() -> {
+                captchaToken = token;
+                System.out.println("✅ Token stocké dans captchaToken");
+
+                // Vérifier le token avec Google
+                new Thread(() -> {
+                    System.out.println("🔄 Démarrage de la vérification avec Google...");
+                    boolean valid = captchaService.verifyToken(token);
+
+                    Platform.runLater(() -> {
+                        if (valid) {
+                            captchaVerified = true;
+                            System.out.println("✅✅✅ CAPTCHA VÉRIFIÉ ET VALIDÉ !");
+
+                            if (captchaStatusLabel != null) {
+                                captchaStatusLabel.setText("✅ Vérification réussie !");
+                                captchaStatusLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+                            }
+                        } else {
+                            captchaVerified = false;
+                            System.out.println("❌❌❌ CAPTCHA INVALIDE !");
+
+                            if (captchaStatusLabel != null) {
+                                captchaStatusLabel.setText("❌ Vérification échouée");
+                                captchaStatusLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+                            }
+                        }
+                    });
+                }).start();
+            });
+        }
+    }
+
     private void bindPasswordFields() {
-        // Synchroniser passwordField et passwordTextField
         passwordField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.equals(passwordTextField.getText())) {
-                passwordTextField.setText(newVal);
-            }
+            if (!newVal.equals(passwordTextField.getText())) passwordTextField.setText(newVal);
         });
-
         passwordTextField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.equals(passwordField.getText())) {
-                passwordField.setText(newVal);
-            }
+            if (!newVal.equals(passwordField.getText())) passwordField.setText(newVal);
         });
-
-        // Synchroniser confirmPasswordField et confirmPasswordTextField
         confirmPasswordField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.equals(confirmPasswordTextField.getText())) {
-                confirmPasswordTextField.setText(newVal);
-            }
+            if (!newVal.equals(confirmPasswordTextField.getText())) confirmPasswordTextField.setText(newVal);
         });
-
         confirmPasswordTextField.textProperty().addListener((obs, old, newVal) -> {
-            if (!newVal.equals(confirmPasswordField.getText())) {
-                confirmPasswordField.setText(newVal);
-            }
+            if (!newVal.equals(confirmPasswordField.getText())) confirmPasswordField.setText(newVal);
         });
     }
 
-    // ================= TOGGLE VISIBILITÉ MOT DE PASSE =================
     @FXML
     private void togglePasswordVisibility() {
         isPasswordVisible = !isPasswordVisible;
-
         if (isPasswordVisible) {
-            passwordTextField.setVisible(true);
-            passwordTextField.setManaged(true);
-            passwordField.setVisible(false);
-            passwordField.setManaged(false);
+            passwordTextField.setVisible(true); passwordTextField.setManaged(true);
+            passwordField.setVisible(false); passwordField.setManaged(false);
             togglePasswordBtn.setText("🙈");
         } else {
-            passwordField.setVisible(true);
-            passwordField.setManaged(true);
-            passwordTextField.setVisible(false);
-            passwordTextField.setManaged(false);
+            passwordField.setVisible(true); passwordField.setManaged(true);
+            passwordTextField.setVisible(false); passwordTextField.setManaged(false);
             togglePasswordBtn.setText("👁️");
         }
     }
@@ -109,55 +232,32 @@ public class RegisterController {
     @FXML
     private void toggleConfirmPasswordVisibility() {
         isConfirmPasswordVisible = !isConfirmPasswordVisible;
-
         if (isConfirmPasswordVisible) {
-            confirmPasswordTextField.setVisible(true);
-            confirmPasswordTextField.setManaged(true);
-            confirmPasswordField.setVisible(false);
-            confirmPasswordField.setManaged(false);
+            confirmPasswordTextField.setVisible(true); confirmPasswordTextField.setManaged(true);
+            confirmPasswordField.setVisible(false); confirmPasswordField.setManaged(false);
             toggleConfirmPasswordBtn.setText("🙈");
         } else {
-            confirmPasswordField.setVisible(true);
-            confirmPasswordField.setManaged(true);
-            confirmPasswordTextField.setVisible(false);
-            confirmPasswordTextField.setManaged(false);
+            confirmPasswordField.setVisible(true); confirmPasswordField.setManaged(true);
+            confirmPasswordTextField.setVisible(false); confirmPasswordTextField.setManaged(false);
             toggleConfirmPasswordBtn.setText("👁️");
         }
     }
 
-    // ================= VALIDATION EN TEMPS RÉEL =================
     private void setupRealTimeValidation() {
-        // Validation du nom
         nomField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidName(newVal)) {
-                    ValidationUtils.setFieldSuccess(nomField);
-                } else {
-                    ValidationUtils.setFieldError(nomField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(nomField);
-            }
+                if (ValidationUtils.isValidName(newVal)) ValidationUtils.setFieldSuccess(nomField);
+                else ValidationUtils.setFieldError(nomField);
+            } else ValidationUtils.resetFieldStyle(nomField);
         });
-
-        // Validation de l'email
         emailField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.trim().isEmpty()) {
-                if (ValidationUtils.isValidEmail(newVal)) {
-                    ValidationUtils.setFieldSuccess(emailField);
-                } else {
-                    ValidationUtils.setFieldError(emailField);
-                }
-            } else {
-                ValidationUtils.resetFieldStyle(emailField);
-            }
+                if (ValidationUtils.isValidEmail(newVal)) ValidationUtils.setFieldSuccess(emailField);
+                else ValidationUtils.setFieldError(emailField);
+            } else ValidationUtils.resetFieldStyle(emailField);
         });
-
-        // Validation mot de passe (sur les deux champs)
         passwordField.textProperty().addListener((obs, oldVal, newVal) -> validatePassword(newVal));
         passwordTextField.textProperty().addListener((obs, oldVal, newVal) -> validatePassword(newVal));
-
-        // Validation confirmation
         confirmPasswordField.textProperty().addListener((obs, oldVal, newVal) -> validateConfirmPassword(newVal));
         confirmPasswordTextField.textProperty().addListener((obs, oldVal, newVal) -> validateConfirmPassword(newVal));
     }
@@ -171,7 +271,7 @@ public class RegisterController {
             } else if (ValidationUtils.isValidPassword(password)) {
                 ValidationUtils.setFieldError(passwordField);
                 ValidationUtils.setFieldError(passwordTextField);
-                showPasswordStrength("⚠️ Mot de passe faible - Ajoutez majuscule, minuscule et chiffre", "#ff9800");
+                showPasswordStrength("⚠️ Mot de passe faible", "#ff9800");
             } else {
                 ValidationUtils.setFieldError(passwordField);
                 ValidationUtils.setFieldError(passwordTextField);
@@ -200,7 +300,6 @@ public class RegisterController {
         }
     }
 
-    // ================= AFFICHER LA FORCE DU MOT DE PASSE =================
     private void showPasswordStrength(String message, String color) {
         if (passwordStrengthLabel != null) {
             passwordStrengthLabel.setText(message);
@@ -210,12 +309,9 @@ public class RegisterController {
     }
 
     private void hidePasswordStrength() {
-        if (passwordStrengthLabel != null) {
-            passwordStrengthLabel.setVisible(false);
-        }
+        if (passwordStrengthLabel != null) passwordStrengthLabel.setVisible(false);
     }
 
-    // ================= INSCRIPTION =================
     @FXML
     private void handleRegister() {
         String nom = ValidationUtils.sanitize(nomField.getText());
@@ -224,122 +320,82 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
         Role role = roleChoice.getValue();
 
-        // Validation des champs vides
         if (!ValidationUtils.isNotEmpty(nom) || !ValidationUtils.isNotEmpty(email) ||
                 !ValidationUtils.isNotEmpty(password) || !ValidationUtils.isNotEmpty(confirmPassword)) {
             ValidationUtils.showError(errorLabel, "Veuillez remplir tous les champs");
             return;
         }
-
-        // Validation du nom
         if (!ValidationUtils.isValidName(nom)) {
-            ValidationUtils.showError(errorLabel, "Le nom doit contenir entre 2 et 50 caractères (lettres uniquement)");
+            ValidationUtils.showError(errorLabel, "Nom invalide");
             ValidationUtils.setFieldError(nomField);
             return;
         }
-
-        // Validation de l'email
         if (!ValidationUtils.isValidEmail(email)) {
             ValidationUtils.showError(errorLabel, "Format d'email invalide");
             ValidationUtils.setFieldError(emailField);
             return;
         }
-
-        // Vérifier si l'email existe
         if (userService.emailExiste(email)) {
             ValidationUtils.showError(errorLabel, "Cet email est déjà utilisé");
             ValidationUtils.setFieldError(emailField);
             return;
         }
-
-        // Validation mot de passe minimum 8 caractères
         if (!ValidationUtils.isValidPassword(password)) {
-            ValidationUtils.showError(errorLabel, "Le mot de passe doit contenir au moins 8 caractères");
+            ValidationUtils.showError(errorLabel, "Minimum 8 caractères");
             ValidationUtils.setFieldError(passwordField);
-            ValidationUtils.setFieldError(passwordTextField);
             return;
         }
-
-        // Vérification mot de passe fort (avertissement)
-        if (!ValidationUtils.isStrongPassword(password)) {
-            ValidationUtils.showWarning(errorLabel, "⚠️ Mot de passe faible : Ajoutez majuscule, minuscule et chiffre pour plus de sécurité");
-        }
-
-        // Vérification de la confirmation
         if (!password.equals(confirmPassword)) {
             ValidationUtils.showError(errorLabel, "Les mots de passe ne correspondent pas");
             ValidationUtils.setFieldError(confirmPasswordField);
-            ValidationUtils.setFieldError(confirmPasswordTextField);
             return;
         }
 
-        // Créer l'utilisateur
+        // ✅ Vérifier CAPTCHA
+        if (!captchaVerified) {
+            ValidationUtils.showError(errorLabel, "❌ Veuillez compléter la vérification CAPTCHA !");
+            return;
+        }
+
         try {
             User newUser = new User(nom, email, password, role, EtatCompte.ACTIF);
             userService.ajouter(newUser);
-
-            // ✅ ENVOYER EMAIL DE BIENVENUE
             EmailService emailService = new EmailService();
             emailService.sendWelcomeEmail(email, nom);
-
             showSuccess(errorLabel, "✅ Compte créé ! Consultez votre email.");
-            // Redirection après 1.5 secondes
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
-                    javafx.application.Platform.runLater(() -> handleBackToLogin());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    Platform.runLater(this::handleBackToLogin);
+                } catch (InterruptedException e) { e.printStackTrace(); }
             }).start();
-
         } catch (Exception e) {
             ValidationUtils.showError(errorLabel, "Erreur lors de la création du compte");
             e.printStackTrace();
         }
-
     }
 
     @FXML
     private void handleBackToLogin() {
         try {
-            // ✅ CHARGER LE FXML COMPLET
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
-            Parent root = loader.load(); // C'est un HBox
-
-            // ✅ RÉCUPÉRER LE CONTROLLER
+            Parent root = loader.load();
             LoginController controller = loader.getController();
-
-            // ✅ EXTRAIRE LE VBOX DU FORMULAIRE (qui est dans le 2ème enfant du HBox)
             if (root instanceof javafx.scene.layout.HBox hbox) {
-                // Le HBox contient 2 StackPane : [0] = vert, [1] = blanc
                 if (hbox.getChildren().size() >= 2) {
-                    javafx.scene.layout.StackPane whitePane = (javafx.scene.layout.StackPane) hbox.getChildren().get(1);
-
-                    // Le StackPane blanc contient le VBox du formulaire
+                    javafx.scene.layout.StackPane whitePane =
+                            (javafx.scene.layout.StackPane) hbox.getChildren().get(1);
                     if (whitePane.getChildren().size() > 0) {
                         javafx.scene.Node loginForm = whitePane.getChildren().get(0);
-
-                        // ✅ RETIRER LE FORMULAIRE DU STACKPANE BLANC
                         whitePane.getChildren().remove(loginForm);
-
-                        // ✅ METTRE LE FORMULAIRE DANS NOTRE CONTENTPANE
                         contentPane.getChildren().clear();
                         contentPane.getChildren().add(loginForm);
-
-                        // ✅ PASSER LE CONTENTPANE AU CONTROLLER
                         controller.contentPane = this.contentPane;
-
-                        System.out.println("✅ Formulaire de login extrait et affiché");
                     }
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            if (errorLabel != null) {
-                errorLabel.setText("Erreur lors du retour au login");
-            }
         }
     }
 }
