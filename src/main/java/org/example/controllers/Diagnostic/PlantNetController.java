@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 public class PlantNetController {
 
-    private static final String API_KEY = "2b10RB9HZ7W4Vt0kEgqDBKuD6e";
+    private static final String API_KEY = "2b1013bPwXrIUOLLDVyFiH3xvu";
     private File selectedFile;
 
     @FXML
@@ -61,7 +61,6 @@ public class PlantNetController {
         speciesLabel.setText("");
 
         Task<Void> task = new Task<>() {
-
             @Override
             protected Void call() {
 
@@ -70,28 +69,27 @@ public class PlantNetController {
                 try {
 
                     String boundary = "===" + System.currentTimeMillis() + "===";
-
-                    URL url = new URL(
-                            "https://my-api.plantnet.org/v2/identify/all?api-key="
-                                    + API_KEY
-                    );
-
+                    URL url = new URL("https://my-api.plantnet.org/v2/identify/all");
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type",
-                            "multipart/form-data; boundary=" + boundary);
+
+                    // ✅ Headers importants
+                    conn.setRequestProperty("Authorization", "Api-Key " + API_KEY);
+                    conn.setRequestProperty("User-Agent", "JavaFX PlantNet Client");
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
                     OutputStream output = conn.getOutputStream();
-                    PrintWriter writer = new PrintWriter(
-                            new OutputStreamWriter(output, "UTF-8"), true);
+                    PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, "UTF-8"), true);
 
+                    // 🔹 Type mime
                     String mimeType = Files.probeContentType(selectedFile.toPath());
                     if (mimeType == null) mimeType = "application/octet-stream";
 
-                    // ==== Envoi image ====
+                    // 🔹 Envoi de l'image avec le champ "images[]"
                     writer.append("--").append(boundary).append("\r\n");
-                    writer.append("Content-Disposition: form-data; name=\"images\"; filename=\"")
+                    writer.append("Content-Disposition: form-data; name=\"images[]\"; filename=\"")
                             .append(selectedFile.getName()).append("\"\r\n");
                     writer.append("Content-Type: ").append(mimeType).append("\r\n\r\n");
                     writer.flush();
@@ -109,51 +107,33 @@ public class PlantNetController {
                     writer.append("--").append(boundary).append("--").append("\r\n");
                     writer.close();
 
-                    // ==== Lire réponse ====
+                    // 🔹 Lecture de la réponse
                     int responseCode = conn.getResponseCode();
-
                     InputStream stream = (responseCode >= 200 && responseCode < 300)
                             ? conn.getInputStream()
                             : conn.getErrorStream();
 
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(stream));
-
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                     StringBuilder response = new StringBuilder();
                     String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-
+                    while ((line = reader.readLine()) != null) response.append(line);
                     reader.close();
 
                     if (responseCode >= 200 && responseCode < 300) {
-
                         JSONObject json = new JSONObject(response.toString());
 
-                        // 🔹 Organe détecté
                         JSONArray predictedOrgans = json.optJSONArray("predictedOrgans");
                         String organ = "N/A";
-
                         if (predictedOrgans != null && predictedOrgans.length() > 0) {
-                            organ = predictedOrgans.getJSONObject(0)
-                                    .optString("organ", "N/A");
+                            organ = predictedOrgans.getJSONObject(0).optString("organ", "N/A");
                         }
 
-                        // 🔹 Nom scientifique
                         JSONArray results = json.getJSONArray("results");
-
                         if (results.length() > 0) {
-
-                            JSONObject firstResult = results.getJSONObject(0);
-                            JSONObject speciesObj = firstResult.getJSONObject("species");
-
-                            String scientific = speciesObj
-                                    .optString("scientificName", "N/A");
+                            JSONObject speciesObj = results.getJSONObject(0).getJSONObject("species");
+                            String scientific = speciesObj.optString("scientificName", "N/A");
 
                             String finalOrgan = organ;
-
                             javafx.application.Platform.runLater(() -> {
                                 organLabel.setText("Organe détecté : " + finalOrgan);
                                 speciesLabel.setText("Nom scientifique : " + scientific);
@@ -177,9 +157,7 @@ public class PlantNetController {
                     }
 
                 } catch (Exception e) {
-
                     e.printStackTrace();
-
                     javafx.application.Platform.runLater(() -> {
                         organLabel.setText("Erreur : " + e.getMessage());
                         speciesLabel.setText("");
