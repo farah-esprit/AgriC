@@ -3,3 +3,17 @@
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+# ✅ Fichiers sensibles - NE JAMAIS PUSHER
+src/main/resources/config.properties
+
+# Fichiers compilés
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

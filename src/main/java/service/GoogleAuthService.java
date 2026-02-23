@@ -11,6 +11,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
+import utils.ConfigLoader;
 
 import java.io.StringReader;
 import java.util.Collections;
@@ -21,9 +22,8 @@ public class GoogleAuthService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     // 🔥 REMPLACEZ PAR VOS PROPRES IDENTIFIANTS
-    private static final String CLIENT_ID = "747787020143-ci7jpufv8s2rpdmmu3gfhtvb7maurafk.apps.googleusercontent.com";
-    private static final String CLIENT_SECRET = "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";
-
+    private static final String CLIENT_ID = ConfigLoader.get("google.client.id");
+    private static final String CLIENT_SECRET = ConfigLoader.get("google.client.secret");
     private static final String REDIRECT_URI = "http://localhost:8888";
 
     /**

@@ -1,13 +1,15 @@
 package service;
 
+import utils.ConfigLoader;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
 
 public class EmailService {
 
-    private static final String FROM_EMAIL = "agriconnect3a6@gmail.com";
-    private static final String PASSWORD = "ofhd nvdm stky rifc";
+    private static final String FROM_EMAIL = ConfigLoader.get("email.address");
+    private static final String PASSWORD = ConfigLoader.get("email.password");
 
     // 🔹 Méthode commune pour créer la session
     private Session createSession() {

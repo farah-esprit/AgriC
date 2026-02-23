@@ -234,7 +234,6 @@ public class DashboardAgriculteurController {
     }
 
     public User getCurrentUser() {
-
         return currentUser;
     }
 }

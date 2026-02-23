@@ -4,6 +4,8 @@ import com.vonage.client.VonageClient;
 import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.messages.TextMessage;
+import utils.ConfigLoader;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -11,8 +13,8 @@ import java.util.Random;
 public class SmsService {
 
     // ✅ Remplace par tes vraies clés Vonage
-    private static final String API_KEY = "9bf07fea";
-    private static final String API_SECRET = "utqUjl8FB6qBTTC3";
+    private static final String API_KEY = ConfigLoader.get("vonage.api.key");
+    private static final String API_SECRET = ConfigLoader.get("vonage.api.secret");
     private static final String SENDER_NAME = "AgriConnect"; // Nom affiché (max 11 caractères)
 
     // ✅ Stockage temporaire des codes (userId -> code)
