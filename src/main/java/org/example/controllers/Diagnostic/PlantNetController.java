@@ -17,25 +17,21 @@ import org.json.JSONObject;
 
 public class PlantNetController {
 
-    private static final String API_KEY = "2b1013bPwXrIUOLLDVyFiH3xvu";
+    // ⚠️ IMPORTANT : Remplacez par votre nouvelle clé générée sur my.plantnet.org
+    private static final String API_KEY = "2b10KGNAOKYqTeH6uQejN8qmOe";
     private File selectedFile;
 
     @FXML
     private Label selectedFileLabel;
-
     @FXML
     private Label organLabel;
-
     @FXML
     private Label speciesLabel;
-
     @FXML
     private Button identifyBtn;
 
-    // ================= Choisir image =================
     @FXML
     public void chooseImage() {
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir une image de plante");
         fileChooser.getExtensionFilters().add(
@@ -50,10 +46,8 @@ public class PlantNetController {
         }
     }
 
-    // ================= Identifier plante =================
     @FXML
     public void identifyPlant() {
-
         if (selectedFile == null) return;
 
         identifyBtn.setDisable(true);
@@ -63,49 +57,56 @@ public class PlantNetController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-
                 HttpURLConnection conn = null;
-
                 try {
-
                     String boundary = "===" + System.currentTimeMillis() + "===";
-                    URL url = new URL("https://my-api.plantnet.org/v2/identify/all");
+
+                    // ✅ MODIFICATION 1 : Clé API passée directement dans l'URL
+                    String urlString = "https://my-api.plantnet.org/v2/identify/all?api-key=" + API_KEY;
+                    URL url = new URL(urlString);
+
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
 
-                    // ✅ Headers importants
-                    conn.setRequestProperty("Authorization", "Api-Key " + API_KEY);
+                    // ✅ MODIFICATION 2 : Headers simplifiés (Suppression du Authorization Header problématique)
                     conn.setRequestProperty("User-Agent", "JavaFX PlantNet Client");
                     conn.setRequestProperty("Accept", "application/json");
                     conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-                    OutputStream output = conn.getOutputStream();
-                    PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, "UTF-8"), true);
+                    try (OutputStream output = conn.getOutputStream();
+                         PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, "UTF-8"), true)) {
 
-                    // 🔹 Type mime
-                    String mimeType = Files.probeContentType(selectedFile.toPath());
-                    if (mimeType == null) mimeType = "application/octet-stream";
+                        // --- PARTIE 1 : Envoi de l'organe (Obligatoire pour certaines versions de l'API) ---
+                        writer.append("--").append(boundary).append("\r\n");
+                        writer.append("Content-Disposition: form-data; name=\"organs\"\r\n\r\n");
+                        writer.append("leaf").append("\r\n"); // On définit 'leaf' (feuille) par défaut
+                        writer.flush();
 
-                    // 🔹 Envoi de l'image avec le champ "images[]"
-                    writer.append("--").append(boundary).append("\r\n");
-                    writer.append("Content-Disposition: form-data; name=\"images[]\"; filename=\"")
-                            .append(selectedFile.getName()).append("\"\r\n");
-                    writer.append("Content-Type: ").append(mimeType).append("\r\n\r\n");
-                    writer.flush();
+                        // --- PARTIE 2 : Envoi de l'image ---
+                        String mimeType = Files.probeContentType(selectedFile.toPath());
+                        if (mimeType == null) mimeType = "image/jpeg";
 
-                    try (FileInputStream inputStream = new FileInputStream(selectedFile)) {
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = inputStream.read(buffer)) != -1) {
-                            output.write(buffer, 0, bytesRead);
+                        writer.append("--").append(boundary).append("\r\n");
+                        // Note : Le nom du champ doit être "images" pour l'endpoint /all
+                        writer.append("Content-Disposition: form-data; name=\"images\"; filename=\"")
+                                .append(selectedFile.getName()).append("\"\r\n");
+                        writer.append("Content-Type: ").append(mimeType).append("\r\n\r\n");
+                        writer.flush();
+
+                        try (FileInputStream inputStream = new FileInputStream(selectedFile)) {
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                                output.write(buffer, 0, bytesRead);
+                            }
+                            output.flush();
                         }
-                        output.flush();
-                    }
 
-                    writer.append("\r\n");
-                    writer.append("--").append(boundary).append("--").append("\r\n");
-                    writer.close();
+                        writer.append("\r\n");
+                        writer.append("--").append(boundary).append("--").append("\r\n");
+                        writer.flush();
+                    }
 
                     // 🔹 Lecture de la réponse
                     int responseCode = conn.getResponseCode();
@@ -113,65 +114,56 @@ public class PlantNetController {
                             ? conn.getInputStream()
                             : conn.getErrorStream();
 
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                     StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) response.append(line);
-                    reader.close();
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) response.append(line);
+                    }
 
                     if (responseCode >= 200 && responseCode < 300) {
                         JSONObject json = new JSONObject(response.toString());
+                        JSONArray results = json.optJSONArray("results");
 
-                        JSONArray predictedOrgans = json.optJSONArray("predictedOrgans");
-                        String organ = "N/A";
-                        if (predictedOrgans != null && predictedOrgans.length() > 0) {
-                            organ = predictedOrgans.getJSONObject(0).optString("organ", "N/A");
-                        }
+                        if (results != null && results.length() > 0) {
+                            JSONObject firstResult = results.getJSONObject(0);
+                            JSONObject speciesObj = firstResult.getJSONObject("species");
+                            String scientific = speciesObj.optString("scientificName", "Inconnu");
 
-                        JSONArray results = json.getJSONArray("results");
-                        if (results.length() > 0) {
-                            JSONObject speciesObj = results.getJSONObject(0).getJSONObject("species");
-                            String scientific = speciesObj.optString("scientificName", "N/A");
+                            // Récupération de l'organe prédit par l'IA
+                            JSONArray predictedOrgans = json.optJSONArray("predictedOrgans");
+                            String organDetected = (predictedOrgans != null) ? predictedOrgans.optString(0, "N/A") : "N/A";
 
-                            String finalOrgan = organ;
                             javafx.application.Platform.runLater(() -> {
-                                organLabel.setText("Organe détecté : " + finalOrgan);
-                                speciesLabel.setText("Nom scientifique : " + scientific);
+                                organLabel.setText("Organe : " + organDetected);
+                                speciesLabel.setText("Espèce : " + scientific);
                                 identifyBtn.setDisable(false);
                             });
-
                         } else {
-                            javafx.application.Platform.runLater(() -> {
-                                organLabel.setText("Organe détecté : N/A");
-                                speciesLabel.setText("Aucun résultat trouvé");
-                                identifyBtn.setDisable(false);
-                            });
+                            updateUI("Aucun résultat", "", false);
                         }
-
                     } else {
-                        javafx.application.Platform.runLater(() -> {
-                            organLabel.setText("Erreur API : HTTP " + responseCode);
-                            speciesLabel.setText("");
-                            identifyBtn.setDisable(false);
-                        });
+                        // Ici le code 401 sera capturé si la clé dans l'URL est toujours mauvaise
+                        updateUI("Erreur API : " + responseCode, "Vérifiez votre clé API", false);
+                        System.out.println("Détails erreur : " + response.toString());
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    javafx.application.Platform.runLater(() -> {
-                        organLabel.setText("Erreur : " + e.getMessage());
-                        speciesLabel.setText("");
-                        identifyBtn.setDisable(false);
-                    });
-
+                    updateUI("Erreur de connexion", e.getMessage(), false);
                 } finally {
                     if (conn != null) conn.disconnect();
                 }
-
                 return null;
             }
         };
-
         new Thread(task).start();
+    }
+
+    private void updateUI(String organ, String species, boolean disableBtn) {
+        javafx.application.Platform.runLater(() -> {
+            organLabel.setText(organ);
+            speciesLabel.setText(species);
+            identifyBtn.setDisable(disableBtn);
+        });
     }
 }
