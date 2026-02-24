@@ -16,7 +16,7 @@
     <children>
 
         <!-- ==================== SIDEBAR FIXE VERTE ==================== -->
-        <AnchorPane fx:id="sidebar" prefWidth="280.0" style="-fx-background-color: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="sidebar" prefWidth="280.0" style="-fx-background-color: #2e4d2e;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- LOGO ET TITRE -->
@@ -24,15 +24,15 @@
                     <children>
                         <Label text="AgriConnect" textFill="#388e3c">
                             <font>
-                        <Font name="System Bold" size="26.0" />
-                     </font>
-                     <graphic>
-                        <ImageView fitHeight="38.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/logo1.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
+                                <Font name="System Bold" size="26.0" />
+                            </font>
+                            <graphic>
+                                <ImageView fitHeight="38.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@images/logo1.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
                         </Label>
                         <Label text="Admin Dashboard" textFill="#0d0d0dd9">
                             <font><Font name="System Bold" size="15.0" /></font>
@@ -69,20 +69,20 @@
                                 </Label>
                             </children>
                         </HBox>
-                  <HBox fx:id="menuProfil" alignment="CENTER_LEFT" layoutX="10.0" layoutY="68.0" onMouseClicked="#handleGoToProfil" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                              -fx-background-radius: 12;                              -fx-padding: 0 20;">
-                     <children>
-                        <Label text="👤" textFill="#388e3c">
-                           <font>
-                              <Font size="22.0" />
-                           </font>
-                        </Label>
-                        <Label text="Profile" textFill="#388e3cf2">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
+                        <HBox fx:id="menuProfil" alignment="CENTER_LEFT" layoutX="10.0" layoutY="68.0" onMouseClicked="#handleGoToProfil" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                              -fx-background-radius: 12;                              -fx-padding: 0 20;">
+                            <children>
+                                <Label text="👤" textFill="#388e3c">
+                                    <font>
+                                        <Font size="22.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Profile" textFill="#388e3cf2">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </HBox>
 
                         <!-- Statistiques -->
                         <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="240.0" spacing="15.0" style="-fx-cursor: hand;                              -fx-background-radius: 12;                              -fx-padding: 0 20;">
@@ -132,11 +132,11 @@
                         <!-- Profil -->
                         <HBox alignment="CENTER_LEFT" onMouseClicked="#handleGoToProfil" spacing="12.0" style="-fx-cursor: hand;                              -fx-background-color: rgba(255,255,255,0.15);                              -fx-background-radius: 12;                              -fx-padding: 12;">
                             <children>
-                        <ImageView fitHeight="38.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/hm.png" />
-                           </image>
-                        </ImageView>
+                                <ImageView fitHeight="38.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@images/hm.png" />
+                                    </image>
+                                </ImageView>
                                 <VBox>
                                     <children>
                                         <Label fx:id="adminNameLabel" text="Admin">
@@ -157,7 +157,7 @@
         </AnchorPane>
 
         <!-- ==================== CONTENT PANE DYNAMIQUE ==================== -->
-        <AnchorPane fx:id="contentPane" style="-fx-background-color: #e7e3e3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="280.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="contentPane" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="280.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- HEADER BAR -->
@@ -191,21 +191,21 @@
                         <!-- Notifications -->
                         <HBox alignment="CENTER" spacing="15.0">
                             <children>
-                        <ToggleButton fx:id="themeToggle" onAction="#handleToggleTheme" prefHeight="45.0" prefWidth="46.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-min-width: 45; -fx-min-height: 45; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);" text="🌙">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </ToggleButton>
+                                <ToggleButton fx:id="themeToggle" onAction="#handleToggleTheme" prefHeight="45.0" prefWidth="46.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-min-width: 45; -fx-min-height: 45; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);" text="🌙">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </ToggleButton>
                                 <Button style="-fx-background-color: white;                                                -fx-cursor: hand;                                                -fx-background-radius: 50%;                                                -fx-min-width: 45;                                                -fx-min-height: 45;                                                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);" text="🔔">
                                     <font><Font size="18.0" /></font>
                                 </Button>
-      
-                              <!-- Déconnexion -->
-                              <Button onMouseClicked="#handleLogout" prefHeight="38.0" prefWidth="42.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 12;" text="⏻">
-                                  <font>
-                              <Font name="System Bold" size="13.0" />
-                           </font>
-                              </Button>
+
+                                <!-- Déconnexion -->
+                                <Button onMouseClicked="#handleLogout" prefHeight="38.0" prefWidth="42.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 12;" text="⏻">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Button>
                             </children>
                         </HBox>
 
@@ -232,7 +232,7 @@
                                             <children>
                                                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                     <children>
-                                                        <Label text="Total Utilisateurs" textFill="#64748b">
+                                                        <Label text="Total Utilisateurs" textFill="#2e4d2e">
                                                             <font><Font name="System Bold" size="14.0" /></font>
                                                         </Label>
                                                         <Label fx:id="totalUsersLabel" text="0" textFill="#1e293b">

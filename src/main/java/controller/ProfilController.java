@@ -240,23 +240,61 @@ public class ProfilController {
             showError("Aucun profil à supprimer");
             return;
         }
+
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation de suppression");
         confirmation.setHeaderText("Supprimer votre profil ?");
         confirmation.setContentText("⚠️ ATTENTION : Cette action supprimera définitivement votre profil.\n\nVoulez-vous continuer ?");
+
         ButtonType buttonOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonNon = new ButtonType("Non, annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirmation.getButtonTypes().setAll(buttonOui, buttonNon);
+
         Optional<ButtonType> result = confirmation.showAndWait();
+
         if (result.isPresent() && result.get() == buttonOui) {
             try {
+                // ✅ 1. Récupérer le chemin de l'image AVANT de supprimer le profil
+                String imagePath = currentProfil.getImage();
+
+                // ✅ 2. Supprimer l'entrée en base de données
                 profilService.supprimer(currentProfil.getId());
+
+                // ✅ 3. Supprimer le fichier image physique
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    deleteImageFile(imagePath);
+                }
+
                 showSuccess("✅ Profil supprimé avec succès !");
                 loadProfilData();
+
             } catch (Exception e) {
                 showError("❌ Erreur lors de la suppression du profil");
                 e.printStackTrace();
             }
+        }
+    }
+
+    // ✅ NOUVELLE MÉTHODE : Supprimer le fichier image
+    private void deleteImageFile(String imagePath) {
+        try {
+            File imageFile = new File(imagePath);
+
+            if (imageFile.exists()) {
+                boolean deleted = imageFile.delete();
+
+                if (deleted) {
+                    System.out.println("✅ Image supprimée : " + imagePath);
+                } else {
+                    System.err.println("⚠️ Impossible de supprimer l'image : " + imagePath);
+                }
+            } else {
+                System.out.println("ℹ️ Fichier image introuvable : " + imagePath);
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de la suppression de l'image : " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

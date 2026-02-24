@@ -32,7 +32,6 @@ public class DashboardAgriculteurController {
     @FXML private Label problemsCountLabel;
     @FXML private Label ordersCountLabel;
     @FXML private AnchorPane contentPane;
-    @FXML private AnchorPane sidebar;
     @FXML private ToggleButton themeToggle;
     @FXML private HBox menuHome;
     @FXML private HBox menuCulture;
@@ -40,7 +39,9 @@ public class DashboardAgriculteurController {
     @FXML private HBox menuForum;
     @FXML private HBox menuReclamation;
     @FXML private HBox menuBoutique;
-
+    @FXML private AnchorPane sidebarExpanded;
+    @FXML private AnchorPane sidebarCollapsed;
+    private boolean sidebarOpen = false;
     private User currentUser;
     private boolean isDarkMode = false;
 
@@ -59,13 +60,14 @@ public class DashboardAgriculteurController {
 
         if (menuHome != null) setActiveMenu(menuHome);
 
-        if (culturesCountLabel != null) culturesCountLabel.setText("0 actives");
-        if (problemsCountLabel != null) problemsCountLabel.setText("0 signalés");
-        if (ordersCountLabel != null) ordersCountLabel.setText("0 en cours");
+        if (culturesCountLabel != null) culturesCountLabel.setText("0");
+        if (problemsCountLabel != null) problemsCountLabel.setText("0");
+        if (ordersCountLabel != null) ordersCountLabel.setText("0");
 
         Platform.runLater(() -> {
             try {
-                AnchorPane root = (AnchorPane) sidebar.getParent();
+                // ✅ sidebarCollapsed à la place de sidebar
+                AnchorPane root = (AnchorPane) sidebarCollapsed.getParent();
                 if (root != null && root.getScene() != null) {
                     Stage stage = (Stage) root.getScene().getWindow();
                     Scene scene = root.getScene();
@@ -76,11 +78,11 @@ public class DashboardAgriculteurController {
                     }
                 }
 
-                // ✅ Sauvegarder le contenu original du contentPane
                 if (contentPane != null) {
                     originalDashboardContent = new ArrayList<>(contentPane.getChildren());
-                    System.out.println("✅ Contenu original sauvegardé : " + originalDashboardContent.size() + " éléments");
                 }
+
+                setupSidebarHover();
 
             } catch (Exception e) {
                 System.err.println("⚠️ Erreur initialisation : " + e.getMessage());
@@ -88,6 +90,38 @@ public class DashboardAgriculteurController {
         });
     }
 
+    private void setupSidebarHover() {
+        // Quand souris entre dans sidebar collapsed
+        sidebarCollapsed.setOnMouseEntered(e -> expandSidebar());
+
+        // Quand souris entre dans sidebar expanded
+        sidebarExpanded.setOnMouseEntered(e -> expandSidebar());
+
+        // Quand souris quitte sidebar collapsed
+        sidebarCollapsed.setOnMouseExited(e -> {
+            // Vérifier si la souris est dans expanded
+            if (!sidebarExpanded.isHover()) {
+                collapseSidebar();
+            }
+        });
+
+        // Quand souris quitte sidebar expanded
+        sidebarExpanded.setOnMouseExited(e -> {
+            if (!sidebarCollapsed.isHover()) {
+                collapseSidebar();
+            }
+        });
+    }
+
+    private void expandSidebar() {
+        sidebarExpanded.setVisible(true);
+        AnchorPane.setLeftAnchor(contentPane, 310.0);
+    }
+
+    private void collapseSidebar() {
+        sidebarExpanded.setVisible(false);
+        AnchorPane.setLeftAnchor(contentPane, 70.0);
+    }
     public void setUser(User user) {
         this.currentUser = user;
         if (welcomeLabel != null) welcomeLabel.setText("Bienvenue, " + user.getNom() + " !");
@@ -99,24 +133,25 @@ public class DashboardAgriculteurController {
     private void handleToggleTheme() {
         isDarkMode = !isDarkMode;
         if (isDarkMode) {
-            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);");
+            sidebarCollapsed.setStyle("-fx-background-color: #1a1a1a;");
+            sidebarExpanded.setStyle("-fx-background-color: #1a1a1a; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 18, 0, 6, 0);");
             contentPane.setStyle("-fx-background-color: #1e1e1e;");
             if (themeModeText != null) themeModeText.setText("Sombre");
             if (themeToggle != null) {
                 themeToggle.setText("☀");
-                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 15; -fx-cursor: hand;");
+                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 10; -fx-cursor: hand;");
             }
         } else {
-            sidebar.setStyle("-fx-background-color: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);");
-            contentPane.setStyle("-fx-background-color: #f7f8fc;");
+            sidebarCollapsed.setStyle("-fx-background-color: #2e4d2e;");
+            sidebarExpanded.setStyle("-fx-background-color: #2e4d2e; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);");
+            contentPane.setStyle("-fx-background-color: #f0f4f0;");
             if (themeModeText != null) themeModeText.setText("Clair");
             if (themeToggle != null) {
                 themeToggle.setText("🌙");
-                themeToggle.setStyle("-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15; -fx-cursor: hand;");
+                themeToggle.setStyle("-fx-background-color: #f5f8f5; -fx-background-radius: 10; -fx-cursor: hand;");
             }
         }
     }
-
     private void setActiveMenu(HBox activeMenuItem) {
         String defaultStyle = "-fx-cursor: hand; -fx-background-radius: 12; -fx-padding: 0 20;";
         String activeStyle = "-fx-cursor: hand; -fx-background-color: rgba(255,255,255,0.25); -fx-background-radius: 12; -fx-padding: 0 20;";

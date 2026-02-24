@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="579.0" prefWidth="477.0" style="-fx-background-color: #e7e3e3;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilAdminController">
+<AnchorPane prefHeight="579.0" prefWidth="477.0" style="-fx-background-color: #f0f4f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilAdminController">
     <children>
 
         <!-- HEADER -->
@@ -58,8 +58,8 @@
                     <children>
                         <VBox alignment="CENTER">
                             <children>
-                                <Circle fx:id="profileCircle" fill="#667eea" radius="50.0" stroke="#e2e8f0" strokeWidth="4.0" />
-                                <Label style="-fx-translate-y: -55;" text="👤" textFill="WHITE">
+                                <Circle fx:id="profileCircle" fill="#10b981" radius="50.0" stroke="#e2e8f0" strokeWidth="4.0" />
+                                <Label prefHeight="50.0" prefWidth="50.0" style="-fx-translate-y: -55;" text="👤" textFill="WHITE">
                                     <font><Font size="50.0" /></font>
                                 </Label>
                             </children>

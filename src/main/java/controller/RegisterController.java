@@ -382,15 +382,15 @@ public class RegisterController {
             // ✅ Ajouter l'utilisateur en base
             userService.ajouter(newUser);
 
-            System.out.println("✅ User ajouté avec mot de passe hashé");
-            System.out.println("✅ Code de vérification : " + code);
+            System.out.println("User ajouté avec mot de passe hashé");
+            System.out.println("Code de vérification : " + code);
 
             // ✅ Envoyer email de vérification
             EmailService emailService = new EmailService();
             emailService.sendVerificationEmail(email, nom, code);
-            System.out.println("✅ Email de vérification envoyé à " + email);
+            System.out.println("Email de vérification envoyé à " + email);
 
-            showSuccess(errorLabel, "✅ Compte créé ! Vérifiez votre email.");
+            showSuccess(errorLabel, "Compte créé ! Vérifiez votre email.");
 
             // ✅ CHARGER VERIFICATION DANS LE STACKPANE
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/verification.fxml"));
@@ -409,7 +409,7 @@ public class RegisterController {
             AnchorPane.setLeftAnchor(root, 0.0);
             AnchorPane.setRightAnchor(root, 0.0);
 
-            System.out.println("✅ Page de vérification chargée dans StackPane");
+            System.out.println("Page de vérification chargée dans StackPane");
 
         } catch (Exception e) {
             ValidationUtils.showError(errorLabel, "Erreur lors de la création du compte");
@@ -434,7 +434,7 @@ public class RegisterController {
                         contentPane.getChildren().clear();
                         contentPane.getChildren().add(loginForm);
                         controller.contentPane = this.contentPane;
-                        System.out.println("✅ Retour au login dans StackPane");
+                        System.out.println("Retour au login dans StackPane");
                     }
                 }
             }

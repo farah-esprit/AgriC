@@ -59,11 +59,10 @@ public class LoginController {
         });
     }
 
-    // ✅ MÉTHODE : Authentification Google
     @FXML
     private void handleGoogleLogin() {
         try {
-            showSuccess("🔄 Connexion avec Google en cours...");
+            showSuccess(" Connexion avec Google en cours...");
 
             new Thread(() -> {
                 GoogleAuthService.GoogleUserInfo googleUser = googleAuthService.authenticate();
@@ -74,26 +73,39 @@ public class LoginController {
                         User existingUser = userService.findByEmail(googleUser.getEmail());
 
                         if (existingUser != null) {
-                            // ✅ Utilisateur existe → Connexion directe
-                            showSuccess("✅ Connexion réussie ! Bienvenue " + existingUser.getNom());
-                            redirectToDashboard(existingUser);
+                            // ✅ Utilisateur existe
+                            System.out.println(" Utilisateur Google trouvé : " + existingUser.getEmail());
+
+                            // 🔐 VÉRIFIER SI 2FA EST ACTIVÉ
+                            boolean twoFactorEnabled = userService.is2FAEnabled(existingUser.getId());
+                            System.out.println("2FA activé pour " + existingUser.getEmail() + " : " + twoFactorEnabled);
+
+                            if (twoFactorEnabled) {
+                                // ✅ 2FA activé → Rediriger vers la page de vérification 2FA
+                                System.out.println("Redirection vers vérification 2FA pour utilisateur Google...");
+                                redirectToTwoFactorVerification(existingUser);
+                            } else {
+                                // ✅ Pas de 2FA → Connexion directe
+                                showSuccess("Connexion réussie ! Bienvenue " + existingUser.getNom());
+                                redirectToDashboard(existingUser);
+                            }
 
                         } else {
-                            // ❌ Utilisateur n'existe pas → 🔥 AFFICHER LE CHOICEBOX
+                            // ❌ Utilisateur n'existe pas → AFFICHER LE CHOICEBOX
                             currentGoogleUser = googleUser;
                             showGoogleRoleSelection(googleUser);
                         }
                     });
                 } else {
                     Platform.runLater(() -> {
-                        showError("❌ Authentification Google annulée ou échouée");
+                        showError("Authentification Google annulée ou échouée");
                     });
                 }
             }).start();
 
         } catch (Exception e) {
             e.printStackTrace();
-            showError("❌ Erreur lors de l'authentification Google");
+            showError("Erreur lors de l'authentification Google");
         }
     }
 
@@ -111,7 +123,7 @@ public class LoginController {
         googleNameLabel.setText(googleUser.getName());
         googleEmailLabel.setText(googleUser.getEmail());
 
-        System.out.println("✅ Formulaire de sélection de rôle affiché");
+        System.out.println("Formulaire de sélection de rôle affiché");
     }
 
     // ✅ MÉTHODE : Continuer avec le rôle sélectionné
@@ -120,7 +132,7 @@ public class LoginController {
         Role selectedRole = googleRoleChoice.getValue();
 
         if (selectedRole == null) {
-            showGoogleError("❌ Veuillez sélectionner un type de compte");
+            showGoogleError("Veuillez sélectionner un type de compte");
             return;
         }
 
@@ -136,14 +148,14 @@ public class LoginController {
             // Ajouter en base de données
             userService.ajouter(newUser);
 
-            System.out.println("✅ Compte créé avec rôle : " + selectedRole);
+            System.out.println("Compte créé avec rôle : " + selectedRole);
 
             // Rediriger vers le dashboard
             redirectToDashboard(newUser);
 
         } catch (Exception e) {
             e.printStackTrace();
-            showGoogleError("❌ Erreur lors de la création du compte");
+            showGoogleError("Erreur lors de la création du compte");
         }
     }
 
@@ -163,7 +175,7 @@ public class LoginController {
         errorLabel.setText("");
         googleErrorLabel.setText("");
 
-        System.out.println("✅ Retour au formulaire de login");
+        System.out.println("Retour au formulaire de login");
     }
 
     // ================= RESTE DU CODE (handleRegister, handleForgotPassword, etc.) =================
@@ -222,36 +234,36 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (email.isEmpty() || password.isEmpty()) {
-            showError("❌ Veuillez remplir tous les champs");
+            showError("Veuillez remplir tous les champs");
             return;
         }
 
         if (!isValidEmail(email)) {
-            showError("❌ Format d'email invalide");
+            showError("Format d'email invalide");
             return;
         }
 
         User user = userService.authenticate(email, password);
 
         if (user == null) {
-            showError("❌ Email ou mot de passe incorrect");
+            showError("Email ou mot de passe incorrect");
             return;
         }
 
         if (user.getEtatCompte() == EtatCompte.BLOQUE) {
-            showError("❌ Votre compte est bloqué. Contactez l'administrateur.");
+            showError("Votre compte est bloqué. Contactez l'administrateur.");
             return;
         }
 
         boolean twoFactorEnabled = userService.is2FAEnabled(user.getId());
 
-        System.out.println("🔐 2FA activé pour " + user.getEmail() + " : " + twoFactorEnabled);
+        System.out.println("2FA activé pour " + user.getEmail() + " : " + twoFactorEnabled);
 
         if (twoFactorEnabled) {
-            System.out.println("🔐 Redirection vers vérification 2FA...");
+            System.out.println("Redirection vers vérification 2FA...");
             redirectToTwoFactorVerification(user);
         } else {
-            showSuccess("✅ Connexion réussie ! Bienvenue " + user.getNom());
+            showSuccess("Connexion réussie ! Bienvenue " + user.getNom());
             redirectToDashboard(user);
         }
     }
@@ -337,12 +349,12 @@ public class LoginController {
                 stage.setMaximized(true);
             });
 
-            System.out.println("✅ Redirection réussie vers " + fxmlFile);
+            System.out.println("Redirection réussie vers " + fxmlFile);
 
         } catch (Exception e) {
-            System.err.println("❌ ERREUR lors de la redirection :");
+            System.err.println("ERREUR lors de la redirection :");
             e.printStackTrace();
-            showError("❌ Erreur lors de la redirection : " + e.getMessage());
+            showError("Erreur lors de la redirection : " + e.getMessage());
         }
     }
 }
