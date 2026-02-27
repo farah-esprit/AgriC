@@ -1,9 +1,6 @@
 package org.example.utils;
-
-
 import org.mindrot.jbcrypt.BCrypt;
 import utils.MyDataBase;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
