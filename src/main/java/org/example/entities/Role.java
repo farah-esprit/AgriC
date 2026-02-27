@@ -1,4 +1,8 @@
 package org.example.entities;
 
-public class Role {
+public enum Role {
+    ADMIN,
+    AGRICULTEUR,
+    EXPERT,
+    FOURNISSEUR
 }

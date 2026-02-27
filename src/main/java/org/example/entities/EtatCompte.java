@@ -1,4 +1,7 @@
 package org.example.entities;
 
-public class EtatCompte {
+public enum EtatCompte {
+    ACTIF,
+    INACTIF,
+    BLOQUE
 }
