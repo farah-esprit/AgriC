@@ -5,10 +5,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import service.TwoFactorAuthService;
 import service.UserService;
 
@@ -87,8 +90,9 @@ public class Verify2FAController {
 
             switch (currentUser.getRole()) {
                 case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
-                case EXPERT: fxmlFile = "/expertDashboard.fxml"; break;
+                case EXPERT:      fxmlFile = "/expertDashboard.fxml";      break;
                 case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
+                case ADMIN:       fxmlFile = "/adminDashboard.fxml";       break;
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -96,23 +100,38 @@ public class Verify2FAController {
 
             Object controller = loader.getController();
 
-            if (controller instanceof DashboardAgriculteurController)
+            if (controller instanceof DashboardAdminController)
+                ((DashboardAdminController) controller).setUser(currentUser);
+            else if (controller instanceof DashboardAgriculteurController)
                 ((DashboardAgriculteurController) controller).setUser(currentUser);
-            else if (controller instanceof DashboardExpertController)
-                ((DashboardExpertController) controller).setUser(currentUser);
             else if (controller instanceof DashboardFournisseurController)
                 ((DashboardFournisseurController) controller).setUser(currentUser);
+            else if (controller instanceof DashboardExpertController)
+                ((DashboardExpertController) controller).setUser(currentUser);
 
-            // ⚡ Afficher dans le contentPane côté droit
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(root);
+            // ✅ OBTENIR LA FENÊTRE ACTUELLE
+            Stage stage = (Stage) contentPane.getScene().getWindow();
 
-            AnchorPane.setTopAnchor(root, 0.0);
-            AnchorPane.setBottomAnchor(root, 0.0);
-            AnchorPane.setLeftAnchor(root, 0.0);
-            AnchorPane.setRightAnchor(root, 0.0);
+            // ✅ CRÉER UNE NOUVELLE SCENE
+            Scene scene = new Scene(root);
+
+            // ✅ LIER LES DIMENSIONS
+            if (root instanceof Region r) {
+                r.prefWidthProperty().bind(scene.widthProperty());
+                r.prefHeightProperty().bind(scene.heightProperty());
+            }
+
+            // ✅ REMPLACER LA SCENE
+            stage.setScene(scene);
+            stage.setTitle("AgriConnect - Dashboard " + currentUser.getRole());
+
+            // ✅ MAXIMISER LA FENÊTRE
+            Platform.runLater(() -> stage.setMaximized(true));
+
+            System.out.println("✅ Redirection plein écran vers " + fxmlFile);
 
         } catch (Exception e) {
+            System.err.println("❌ Erreur redirection :");
             e.printStackTrace();
         }
     }

@@ -12,24 +12,25 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane minHeight="750.0" minWidth="1280.0" style="-fx-background-color: #f0f4f0;" stylesheets="@dashboard-styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">    <children>
 
         <!-- SIDEBAR COLLAPSED (70px) -->
-        <AnchorPane fx:id="sidebarCollapsed" prefHeight="750.0" prefWidth="66.0" style="-fx-background-color: #4CAF50;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="sidebarCollapsed" prefHeight="750.0" prefWidth="66.0" style="-fx-background-color: #388e3c;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- Logo icône -->
                 <StackPane layoutX="15.0" layoutY="18.0" />
 
                 <!-- Icônes menu -->
-                <VBox layoutX="3.0" layoutY="116.0" prefHeight="383.0" prefWidth="61.0" spacing="18.0">
+                <VBox layoutX="3.0" layoutY="124.0" prefHeight="350.0" prefWidth="62.0" spacing="18.0">
                     <children>
 
                         <!-- Accueil actif -->
                         <StackPane>
                             <children>
-                                <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#4CAF50" height="42.0" width="42.0" />
+                                <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#388e3c" height="42.0" width="42.0" />
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/icons/home.png" />
@@ -97,7 +98,7 @@
                 </VBox>
 
                 <!-- Profil + logout bas -->
-                <VBox spacing="8.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="14.0" />
+                <VBox prefHeight="2.0" prefWidth="5.0" spacing="8.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
             <ImageView fitHeight="108.0" fitWidth="42.0" layoutX="11.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@images/logo1.png" />
@@ -110,12 +111,12 @@
                           <Label prefHeight="39.0" prefWidth="23.0" style="-fx-font-size: 16px;" text="👨‍🌾" textFill="#a9a9a9" />
                       </children>
                   </StackPane>
-                  <Button layoutX="11.0" layoutY="699.0" onMouseClicked="#handleLogout" prefHeight="42.0" prefWidth="45.0" style="-fx-background-color: #000000; -fx-text-fill: #ff6666; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 16px;" text="⏻" textFill="WHITE" />
+                  <Button layoutX="11.0" layoutY="699.0" onMouseClicked="#handleLogout" prefHeight="42.0" prefWidth="45.0" style="-fx-background-color: #000000; -fx-text-fill: #ffffff; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 16px;" text="⏻" textFill="WHITE" />
 
             </children>
         </AnchorPane>
 
-        <AnchorPane fx:id="sidebarExpanded" layoutX="70.0" prefWidth="240.0" style="-fx-background-color: #4CAF50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="sidebarExpanded" layoutX="65.0" prefHeight="750.0" prefWidth="245.0" style="-fx-background-color: #388e3c; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- Logo + titre -->
@@ -137,9 +138,6 @@
                         <!-- Dashboard ACTIF -->
                         <HBox fx:id="menuHome" alignment="CENTER_LEFT" onMouseClicked="#handleShowHome" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-color: #4CAF50; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/home.png" /></image>
-                                </ImageView>
                                 <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Dashboard" textFill="#ffffff" />
                             </children>
                         </HBox>
@@ -147,19 +145,16 @@
                         <!-- Ma culture -->
                         <HBox fx:id="menuCulture" alignment="CENTER_LEFT" onMouseClicked="#handleShowCulture" prefHeight="49.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/plant.png" /></image>
-                                </ImageView>
-                                <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Ma culture" textFill="#ffffffcc" />
+                                <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Ma culture" textFill="#ffffffcc">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                             </children>
                         </HBox>
 
                         <!-- Problèmes -->
                         <HBox fx:id="menuProblemes" alignment="CENTER_LEFT" onMouseClicked="#handleShowProblems" prefHeight="53.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/alert-circle.png" /></image>
-                                </ImageView>
                                 <Label style="-fx-font-size: 13px;" text="Problèmes" textFill="#ffffffcc" />
                             </children>
                         </HBox>
@@ -167,9 +162,6 @@
                         <!-- Forum -->
                         <HBox fx:id="menuForum" alignment="CENTER_LEFT" onMouseClicked="#handleShowForum" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/message.png" /></image>
-                                </ImageView>
                                 <Label style="-fx-font-size: 13px;" text="Forum" textFill="#ffffffcc" />
                             </children>
                         </HBox>
@@ -177,9 +169,6 @@
                         <!-- Réclamation -->
                         <HBox fx:id="menuReclamation" alignment="CENTER_LEFT" onMouseClicked="#handleShowReclamation" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/clipboard-list.png" /></image>
-                                </ImageView>
                                 <Label style="-fx-font-size: 13px;" text="Réclamation" textFill="#ffffffcc" />
                             </children>
                         </HBox>
@@ -187,9 +176,6 @@
                         <!-- Boutique -->
                         <HBox fx:id="menuBoutique" alignment="CENTER_LEFT" onMouseClicked="#handleShowBoutique" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
                             <children>
-                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                    <image><Image url="@images/icons/shopping-cart.png" /></image>
-                                </ImageView>
                                 <Label style="-fx-font-size: 13px;" text="Boutique" textFill="#ffffffcc" />
                             </children>
                         </HBox>
@@ -217,7 +203,7 @@
                             </children>
                         </HBox>
 
-                        <Button onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="216.0" style="-fx-background-color: #000000; -fx-text-fill: #ff6666; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px; -fx-border-color: #ff444430; -fx-border-radius: 10; -fx-border-width: 1;" text="⏻  Log Out" />
+                        <Button onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="216.0" style="-fx-background-color: #000000; -fx-text-fill: #ffffff; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px; -fx-border-color: #ff444430; -fx-border-radius: 10; -fx-border-width: 1;" text="⏻  Log Out" />
                     </children>
                 </VBox>
 
@@ -225,22 +211,25 @@
         </AnchorPane>
 
         <!-- CONTENT PANE -->
-        <AnchorPane fx:id="contentPane" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="contentPane" layoutX="66.0" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="4.400000000000091" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- TOPBAR -->
-                <HBox alignment="CENTER_LEFT" layoutX="35.0" layoutY="21.0" prefHeight="70.0" style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="21.0">
+                <HBox alignment="CENTER_LEFT" layoutX="35.0" layoutY="21.0" prefHeight="70.0" style="-fx-background-color: #f0f4f0;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="21.0">
                     <padding><Insets left="30.0" right="28.0" /></padding>
                     <children>
                         <VBox spacing="2.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label fx:id="welcomeLabel" style="-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Bonjour, Agriculteur 👋" />
+                                <Label fx:id="welcomeLabel" prefHeight="38.0" prefWidth="242.0" style="-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Bonjour, Agriculteur 👋">
+                           <font>
+                              <Font size="15.0" />
+                           </font></Label>
                                 <Label fx:id="dateLabel" style="-fx-font-size: 11px; -fx-text-fill: #999;" text="Lundi, 23 février 2026" />
                             </children>
                         </VBox>
                         <HBox alignment="CENTER" spacing="10.0">
                             <children>
-                                <HBox alignment="CENTER_LEFT" prefHeight="19.0" prefWidth="210.0" spacing="10.0" style="-fx-background-color: #f5f8f5; -fx-background-radius: 20; -fx-padding: 0 16; -fx-border-color: #c8e6c9; -fx-border-radius: 20; -fx-border-width: 1.5;">
+                                <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="344.0" spacing="10.0" style="-fx-background-color: #f5f8f5; -fx-background-radius: 20; -fx-padding: 0 16; -fx-border-color: #c8e6c9; -fx-border-radius: 20; -fx-border-width: 1.5;">
                                     <children>
                                         <Label style="-fx-font-size: 12px; -fx-text-fill: #aaa;" text="🔍" />
                                         <Label style="-fx-font-size: 12px; -fx-text-fill: #ccc;" text="Rechercher..." />
@@ -270,11 +259,11 @@
                 <Label fx:id="messageLabel" layoutX="45.0" layoutY="105.0" style="-fx-font-size: 12px; -fx-font-weight: bold;" AnchorPane.leftAnchor="45.0" AnchorPane.topAnchor="105.0" />
 
                 <!-- CONTENU AVEC ANIMATIONS -->
-                <VBox layoutX="35.0" layoutY="130.0" prefHeight="578.0" prefWidth="1139.0" spacing="20.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.40000000000009" AnchorPane.topAnchor="130.0">
+                <VBox layoutX="35.0" layoutY="130.0" prefHeight="605.0" prefWidth="1139.0" spacing="20.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="130.0">
                     <children>
 
                         <!-- 4 CARTES STATS ANIMÉES -->
-                        <HBox prefHeight="174.0" prefWidth="1139.0" spacing="18.0">
+                        <HBox prefHeight="196.0" prefWidth="1139.0" spacing="18.0">
                             <children>
                                 <!-- Cultures -->
                                 <VBox spacing="8.0" styleClass="stat-card, stat-card-culture" HBox.hgrow="ALWAYS">
@@ -371,7 +360,7 @@
                         </HBox>
 
                         <!-- HERO + ACTIONS -->
-                        <HBox spacing="18.0">
+                        <HBox prefHeight="311.0" prefWidth="1139.0" spacing="18.0">
                             <children>
                                 <!-- HERO CARD ANIMÉE -->
                                 <VBox prefHeight="263.0" prefWidth="324.0" spacing="18.0" styleClass="hero-card" HBox.hgrow="ALWAYS">
@@ -385,7 +374,7 @@
                                         </VBox>
                                         <HBox spacing="10.0">
                                             <children>
-                                                <Button onMouseClicked="#handleShowCulture" prefHeight="34.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 0 16;" text="Mes cultures →" />
+                                                <Button onMouseClicked="#handleShowCulture" prefHeight="34.0" style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 0 16;" text="Mes cultures →" />
                                                 <Button onMouseClicked="#handleGoToProfil" prefHeight="34.0" style="-fx-background-color: transparent; -fx-text-fill: #4CAF50; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px; -fx-border-color: #4CAF5055; -fx-border-radius: 10; -fx-border-width: 1; -fx-padding: 0 16;" text="Mon profil" />
                                             </children>
                                         </HBox>
@@ -393,7 +382,7 @@
                                 </VBox>
 
                                 <!-- ACTIONS RAPIDES ANIMÉES -->
-                                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                <VBox prefHeight="311.0" prefWidth="218.0" spacing="10.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label style="-fx-font-size: 9px; -fx-text-fill: #aaa; -fx-letter-spacing: 1px;" text="ACCÈS RAPIDE" />
 
