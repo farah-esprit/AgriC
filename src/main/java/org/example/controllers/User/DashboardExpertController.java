@@ -218,7 +218,7 @@ public class DashboardExpertController {
     @FXML
     private void handleGoToProfil(MouseEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/profil.fxml"));
             Parent profilContent = loader.load();
 
             ProfilController controller = loader.getController();
