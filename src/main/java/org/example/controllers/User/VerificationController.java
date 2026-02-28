@@ -104,7 +104,7 @@ public class VerificationController {
     private void handleBackToLogin() {
         try {
             // ✅ CHARGER LE FXML COMPLET
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/login.fxml"));
             Parent root = loader.load();
 
             // ✅ RÉCUPÉRER LE CONTROLLER

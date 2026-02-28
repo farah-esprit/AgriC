@@ -91,10 +91,10 @@ public class Verify2FAController {
             String fxmlFile = "";
 
             switch (currentUser.getRole()) {
-                case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
-                case EXPERT:      fxmlFile = "/expertDashboard.fxml";      break;
-                case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
-                case ADMIN:       fxmlFile = "/adminDashboard.fxml";       break;
+                case AGRICULTEUR: fxmlFile = "/User/agriculteurDashboard.fxml"; break;
+                case EXPERT:      fxmlFile = "/User/expertDashboard.fxml";      break;
+                case FOURNISSEUR: fxmlFile = "/User/fournisseurDashboard.fxml"; break;
+                case ADMIN:       fxmlFile = "/User/adminDashboard.fxml";       break;
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
