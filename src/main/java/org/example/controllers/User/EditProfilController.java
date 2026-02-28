@@ -202,7 +202,7 @@ public class EditProfilController {
 
     private void openSmsVerificationDialog(String phone) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/verifySms.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/verifySms.fxml"));
             Parent root = loader.load();
 
             VerifySmsController controller = loader.getController();

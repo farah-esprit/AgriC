@@ -154,7 +154,7 @@ public class EditProfilAdminController {
                     Platform.runLater(() -> {
                         try {
 
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/profilAdmin.fxml"));
                             Parent root = loader.load();
 
                             ProfilAdminController controller = loader.getController();
