@@ -60,6 +60,11 @@ public class DiagnosticService implements IService<Diagnostic> {
     }
 
     @Override
+    public void supprimer(int id) throws SQLException {
+
+    }
+
+    @Override
     public void modifier(Diagnostic diag) throws SQLException {
 
         String sql = """

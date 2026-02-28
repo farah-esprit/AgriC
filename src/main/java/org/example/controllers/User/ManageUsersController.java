@@ -267,20 +267,24 @@ public class ManageUsersController {
     // ================= STATISTIQUES =================
     private void updateStatistics() {
         try {
-            Connection conn = MyDatabase.getConnection();
+            Connection conn = MyDatabase.getInstance().getConnection();
             Statement st = conn.createStatement();
 
             ResultSet rs = st.executeQuery("SELECT COUNT(*) as total FROM user");
-            if (rs.next() && totalUsersLabel != null) totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
+            if (rs.next() && totalUsersLabel != null)
+                totalUsersLabel.setText(String.valueOf(rs.getInt("total")));
 
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='ACTIF'");
-            if (rs.next() && actifsLabel != null) actifsLabel.setText(String.valueOf(rs.getInt("total")));
+            if (rs.next() && actifsLabel != null)
+                actifsLabel.setText(String.valueOf(rs.getInt("total")));
 
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE etatCompte='BLOQUE'");
-            if (rs.next() && bloquesLabel != null) bloquesLabel.setText(String.valueOf(rs.getInt("total")));
+            if (rs.next() && bloquesLabel != null)
+                bloquesLabel.setText(String.valueOf(rs.getInt("total")));
 
             rs = st.executeQuery("SELECT COUNT(*) as total FROM user WHERE date_creation >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-            if (rs.next() && nouveauxLabel != null) nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
+            if (rs.next() && nouveauxLabel != null)
+                nouveauxLabel.setText(String.valueOf(rs.getInt("total")));
 
         } catch (Exception e) {
             e.printStackTrace();
