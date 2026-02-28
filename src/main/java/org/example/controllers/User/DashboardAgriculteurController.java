@@ -231,7 +231,7 @@ public class DashboardAgriculteurController {
     @FXML
     private void handleLogout(MouseEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/User/login.fxml"));
             Stage stage = (Stage) contentPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgriConnect - Login");
