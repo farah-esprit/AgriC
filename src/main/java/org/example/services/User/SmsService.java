@@ -1,9 +1,12 @@
 package org.example.services.User;
+import com.vonage.client.sms.messages.TextMessage;
 import org.example.utils.ConfigLoader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
+import com.vonage.client.VonageClient;
+import com.vonage.client.sms.SmsSubmissionResponse;
+import com.vonage.client.sms.MessageStatus;
 public class SmsService {
 
     // ✅ Remplace par tes vraies clés Vonage
@@ -14,7 +17,7 @@ public class SmsService {
     // ✅ Stockage temporaire des codes (userId -> code)
     private static final Map<Integer, String> verificationCodes = new HashMap<>();
 
-    private static VonageClient client;
+    private static  VonageClient client;
 
     static {
         try {

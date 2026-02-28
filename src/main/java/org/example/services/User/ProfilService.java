@@ -13,11 +13,10 @@ public class ProfilService implements IService<Profil> {
     private Connection connection;
 
     public ProfilService() {
-        try {
-            connection = MyDatabase.getConnection();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+
+        MyDatabase db = new MyDatabase();
+        Connection conn = db.getConnection(); // ✅ Correct
+
     }
 
     //AJOUT
@@ -49,6 +48,11 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
+    @Override
+    public void supprimer(Profil profil) throws SQLException {
+
+    }
+
     //MODIFIER
     @Override
     public void modifier(Profil profil) {
@@ -78,6 +82,11 @@ public class ProfilService implements IService<Profil> {
         }
     }
 
+    @Override
+    public void lire(Profil profil) throws SQLException {
+
+    }
+
     //SUPPRIMER
     @Override
     public void supprimer(int id) {
@@ -97,7 +106,6 @@ public class ProfilService implements IService<Profil> {
     }
 
     //AFFICHER
-    @Override
     public void afficher() {
 
         String sql = """

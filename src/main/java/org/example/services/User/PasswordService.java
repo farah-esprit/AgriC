@@ -1,5 +1,5 @@
 package org.example.services.User;
-
+import org.mindrot.jbcrypt.BCrypt;
 
 
 public class PasswordService {

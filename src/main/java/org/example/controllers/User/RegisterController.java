@@ -1,6 +1,6 @@
 package org.example.controllers.User;
-
-
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;

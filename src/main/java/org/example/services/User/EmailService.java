@@ -6,6 +6,8 @@ import com.google.protobuf.Message;
 import com.mysql.cj.Session;
 import org.example.utils.ConfigLoader;
 
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.Properties;

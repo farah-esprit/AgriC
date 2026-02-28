@@ -98,7 +98,8 @@ public class PasswordResetService {
      */
     public void markTokenAsUsed(String token) {
         try {
-            Connection conn = MyDataBase.getConnection();
+            MyDatabase db = new MyDatabase();
+            Connection conn = db.getConnection(); // ✅ Correct
             String sql = "UPDATE password_reset SET used = TRUE WHERE token = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, token);
