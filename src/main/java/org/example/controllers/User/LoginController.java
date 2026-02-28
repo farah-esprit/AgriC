@@ -385,7 +385,7 @@ public class LoginController {
     @FXML
     private void handleRegister() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/register.fxml"));
             Parent root = loader.load();
             RegisterController controller = loader.getController();
             controller.setContentPane(this.contentPane);

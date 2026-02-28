@@ -137,7 +137,7 @@ public class AddUserController {
         // ✅ Retourner à ManageUsers dans le contentPane
         if (contentPane != null && manageUsersController != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/managerUsers.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/managerUsers.fxml"));
                 Parent root = loader.load();
                 ManageUsersController controller = loader.getController();
                 controller.setDashboardController(manageUsersController.getDashboardController());

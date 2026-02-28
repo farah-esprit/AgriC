@@ -95,7 +95,7 @@ public class ChangePasswordController {
         try {
             if (dashboardController != null) {
                 // ✅ Cas ADMIN → retour profilAdmin.fxml
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/profilAdmin.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/profilAdmin.fxml"));
                 Parent root = loader.load();
                 ProfilAdminController controller = loader.getController();
                 controller.setUser(currentUser);
