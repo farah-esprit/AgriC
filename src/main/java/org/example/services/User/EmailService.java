@@ -1,11 +1,11 @@
 package org.example.services.User;
 
 
-
+import javax.mail.Session;
 import com.google.protobuf.Message;
-import com.mysql.cj.Session;
 import org.example.utils.ConfigLoader;
 
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.net.Authenticator;
