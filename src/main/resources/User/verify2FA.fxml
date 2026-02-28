@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Verify2FAController">
+<StackPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.User.Verify2FAController">
     <children>
         <VBox alignment="CENTER" maxWidth="440.0" spacing="25" StackPane.alignment="CENTER">
             <padding><Insets bottom="30" left="30" right="30" top="30" /></padding>
