@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EditProfilController">
+<StackPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.User.EditProfilController">
     <children>
         <VBox maxWidth="480.0" prefHeight="512.0" prefWidth="480.0" spacing="15.0" style="-fx-background-color: #e7e3e3;" StackPane.alignment="CENTER">
             <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0" /></padding>
