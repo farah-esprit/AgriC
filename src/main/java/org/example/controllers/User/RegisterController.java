@@ -420,7 +420,7 @@ public class RegisterController {
 
             showSuccess(errorLabel, "Compte créé ! Vérifiez votre email.");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/verification.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/verification.fxml"));
             Parent root = loader.load();
 
             VerificationController controller = loader.getController();
