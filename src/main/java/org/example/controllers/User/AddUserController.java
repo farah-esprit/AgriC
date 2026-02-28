@@ -1,8 +1,5 @@
 package org.example.controllers.User;
-import entities.EtatCompte;
-import entities.Role;
-import entities.User;
-import javafx.application.Platform;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,10 +9,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.stage.Stage;
-import service.UserService;
-import utils.ValidationUtils;
+import org.example.entities.EtatCompte;
+import org.example.entities.Role;
+import org.example.entities.User;
+import org.example.services.User.UserService;
+import org.example.utils.ValidationUtils;
+
 public class AddUserController {
     @FXML private TextField nomField;
     @FXML private TextField emailField;
