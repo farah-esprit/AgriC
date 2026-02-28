@@ -2,8 +2,8 @@ package org.example;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class MainGUI extends Application {
@@ -11,22 +11,26 @@ public class MainGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Charger le layout principal avec sidebar
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/login.fxml"));
-            BorderPane root = loader.load();
+            // 🔹 Charger le layout principal (login.fxml)
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/User/login.fxml")
+            );
+            Parent root = loader.load();  // ✅ Charge correctement HBox du FXML
 
+            // 🔹 Créer la scène et appliquer le CSS
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+            scene.getStylesheets().add(
+                    getClass().getResource("/style.css").toExternalForm()
+            );
 
+            // 🔹 Configurer la fenêtre
             primaryStage.setTitle("🌱 Gestion des Cultures - Agriconnect");
             primaryStage.setScene(scene);
 
-            // 🔹 Fenêtre maximisée pour full screen (barre de tâches visible)
+            // Fenêtre maximisée (barre de tâches visible)
             primaryStage.setMaximized(true);
 
-            // Si tu veux le vrai full screen sans barre de tâches
-            // primaryStage.setFullScreen(true);
-
+            // Afficher la fenêtre
             primaryStage.show();
 
         } catch (Exception e) {
