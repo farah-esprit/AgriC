@@ -333,7 +333,7 @@ public class ManageUsersController {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addUser.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/addUser.fxml"));
             Parent root = loader.load();
             AddUserController controller = loader.getController();
             controller.setManageUsersController(this);

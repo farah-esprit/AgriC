@@ -117,7 +117,7 @@ public class ForgotPasswordController {
     // ================= NAVIGATION VERS RESET PASSWORD =================
     private void goToResetPassword() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resetPassword.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/resetPassword.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root));
