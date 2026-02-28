@@ -3,14 +3,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class MyDatabase {
     private final String USER = "root";
     private final String PASSWORD = "";
-    private final String URL = "jdbc:mysql://localhost:3306/AgriC";
+    private final String URL = "jdbc:mysql://localhost:3306/agriconnect_db";
     private Connection connection;
     private static MyDatabase instance;
 
-    private MyDatabase() {
+    public MyDatabase() {
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Connexion établie ✅");
@@ -27,7 +28,7 @@ public class MyDatabase {
         return instance;
     }
 
-    public Connection getConnection() {
+    public  Connection getConnection() {
         return connection;
     }
 }

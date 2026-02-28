@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.DashboardAgriculteurController"
+            prefWidth="1100" prefHeight="750"
+            style="-fx-background-color: #F4F7F6;">
+
+    <!-- Sidebar / Header -->
+    <VBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 0 0 30 10;">
+        <Label text="AgriConnect" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Espace Agriculteur" style="-fx-font-size: 11px; -fx-text-fill: #A7C09A; -fx-font-weight: bold;"/>
+    </VBox>
+
+    <!-- Top -->
+    <top>
+        <HBox alignment="CENTER_RIGHT" prefHeight="65"
+              style="-fx-background-color: white; -fx-padding: 0 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);">
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Bienvenue, Agriculteur 🌾" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2D3436;"/>
+            </HBox>
+            <Label text="21 Fév. 2026" style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <!-- Center -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="30" style="-fx-padding: 30;">
+
+                <Label text="Tableau de Bord" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2D3436;"/>
+
+                <!-- Statistiques rapides -->
+                <HBox spacing="20">
+                    <!-- Cultures actives -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                        <StackPane alignment="CENTER_LEFT">
+                            <Circle radius="18" fill="#F1F4F0"/>
+                            <Label text="🌱" style="-fx-padding: 0 0 0 8;"/>
+                        </StackPane>
+                        <Label text="Cultures Actives" style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <Label text="12" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3E6B27;"/>
+                    </VBox>
+
+                    <!-- Irrigations -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                        <StackPane alignment="CENTER_LEFT">
+                            <Circle radius="18" fill="#EDF2F7"/>
+                            <Label text="💧" style="-fx-padding: 0 0 0 8;"/>
+                        </StackPane>
+                        <Label text="Irrigations" style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <Label text="5 Aujourd'hui" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2D3436;"/>
+                    </VBox>
+
+                    <!-- Alertes Santé -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                        <StackPane alignment="CENTER_LEFT">
+                            <Circle radius="18" fill="#FFF1F0"/>
+                            <Label text="🩺" style="-fx-padding: 0 0 0 8;"/>
+                        </StackPane>
+                        <Label text="Alertes Santé" style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <Label text="3 Alertes" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #E74C3C;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Section météo et conseil -->
+                <HBox spacing="25">
+                    <!-- Météo -->
+                    <VBox spacing="15" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 20;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="🌦" style="-fx-font-size: 20px;"/>
+                            <Label text="MÉTÉO ACTUELLE" style="-fx-font-weight: bold; -fx-text-fill: #8E9AAF; -fx-font-size: 12px;"/>
+                        </HBox>
+                        <Separator/>
+                        <VBox spacing="12">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Température :" style="-fx-text-fill: #4A5568;"/>
+                                <Label fx:id="temperatureLabel" text="--" style="-fx-font-weight: bold;
+              -fx-font-size: 16px;
+              -fx-text-fill: #2D3436;"/>
+                            </HBox>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Vent :" style="-fx-text-fill: #4A5568;"/>
+                                <Label fx:id="windspeedLabel" text="--" style="-fx-font-weight: bold;
+              -fx-text-fill: #2D3436;"/>
+                            </HBox>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Conditions :" style="-fx-text-fill: #4A5568;"/>
+                                <Label fx:id="weatherCodeLabel" text="--" style="-fx-font-weight: bold; -fx-text-fill: #E67E22;"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Conseil du jour -->
+                    <!-- Conseil du jour -->
+                    <VBox spacing="15" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: #3E6B27; -fx-padding: 25; -fx-background-radius: 20;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(62,107,39,0.2), 15, 0, 0, 5);">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="💡" style="-fx-font-size: 20px;"/>
+                            <Label text="CONSEIL DU JOUR" style="-fx-font-weight: bold; -fx-text-fill: #A7C09A; -fx-font-size: 12px;"/>
+                        </HBox>
+                        <Label fx:id="agriTipLabel"
+                               text="Chargement du conseil..."
+                               wrapText="true"
+                               style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-line-spacing: 5;"/>
+                        <Region VBox.vgrow="ALWAYS"/>
+                        <Button text="En savoir plus" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-background-radius: 10;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

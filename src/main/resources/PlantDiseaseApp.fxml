@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.Diagnostic.PlantDiseaseController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      style="-fx-background-color: linear-gradient(to bottom, #EAF6E3, #D1F2C4);">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Titre -->
+    <TextArea text="Détection des maladies des plantes"
+              editable="false"
+              wrapText="true"
+              style="-fx-background-color: transparent; -fx-text-fill: #2F4F4F; -fx-font-size: 20px; -fx-font-weight: bold;"
+              maxHeight="50"
+              maxWidth="400"/>
+
+    <!-- Bouton stylé pour choisir l'image -->
+    <Button fx:id="btnChooseImage"
+            text="📷 Choisir une image de plante"
+            prefWidth="250"
+            prefHeight="40"
+            style="-fx-background-color: #4CAF50;
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px;
+                   -fx-background-radius: 15px;
+                   -fx-cursor: hand;">
+    </Button>
+
+    <!-- Affichage de l'image sélectionnée avec bordure -->
+    <ImageView fx:id="imageView"
+               fitHeight="300"
+               fitWidth="400"
+               preserveRatio="true"
+               style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.5, 0, 0);
+                      -fx-background-radius: 15px;
+                      -fx-border-radius: 15px;"/>
+
+    <!-- Zone de texte pour afficher le résultat -->
+    <TextArea fx:id="resultArea"
+              editable="false"
+              wrapText="true"
+              prefHeight="200"
+              prefWidth="400"
+              style="-fx-background-color: #FFFFFF;
+                     -fx-border-color: #4CAF50;
+                     -fx-border-radius: 10px;
+                     -fx-background-radius: 10px;
+                     -fx-padding: 10px;
+                     -fx-font-size: 14px;
+                     -fx-text-fill: #333333;"
+              promptText="Le résultat de l'analyse apparaîtra ici…"/>
+</VBox>
