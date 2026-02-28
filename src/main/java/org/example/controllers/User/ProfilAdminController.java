@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import org.example.entities.User;
 import org.example.services.User.UserService;
 
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -129,7 +130,7 @@ public class ProfilAdminController {
         }
     }
     @FXML
-    private void handleSupprimerCompte(ActionEvent event) {
+    private void handleSupprimerCompte(ActionEvent event) throws SQLException {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
         confirmation.setHeaderText("Supprimer votre compte ?");

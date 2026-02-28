@@ -1,16 +1,19 @@
 package org.example.services.User;
 
 
-import javax.mail.Session;
-import com.google.protobuf.Message;
 import org.example.utils.ConfigLoader;
 
+import javax.mail.Session;
+import javax.mail.Message;
 import javax.mail.Transport;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
+
 import java.util.Properties;
+
+
 
 public class EmailService {
 

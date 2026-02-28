@@ -28,6 +28,7 @@ import org.example.utils.MyDatabase;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
@@ -192,8 +193,20 @@ public class ManageUsersController {
                 deleteItem.setStyle("-fx-text-fill: #dc2626;");
 
                 editItem.setOnAction(e -> handleEditUser(getTableView().getItems().get(getIndex())));
-                blockItem.setOnAction(e -> handleToggleBlockUser(getTableView().getItems().get(getIndex())));
-                deleteItem.setOnAction(e -> handleDeleteUser(getTableView().getItems().get(getIndex())));
+                blockItem.setOnAction(e -> {
+                    try {
+                        handleToggleBlockUser(getTableView().getItems().get(getIndex()));
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+                deleteItem.setOnAction(e -> {
+                    try {
+                        handleDeleteUser(getTableView().getItems().get(getIndex()));
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
 
                 menuBtn.getItems().addAll(editItem, new SeparatorMenuItem(), blockItem, new SeparatorMenuItem(), deleteItem);
             }
@@ -254,7 +267,7 @@ public class ManageUsersController {
     // ================= STATISTIQUES =================
     private void updateStatistics() {
         try {
-            Connection conn = MyDataBase.getConnection();
+            Connection conn = MyDatabase.getConnection();
             Statement st = conn.createStatement();
 
             ResultSet rs = st.executeQuery("SELECT COUNT(*) as total FROM user");
@@ -346,7 +359,7 @@ public class ManageUsersController {
         }
     }
 
-    private void handleDeleteUser(User user) {
+    private void handleDeleteUser(User user) throws SQLException {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmation");
         confirmation.setHeaderText("Supprimer l'utilisateur ?");
@@ -361,7 +374,7 @@ public class ManageUsersController {
         }
     }
 
-    private void handleToggleBlockUser(User user) {
+    private void handleToggleBlockUser(User user) throws SQLException {
         if (user.getEtatCompte() == EtatCompte.ACTIF) {
             user.setEtatCompte(EtatCompte.BLOQUE);
             showSuccess("🔒 Compte bloqué !");

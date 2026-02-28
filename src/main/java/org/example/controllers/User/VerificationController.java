@@ -16,6 +16,7 @@ import org.example.entities.User;
 import org.example.services.User.UserService;
 
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class VerificationController {
@@ -43,7 +44,7 @@ public class VerificationController {
     }
 
     @FXML
-    private void handleVerify() {
+    private void handleVerify() throws SQLException {
         String codeSaisi = codeField.getText().trim();
 
         if (codeSaisi.isEmpty()) {
