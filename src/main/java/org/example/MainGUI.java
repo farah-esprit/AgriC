@@ -12,7 +12,7 @@ public class MainGUI extends Application {
     public void start(Stage primaryStage) {
         try {
             // Charger le layout principal avec sidebar
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainLayout.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/login.fxml"));
             BorderPane root = loader.load();
 
             Scene scene = new Scene(root);
