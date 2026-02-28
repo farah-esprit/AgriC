@@ -81,7 +81,7 @@ public class ProfilAdminController {
     private void handleModifierProfil(ActionEvent event) {
         if (dashboardController != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/editProfilAdmin.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/editProfilAdmin.fxml"));
                 Parent root = loader.load();
 
                 EditProfilAdminController controller = loader.getController();

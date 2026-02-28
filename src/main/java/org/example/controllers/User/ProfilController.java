@@ -189,7 +189,7 @@ public class ProfilController {
     @FXML
     private void handleCreateProfil() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/editProfil.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/editProfil.fxml"));
             Parent root = loader.load();
             EditProfilController controller = loader.getController();
             controller.setProfilController(this);
