@@ -120,7 +120,7 @@ public class VerifySmsController {
     private void backToEditProfil() {
         if (contentPane != null && editProfilController != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/editProfil.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/editProfil.fxml"));
                 Parent root = loader.load();
 
                 EditProfilController controller = loader.getController();
