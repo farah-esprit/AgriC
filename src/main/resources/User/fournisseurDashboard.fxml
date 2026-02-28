@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane minHeight="700.0" minWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardFournisseurController">
+<AnchorPane minHeight="700.0" minWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.User.DashboardFournisseurController">
     <children>
         <!-- ==================== SIDEBAR VERTE FIXE ==================== -->
         <AnchorPane fx:id="sidebar" prefWidth="280.0" style="-fx-background-color: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
