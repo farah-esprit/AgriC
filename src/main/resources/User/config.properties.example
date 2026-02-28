@@ -1,0 +1,18 @@
+# AssemblyAI
+assemblyai.api.key=VOTRE_CLE_ICI
+
+# reCAPTCHA
+recaptcha.site.key=VOTRE_SITE_KEY_ICI
+recaptcha.secret.key=VOTRE_SECRET_KEY_ICI
+
+# Email Gmail
+email.address=VOTRE_EMAIL_ICI
+email.password=VOTRE_MOT_DE_PASSE_APPLICATION_ICI
+
+# Google OAuth
+google.client.id=VOTRE_CLIENT_ID_ICI
+google.client.secret=VOTRE_CLIENT_SECRET_ICI
+
+# Vonage SMS
+vonage.api.key=VOTRE_API_KEY_ICI
+vonage.api.secret=VOTRE_API_SECRET_ICI
