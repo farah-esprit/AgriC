@@ -104,7 +104,7 @@ public class ChangePasswordController {
 
             } else if (profilController != null) {
                 // ✅ Cas AGRICULTEUR/EXPERT/FOURNISSEUR → retour profil.fxml
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/profil.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/User/profil.fxml"));
                 Parent root = loader.load();
                 ProfilController controller = loader.getController();
                 controller.setUser(currentUser);
