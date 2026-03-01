@@ -39,31 +39,31 @@ public class LoginController {
     @FXML private Label           googleErrorLabel;
 
     // ── Champs VOCAUX pour le formulaire LOGIN ────────────────────────────
-    @FXML private VBox            voiceBox;             // section vocale login
-    @FXML private ProgressBar     voiceProgressBar;     // barre login
-    @FXML private Label           voiceStatusLabel;     // status login
-    @FXML private Button          btnVoiceRecord;       // bouton enregistrer login
-    @FXML private Button          btnVoiceVerify;       // bouton vérifier login
-    @FXML private Label           voiceSimilarityLabel; // résultat login
+    @FXML private VBox            voiceBox;
+    @FXML private ProgressBar     voiceProgressBar;
+    @FXML private Label           voiceStatusLabel;
+    @FXML private Button          btnVoiceRecord;
+    @FXML private Button          btnVoiceVerify;
+    @FXML private Label           voiceSimilarityLabel;
 
     // ── Champs VOCAUX pour le formulaire GOOGLE ROLE ──────────────────────
-    @FXML private VBox            voiceBoxGoogle;             // section vocale google
-    @FXML private ProgressBar     voiceProgressBarGoogle;     // barre google
-    @FXML private Label           voiceStatusLabelGoogle;     // status google
-    @FXML private Button          btnVoiceRecordGoogle;       // bouton enregistrer google
-    @FXML private Button          btnVoiceVerifyGoogle;       // bouton vérifier google
-    @FXML private Label           voiceSimilarityLabelGoogle; // résultat google
+    @FXML private VBox            voiceBoxGoogle;
+    @FXML private ProgressBar     voiceProgressBarGoogle;
+    @FXML private Label           voiceStatusLabelGoogle;
+    @FXML private Button          btnVoiceRecordGoogle;
+    @FXML private Button          btnVoiceVerifyGoogle;
+    @FXML private Label           voiceSimilarityLabelGoogle;
 
     // ── Services ──────────────────────────────────────────────────────────
     private UserService           userService;
     private GoogleAuthService     googleAuthService;
-    private GoogleAuthService.GoogleUserInfo currentGoogleUser;
+    private GoogleAuthService.GoogleUserInfo currentGoogleUser; // null si utilisateur existant
     private final VoiceAuthService voiceAuthService = new VoiceAuthService();
 
     // ── État interne vocal ─────────────────────────────────────────────────
-    private User  pendingUser;        // user en attente de validation vocale
-    private File  voiceRecordedFile;  // fichier audio enregistré
-    private boolean isGoogleFlow = false; // flag pour savoir si on est dans le flux Google
+    private User    pendingUser;
+    private File    voiceRecordedFile;
+    private boolean isGoogleFlow = false;
 
     // =========================================================================
     // INITIALISATION
@@ -117,15 +117,13 @@ public class LoginController {
             return;
         }
 
-        // ── Vérifier si empreinte vocale existe → afficher section vocale ──
         if (voiceAuthService.hasVoicePrint(user.getEmail())) {
-            pendingUser = user;
+            pendingUser  = user;
             isGoogleFlow = false;
             showVoiceSection();
             return;
         }
 
-        // Pas d'empreinte → flow normal direct
         finishLogin(user);
     }
 
@@ -155,7 +153,7 @@ public class LoginController {
     }
 
     // =========================================================================
-    // BOUTON "ENREGISTRER (3s)" — utilisé par LOGIN et GOOGLE
+    // BOUTON "ENREGISTRER (3s)"
     // =========================================================================
     @FXML
     private void handleVoiceRecord() {
@@ -163,26 +161,20 @@ public class LoginController {
 
         setVoiceStatus("🔴 Enregistrement... parlez maintenant !", "#f44336", isGoogle);
 
-        // Gérer la barre de progression selon le contexte
-        ProgressBar bar = isGoogle ? voiceProgressBarGoogle : voiceProgressBar;
-        Button recordBtn = isGoogle ? btnVoiceRecordGoogle : btnVoiceRecord;
-        Button verifyBtn = isGoogle ? btnVoiceVerifyGoogle : btnVoiceVerify;
-        Label simLabel = isGoogle ? voiceSimilarityLabelGoogle : voiceSimilarityLabel;
+        ProgressBar bar       = isGoogle ? voiceProgressBarGoogle : voiceProgressBar;
+        Button      recordBtn = isGoogle ? btnVoiceRecordGoogle   : btnVoiceRecord;
+        Button      verifyBtn = isGoogle ? btnVoiceVerifyGoogle   : btnVoiceVerify;
+        Label       simLabel  = isGoogle ? voiceSimilarityLabelGoogle : voiceSimilarityLabel;
 
-        if (bar != null) {
-            bar.setVisible(true);
-            bar.setProgress(-1);
-        }
+        if (bar       != null) { bar.setVisible(true); bar.setProgress(-1); }
         if (recordBtn != null) recordBtn.setDisable(true);
         if (verifyBtn != null) verifyBtn.setDisable(true);
-        if (simLabel != null) simLabel.setVisible(false);
+        if (simLabel  != null) simLabel.setVisible(false);
 
         new Thread(() -> {
             voiceRecordedFile = recordVoice(3);
-
             Platform.runLater(() -> {
                 if (bar != null) bar.setProgress(1.0);
-
                 if (voiceRecordedFile != null) {
                     setVoiceStatus("✅ Enregistrement terminé — cliquez Vérifier", "#4CAF50", isGoogle);
                     if (verifyBtn != null) verifyBtn.setDisable(false);
@@ -195,7 +187,7 @@ public class LoginController {
     }
 
     // =========================================================================
-    // BOUTON "VÉRIFIER" — utilisé par LOGIN et GOOGLE
+    // BOUTON "VÉRIFIER"
     // =========================================================================
     @FXML
     private void handleVoiceVerify() {
@@ -208,15 +200,12 @@ public class LoginController {
 
         setVoiceStatus("🔍 Vérification en cours...", "#2196f3", isGoogle);
 
-        ProgressBar bar = isGoogle ? voiceProgressBarGoogle : voiceProgressBar;
-        Button recordBtn = isGoogle ? btnVoiceRecordGoogle : btnVoiceRecord;
-        Button verifyBtn = isGoogle ? btnVoiceVerifyGoogle : btnVoiceVerify;
-        Label simLabel = isGoogle ? voiceSimilarityLabelGoogle : voiceSimilarityLabel;
+        ProgressBar bar       = isGoogle ? voiceProgressBarGoogle : voiceProgressBar;
+        Button      recordBtn = isGoogle ? btnVoiceRecordGoogle   : btnVoiceRecord;
+        Button      verifyBtn = isGoogle ? btnVoiceVerifyGoogle   : btnVoiceVerify;
+        Label       simLabel  = isGoogle ? voiceSimilarityLabelGoogle : voiceSimilarityLabel;
 
-        if (bar != null) {
-            bar.setVisible(true);
-            bar.setProgress(-1);
-        }
+        if (bar       != null) { bar.setVisible(true); bar.setProgress(-1); }
         if (verifyBtn != null) verifyBtn.setDisable(true);
         if (recordBtn != null) recordBtn.setDisable(true);
 
@@ -225,7 +214,6 @@ public class LoginController {
 
         new Thread(() -> {
             boolean ok = voiceAuthService.verify(userToVerify.getEmail(), audioFile);
-
             Platform.runLater(() -> {
                 if (bar != null) bar.setVisible(false);
 
@@ -235,12 +223,10 @@ public class LoginController {
                         simLabel.setText("✅ Voix reconnue avec succès");
                         simLabel.setVisible(true);
                     }
-
                     javafx.animation.PauseTransition pause =
                             new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1));
                     pause.setOnFinished(e -> finishLogin(userToVerify));
                     pause.play();
-
                 } else {
                     setVoiceStatus("❌ Voix non reconnue — réessayez", "#f44336", isGoogle);
                     voiceRecordedFile = null;
@@ -252,7 +238,7 @@ public class LoginController {
     }
 
     // =========================================================================
-    // HELPER : Définir le status vocal (LOGIN ou GOOGLE)
+    // HELPER : status vocal
     // =========================================================================
     private void setVoiceStatus(String text, String color, boolean isGoogle) {
         Label statusLabel = isGoogle ? voiceStatusLabelGoogle : voiceStatusLabel;
@@ -271,7 +257,6 @@ public class LoginController {
         System.out.println("2FA activé pour " + user.getEmail() + " : " + twoFactorEnabled);
 
         if (twoFactorEnabled) {
-            System.out.println("Redirection vers vérification 2FA...");
             redirectToTwoFactorVerification(user);
         } else {
             showSuccess("Connexion réussie ! Bienvenue " + user.getNom());
@@ -295,29 +280,32 @@ public class LoginController {
                         User existingUser = userService.findByEmail(googleUser.getEmail());
 
                         if (existingUser != null) {
-                            System.out.println("✅ Utilisateur Google trouvé : " + existingUser.getEmail());
+                            System.out.println("✅ Utilisateur Google existant : " + existingUser.getEmail());
 
-                            // ✅ Vérifier si empreinte vocale existe
                             if (voiceAuthService.hasVoicePrint(existingUser.getEmail())) {
-                                pendingUser = existingUser;
-                                isGoogleFlow = true;
+                                // Utilisateur existant avec empreinte vocale
+                                // currentGoogleUser reste null — pas besoin de créer un compte
+                                pendingUser      = existingUser;
+                                isGoogleFlow     = true;
+                                currentGoogleUser = null; // explicitement null : compte déjà créé
                                 showGoogleRoleSelection(googleUser);
                                 showVoiceSectionGoogle();
                                 return;
                             }
 
-                            // Pas d'empreinte vocale
+                            // Utilisateur existant sans empreinte vocale
                             boolean twoFactorEnabled = userService.is2FAEnabled(existingUser.getId());
-
                             if (twoFactorEnabled) {
                                 redirectToTwoFactorVerification(existingUser);
                             } else {
                                 showSuccess("Connexion réussie ! Bienvenue " + existingUser.getNom());
                                 redirectToDashboard(existingUser);
                             }
+
                         } else {
+                            // Nouvel utilisateur Google → afficher sélection de rôle
                             currentGoogleUser = googleUser;
-                            isGoogleFlow = true;
+                            isGoogleFlow      = true;
                             showGoogleRoleSelection(googleUser);
                         }
                     });
@@ -344,11 +332,26 @@ public class LoginController {
 
     @FXML
     private void handleGoogleRoleContinue() {
+        // ✅ CORRIGÉ : si pendingUser != null, l'utilisateur existe déjà
+        //              (cas Google + empreinte vocale) → ne pas recréer de compte
+        if (pendingUser != null && currentGoogleUser == null) {
+            // Utilisateur existant validé par voix → connexion directe
+            finishLogin(pendingUser);
+            return;
+        }
+
+        // Sinon : nouvel utilisateur Google → créer le compte
+        if (currentGoogleUser == null) {
+            showGoogleError("Session expirée, veuillez recommencer la connexion Google");
+            return;
+        }
+
         Role selectedRole = googleRoleChoice.getValue();
         if (selectedRole == null) {
             showGoogleError("Veuillez sélectionner un type de compte");
             return;
         }
+
         try {
             User newUser = new User();
             newUser.setNom(currentGoogleUser.getName());
@@ -372,9 +375,11 @@ public class LoginController {
         googleRoleBox.setVisible(false);
         googleRoleBox.setManaged(false);
         currentGoogleUser = null;
-        errorLabel.setText("");
-        googleErrorLabel.setText("");
-        isGoogleFlow = false;
+        pendingUser       = null;
+        isGoogleFlow      = false;
+        voiceRecordedFile = null;
+        if (errorLabel      != null) errorLabel.setText("");
+        if (googleErrorLabel != null) googleErrorLabel.setText("");
         System.out.println("Retour au formulaire de login");
     }
 
@@ -392,9 +397,8 @@ public class LoginController {
             contentPane.getChildren().add(root);
             setAnchors(root);
         } catch (Exception e) {
-            System.out.println("Erreur lors du chargement de l'inscription");
-            e.printStackTrace();
             showError("Erreur lors du chargement de la page d'inscription");
+            e.printStackTrace();
         }
     }
 
@@ -409,8 +413,8 @@ public class LoginController {
             contentPane.getChildren().add(root);
             setAnchors(root);
         } catch (Exception e) {
-            e.printStackTrace();
             showError("Erreur lors du chargement de la page Mot de passe oublié");
+            e.printStackTrace();
         }
     }
 
@@ -431,26 +435,25 @@ public class LoginController {
 
     private void redirectToDashboard(User user) {
         try {
-            String fxmlFile = "";
-            switch (user.getRole()) {
-                case AGRICULTEUR: fxmlFile = "/agriculteurDashboard.fxml"; break;
-                case EXPERT:      fxmlFile = "/expertDashboard.fxml";      break;
-                case FOURNISSEUR: fxmlFile = "/fournisseurDashboard.fxml"; break;
-                case ADMIN:       fxmlFile = "/adminDashboard.fxml";       break;
-            }
+            String fxmlFile = switch (user.getRole()) {
+                case AGRICULTEUR -> "/DashboardAgriculteur.fxml";
+                case EXPERT      -> "/expertDashboard.fxml";
+                case FOURNISSEUR -> "/fournisseurDashboard.fxml";
+                case ADMIN       -> "/adminDashboard.fxml";
+            };
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
             Object controller = loader.getController();
-            if (controller instanceof DashboardAdminController)
-                ((DashboardAdminController) controller).setUser(user);
+            if      (controller instanceof DashboardAdminController)
+                ((DashboardAdminController)       controller).setUser(user);
             else if (controller instanceof DashboardAgriculteurController)
                 ((DashboardAgriculteurController) controller).setUser(user);
             else if (controller instanceof DashboardFournisseurController)
                 ((DashboardFournisseurController) controller).setUser(user);
             else if (controller instanceof DashboardExpertController)
-                ((DashboardExpertController) controller).setUser(user);
+                ((DashboardExpertController)      controller).setUser(user);
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Scene scene = new Scene(root);
@@ -471,6 +474,74 @@ public class LoginController {
     }
 
     // =========================================================================
+    // CONNEXION VOCALE UNIVERSELLE
+    // =========================================================================
+    @FXML
+    private void handleVoiceLogin() {
+        if (voiceProgressBar != null) {
+            voiceProgressBar.setVisible(true);
+            voiceProgressBar.setProgress(-1);
+        }
+        if (voiceStatusLabel != null) {
+            voiceStatusLabel.setText("🔴 Parlez maintenant...");
+            voiceStatusLabel.setVisible(true);
+        }
+
+        new Thread(() -> {
+            File audioFile = recordVoice(3);
+
+            if (audioFile == null) {
+                Platform.runLater(() -> {
+                    if (voiceProgressBar != null) voiceProgressBar.setVisible(false);
+                    if (voiceStatusLabel != null) {
+                        voiceStatusLabel.setText("❌ Erreur microphone");
+                        voiceStatusLabel.setStyle("-fx-text-fill: #d32f2f;");
+                    }
+                });
+                return;
+            }
+
+            VoiceAuthService.VoiceResult result = voiceAuthService.identifyFromFile(audioFile);
+
+            Platform.runLater(() -> {
+                if (voiceProgressBar != null) voiceProgressBar.setVisible(false);
+
+                if (result.authenticated && result.similarity >= 0.80) {
+                    User user = userService.findByEmail(result.username);
+
+                    if (user != null && user.getEtatCompte() != EtatCompte.BLOQUE) {
+                        String percent = String.format("%.0f%%", result.similarity * 100);
+                        showSuccess("✅ Bienvenue " + user.getNom() + " ! (similarité " + percent + ")");
+
+                        if (voiceStatusLabel != null) {
+                            voiceStatusLabel.setText("✅ Identité confirmée !");
+                            voiceStatusLabel.setStyle("-fx-text-fill: #4CAF50;");
+                        }
+
+                        javafx.animation.PauseTransition pause =
+                                new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
+                        pause.setOnFinished(e -> finishLogin(user));
+                        pause.play();
+
+                    } else if (user != null && user.getEtatCompte() == EtatCompte.BLOQUE) {
+                        showError("❌ Votre compte est bloqué");
+                        if (voiceStatusLabel != null) voiceStatusLabel.setVisible(false);
+                    } else {
+                        showError("❌ Utilisateur introuvable");
+                        if (voiceStatusLabel != null) voiceStatusLabel.setVisible(false);
+                    }
+                } else {
+                    showError("❌ Voix non reconnue. Utilisez la connexion classique.");
+                    if (voiceStatusLabel != null) {
+                        voiceStatusLabel.setText("⚠️ Aucune correspondance (seuil: 80%)");
+                        voiceStatusLabel.setStyle("-fx-text-fill: #ff9800;");
+                    }
+                }
+            });
+        }).start();
+    }
+
+    // =========================================================================
     // UTILITAIRES
     // =========================================================================
     private void setAnchors(Parent root) {
@@ -481,25 +552,30 @@ public class LoginController {
     }
 
     private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        if (errorLabel != null) {
+            errorLabel.setText(message);
+            errorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        }
     }
 
     private void showSuccess(String message) {
-        errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+        if (errorLabel != null) {
+            errorLabel.setText(message);
+            errorLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+        }
     }
 
     private void showGoogleError(String message) {
-        googleErrorLabel.setText(message);
-        googleErrorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        if (googleErrorLabel != null) {
+            googleErrorLabel.setText(message);
+            googleErrorLabel.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold;");
+        }
     }
 
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
-    // ── Enregistrement audio N secondes → fichier WAV temporaire ─────────
     private File recordVoice(int seconds) {
         try {
             AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
@@ -536,70 +612,5 @@ public class LoginController {
             System.err.println("Erreur enregistrement : " + e.getMessage());
             return null;
         }
-    }
-    // ✅ NOUVELLE MÉTHODE : Connexion vocale universelle
-    @FXML
-    private void handleVoiceLogin() {
-        if (voiceProgressBar != null) {
-            voiceProgressBar.setVisible(true);
-            voiceProgressBar.setProgress(-1);
-        }
-        if (voiceStatusLabel != null) {
-            voiceStatusLabel.setText("🔴 Parlez maintenant...");
-            voiceStatusLabel.setVisible(true);
-        }
-
-        new Thread(() -> {
-            File audioFile = recordVoice(3);
-
-            if (audioFile == null) {
-                Platform.runLater(() -> {
-                    if (voiceProgressBar != null) voiceProgressBar.setVisible(false);
-                    if (voiceStatusLabel != null) {
-                        voiceStatusLabel.setText("❌ Erreur microphone");
-                        voiceStatusLabel.setStyle("-fx-text-fill: #d32f2f;");
-                    }
-                });
-                return;
-            }
-
-            // ✅ Identification universelle
-            VoiceAuthService.VoiceResult result = voiceAuthService.identifyFromFile(audioFile);
-
-            Platform.runLater(() -> {
-                if (voiceProgressBar != null) voiceProgressBar.setVisible(false);
-
-                if (result.authenticated && result.similarity >= 0.80) {
-                    User user = userService.findByEmail(result.username);
-
-                    if (user != null && user.getEtatCompte() != EtatCompte.BLOQUE) {
-                        String percent = String.format("%.0f%%", result.similarity * 100);
-                        showSuccess("✅ Bienvenue " + user.getNom() + " ! (similarité " + percent + ")");
-
-                        if (voiceStatusLabel != null) {
-                            voiceStatusLabel.setText("✅ Identité confirmée !");
-                            voiceStatusLabel.setStyle("-fx-text-fill: #4CAF50;");
-                        }
-
-                        javafx.animation.PauseTransition pause =
-                                new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
-                        pause.setOnFinished(e -> finishLogin(user));
-                        pause.play();
-                    } else if (user != null && user.getEtatCompte() == EtatCompte.BLOQUE) {
-                        showError("❌ Votre compte est bloqué");
-                        if (voiceStatusLabel != null) voiceStatusLabel.setVisible(false);
-                    } else {
-                        showError("❌ Utilisateur introuvable");
-                        if (voiceStatusLabel != null) voiceStatusLabel.setVisible(false);
-                    }
-                } else {
-                    showError("❌ Voix non reconnue. Utilisez la connexion classique.");
-                    if (voiceStatusLabel != null) {
-                        voiceStatusLabel.setText("⚠️ Aucune correspondance (seuil: 80%)");
-                        voiceStatusLabel.setStyle("-fx-text-fill: #ff9800;");
-                    }
-                }
-            });
-        }).start();
     }
 }

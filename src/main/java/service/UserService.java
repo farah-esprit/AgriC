@@ -258,9 +258,11 @@ public class UserService implements IService<User> {
         }
     }
 
+
+
     // ================= AFFICHER TOUS LES USERS =================
     @Override
-    public void afficher() {
+    public void lire(User user) throws SQLException {
         String sql = "SELECT * FROM user ORDER BY date_creation DESC";
 
         try {
@@ -290,6 +292,7 @@ public class UserService implements IService<User> {
             e.printStackTrace();
         }
     }
+
 
     // ================= COMPTER LES UTILISATEURS =================
     public int compterUsers() {

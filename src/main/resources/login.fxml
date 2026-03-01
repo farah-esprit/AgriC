@@ -67,7 +67,7 @@
                             <Label fx:id="voiceStatusLabel" alignment="CENTER" style="-fx-font-size: 12px; -fx-text-fill: white; -fx-font-weight: bold;" text="Cliquez et parlez pour vous connecter" wrapText="true" />
 
                             <!-- Bouton unique : Connexion vocale -->
-                            <Button fx:id="btnVoiceLogin" onAction="#handleVoiceLogin" prefHeight="50.0" prefWidth="310.0" style="-fx-background-color: white;                                        -fx-text-fill: #667eea;                                        -fx-background-radius: 25;                                        -fx-cursor: hand;                                        -fx-font-size: 14px;                                        -fx-font-weight: bold;                                        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);" text="🎤  PARLER POUR SE CONNECTER" />
+                            <Button fx:id="btnVoiceLogin" onAction="#handleVoiceLogin" prefHeight="50.0" prefWidth="310.0" style="-fx-background-color: white; -fx-text-fill: #000000; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);" text="🎤  PARLER POUR SE CONNECTER" />
 
                             <!-- Résultat -->
                             <Label fx:id="voiceSimilarityLabel" alignment="CENTER" style="-fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;" text="" visible="false" />

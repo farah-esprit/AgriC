@@ -107,7 +107,11 @@
             <artifactId>google-api-services-oauth2</artifactId>
             <version>v2-rev20200213-2.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
         <!-- Gson pour parser JSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

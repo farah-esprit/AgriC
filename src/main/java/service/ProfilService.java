@@ -95,7 +95,7 @@ public class ProfilService implements IService<Profil> {
 
     //AFFICHER
     @Override
-    public void afficher() {
+    public void lire(Profil p) throws SQLException {
 
         String sql = """
                 SELECT p.id, p.nom, p.prenom, p.telephone, u.email

@@ -2,16 +2,19 @@ package main;
 
 import entities.*;
 import service.*;
+import java.sql.SQLException;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        // Services
         UserService userService = new UserService();
         ProfilService profilService = new ProfilService();
 
         System.out.println("========= TEST CRUD USER =========");
 
+        // Création d'un User
         User u1 = new User(
                 "Fatma",
                 "fatma_test@gmail.com",
@@ -20,46 +23,71 @@ public class Main {
                 EtatCompte.ACTIF
         );
 
-        // 🔥 OBLIGATOIRE : ajouter avant modifier
-        userService.ajouter(u1);
+        try {
+            // AJOUTER
+            userService.ajouter(u1);
 
-        userService.afficher();
+            // LIRE / AFFICHER tout
+            System.out.println("\n--- Liste des Users ---");
+            userService.lire(null); // null = lire tous les users
 
-        // Modifier User
-        u1.setNom("Fatma Souei");
-        userService.modifier(u1);
+            // MODIFIER
+            u1.setNom("Fatma Souei");
+            userService.modifier(u1);
 
-        System.out.println("\n--- Users après modification ---");
-        userService.afficher();
+            System.out.println("\n--- Users après modification ---");
+            userService.lire(null);
+
+            // SUPPRIMER (optionnel)
+            // userService.supprimer(u1.getUserId());
+
+        } catch (SQLException e) {
+            System.out.println("Erreur UserService : " + e.getMessage());
+            e.printStackTrace();
+        }
 
         System.out.println("\n========= TEST CRUD PROFIL =========");
 
+        // Création Profil
         Profil profil = new Profil(
                 "Bio Fatma",
                 "22222222",
                 "Fatma",
                 "Souei",
                 "image.png",
-                u1
+                u1 // association avec User
         );
 
-        profilService.ajouter(profil);
-        profilService.afficher();
+        try {
+            // AJOUTER
+            profilService.ajouter(profil);
 
-        // Modifier Profil
-        Profil p2 = new Profil(
-                1, // ⚠️ ID existant en BD
-                "Nouvelle Bio",
-                "99999999",
-                "Fatma",
-                "Souei",
-                "new.png",
-                u1
-        );
+            // LIRE / AFFICHER tout
+            System.out.println("\n--- Liste des Profils ---");
+            profilService.lire(null); // null = lire tous les profils
 
-        profilService.modifier(p2);
+            // MODIFIER
+            Profil p2 = new Profil(
+                    1, // ⚠️ ID existant en BD
+                    "Nouvelle Bio",
+                    "99999999",
+                    "Fatma",
+                    "Souei",
+                    "new.png",
+                    u1
+            );
+            profilService.modifier(p2);
 
-        System.out.println("\n--- Profils après modification ---");
-        profilService.afficher();
+            System.out.println("\n--- Profils après modification ---");
+            profilService.lire(null);
+
+            // SUPPRIMER (optionnel)
+            // profilService.supprimer(p2.getId());
+
+        } catch (SQLException e) {
+            System.out.println("Erreur ProfilService : " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 }

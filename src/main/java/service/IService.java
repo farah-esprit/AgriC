@@ -1,13 +1,16 @@
 package service;
+import java.sql.SQLException;
 
 public interface IService<T> {
 
-    void ajouter(T t);
 
-    void modifier(T t);
+        void ajouter(T t) throws SQLException;
 
-    void supprimer(int id);
+        void modifier(T t) throws SQLException;
 
-    void afficher();
+        void supprimer(int id) throws SQLException;
+
+       void lire(T t) throws SQLException;
+
 }
 

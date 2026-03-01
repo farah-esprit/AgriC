@@ -1,0 +1,47 @@
+/* Sidebar VBox */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #2E8B57, #4CAF50);
+    -fx-padding: 25;
+}
+
+/* Label titre */
+.sidebar-title {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* Separator */
+.sidebar-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Boutons normaux */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Bouton logout */
+.sidebar-btn-logout {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffdddd;
+    -fx-font-size: 15px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sidebar-btn-logout:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}

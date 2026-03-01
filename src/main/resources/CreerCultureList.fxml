@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="650" prefWidth="1100" style="-fx-background-color: #f0f4f0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="controller.CultureListController">
+
+    <center>
+        <VBox spacing="20" style="-fx-padding:30;">
+
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding:0 0 10 0;">
+                <Label style="-fx-font-family:'Playfair Display'; -fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#2D5016;" text="🌱 Mes cultures" />
+
+                <Button onAction="#openAddForm" style="-fx-background-color: #66BB6A;                                -fx-text-fill: white;                                -fx-font-weight: bold;                                -fx-background-radius: 16;                                -fx-padding:10 20;                                -fx-cursor: hand;                                -fx-font-size:14px;" text="➕ Nouvelle culture" />
+
+
+            </HBox>
+
+            <!-- Filtre -->
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding:0 0 0 0;">
+                <Label style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#3D2E1A;" text="Filtrer par type :" />
+
+                <ComboBox fx:id="cbType" prefWidth="220" promptText="Tous les types" style="-fx-background-radius:16;                                  -fx-border-radius:16;                                  -fx-border-color:#A8D5B5;                                  -fx-border-width:1;                                  -fx-background-color:#ffffff;                                  -fx-padding:5 10 5 10;                                  -fx-font-size:14px;                                  -fx-cursor: hand;" />
+            </HBox>
+
+            <!-- Recherche -->
+            <TextField fx:id="txtRecherche" promptText="🔍 Rechercher une culture..." style="-fx-background-radius:16;                               -fx-background-color:#ffffff;                               -fx-border-color:#A8D5B5;                               -fx-border-radius:16;                               -fx-padding:10 15;                               -fx-font-size:14px;                               -fx-cursor:text;" />
+
+            <!-- Pagination -->
+            <Pagination fx:id="pagination" maxPageIndicatorCount="10" pageCount="1" style="-fx-page-information-visible: false;                                -fx-padding:20 0 0 0;" />
+
+        </VBox>
+    </center>
+
+</BorderPane>
