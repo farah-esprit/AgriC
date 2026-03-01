@@ -92,16 +92,21 @@
 
                     </children>
                 </VBox>
+                <VBox alignment="CENTER" spacing="6.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <children>
 
-                <!-- Avatar profil bas -->
-                <StackPane layoutX="9.0" layoutY="632.0" onMouseClicked="#handleGoToProfil" prefHeight="61.0" prefWidth="48.0" style="-fx-cursor: hand;">
-                    <Circle fill="#4CAF5033" radius="21.0" />
-                    <Circle fill="#2e4d2e" radius="24.0" />
-                    <Label style="-fx-font-size: 16px;" text="👨‍🌾" textFill="#a9a9a9" />
-                </StackPane>
+                        <!-- Avatar profil bas -->
+                        <StackPane onMouseClicked="#handleGoToProfil" prefHeight="61.0" prefWidth="48.0" style="-fx-cursor: hand;">
+                            <Circle fill="#4CAF5033" radius="21.0" />
+                            <Circle fill="#2e4d2e" radius="24.0" />
+                            <Label style="-fx-font-size: 16px;" text="👨‍🌾" textFill="#a9a9a9" />
+                        </StackPane>
 
-                <!-- Bouton logout bas -->
-                <Button layoutX="11.0" layoutY="699.0" onMouseClicked="#handleLogout" prefHeight="42.0" prefWidth="45.0" style="-fx-background-color: #000000; -fx-text-fill: #ffffff;                                -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 16px;" text="⏻" />
+                        <!-- Bouton logout bas -->
+                        <Button onMouseClicked="#handleLogout" prefHeight="42.0" prefWidth="45.0" style="-fx-background-color: #000000;                        -fx-text-fill: #ffffff;                        -fx-background-radius: 10;                        -fx-cursor: hand;                        -fx-font-size: 16px;" text="⏻" />
+
+                    </children>
+                </VBox>
 
             </children>
         </AnchorPane>
@@ -109,7 +114,7 @@
         <!-- ══════════════════════════════════════════════════════════════ -->
         <!-- SIDEBAR EXPANDED (245px) - APPARAÎT AU HOVER                  -->
         <!-- ══════════════════════════════════════════════════════════════ -->
-        <AnchorPane fx:id="sidebarExpanded" layoutX="65.0" prefHeight="750.0" prefWidth="245.0" style="-fx-background-color: #388e3c;                            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="sidebarExpanded" layoutX="65.0" prefHeight="750.0" prefWidth="246.0" style="-fx-background-color: #388e3c;                            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- Logo + titre -->
@@ -163,9 +168,9 @@
                 </VBox>
 
                 <!-- Profil + logout bas expanded -->
-                <VBox prefHeight="116.0" prefWidth="222.0" spacing="8.0" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+                <VBox prefHeight="121.0" prefWidth="222.0" spacing="8.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
                     <children>
-                        <HBox alignment="CENTER_LEFT" onMouseClicked="#handleGoToProfil" prefHeight="226.0" prefWidth="222.0" spacing="12.0" style="-fx-cursor: hand; -fx-background-color: #ffffff12;                                      -fx-background-radius: 12; -fx-padding: 10 14;">
+                        <HBox alignment="CENTER_LEFT" onMouseClicked="#handleGoToProfil" prefHeight="66.0" prefWidth="222.0" spacing="12.0" style="-fx-cursor: hand; -fx-background-color: #ffffff12;                                      -fx-background-radius: 12; -fx-padding: 10 14;">
                             <StackPane>
                                 <Circle fill="#2e4d2e" radius="20.0" />
                                 <Label style="-fx-font-size: 16px;" text="👨‍🌾" textFill="DARKGRAY" />
@@ -186,7 +191,7 @@
         <!-- ══════════════════════════════════════════════════════════════ -->
         <!-- CONTENT PANE - ZONE DE CONTENU PRINCIPAL                      -->
         <!-- ══════════════════════════════════════════════════════════════ -->
-        <AnchorPane fx:id="contentPane" layoutX="66.0" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane fx:id="contentPane" layoutX="66.0" layoutY="-1.0" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="0.40000000000009095" AnchorPane.topAnchor="-1.0">
             <children>
 
                 <!-- ════════════════════════════════════════════════════════ -->

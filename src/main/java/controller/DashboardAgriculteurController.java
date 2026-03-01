@@ -6,6 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -22,7 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONObject;
 
-import javafx.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,28 +39,28 @@ public class DashboardAgriculteurController {
     // ══════════════════════════════════════════════════════════════════════
     // LABELS DASHBOARD
     // ══════════════════════════════════════════════════════════════════════
-    @FXML private Label welcomeLabel;
-    @FXML private Label dateLabel;
-    @FXML private Label userNameLabel;
-    @FXML private Label themeModeText;
-    @FXML private Label messageLabel;
-    @FXML private Label culturesCountLabel;
-    @FXML private Label problemsCountLabel;
-    @FXML private Label ordersCountLabel;
+    @FXML private Label        welcomeLabel;
+    @FXML private Label        dateLabel;
+    @FXML private Label        userNameLabel;
+    @FXML private Label        themeModeText;
+    @FXML private Label        messageLabel;
+    @FXML private Label        culturesCountLabel;
+    @FXML private Label        problemsCountLabel;
+    @FXML private Label        ordersCountLabel;
 
     // ══════════════════════════════════════════════════════════════════════
     // LABELS MÉTÉO
     // ══════════════════════════════════════════════════════════════════════
-    @FXML private Label temperatureLabel;
-    @FXML private Label windspeedLabel;
-    @FXML private Label weatherCodeLabel;
+    @FXML private Label        temperatureLabel;
+    @FXML private Label        windspeedLabel;
+    @FXML private Label        weatherCodeLabel;
 
     // ══════════════════════════════════════════════════════════════════════
     // LAYOUT
     // ══════════════════════════════════════════════════════════════════════
-    @FXML private AnchorPane  contentPane;
-    @FXML private AnchorPane  sidebarExpanded;
-    @FXML private AnchorPane  sidebarCollapsed;
+    @FXML private AnchorPane   contentPane;
+    @FXML private AnchorPane   sidebarExpanded;
+    @FXML private AnchorPane   sidebarCollapsed;
     @FXML private ToggleButton themeToggle;
 
     // ══════════════════════════════════════════════════════════════════════
@@ -77,9 +77,9 @@ public class DashboardAgriculteurController {
     // ══════════════════════════════════════════════════════════════════════
     // ÉTAT INTERNE
     // ══════════════════════════════════════════════════════════════════════
-    private User        currentUser;
-    private boolean     isDarkMode = false;
-    private List<Node>  originalDashboardContent;
+    private User       currentUser;
+    private boolean    isDarkMode = false;
+    private List<Node> originalDashboardContent;
 
     // ══════════════════════════════════════════════════════════════════════
     // API MÉTÉO
@@ -137,7 +137,7 @@ public class DashboardAgriculteurController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // MÉTÉO - CHARGEMENT
+    // MÉTÉO
     // ══════════════════════════════════════════════════════════════════════
     private void loadWeather() {
         Task<Void> task = new Task<>() {
@@ -150,13 +150,9 @@ public class DashboardAgriculteurController {
                     conn.setReadTimeout(5000);
                     conn.setRequestMethod("GET");
 
-                    int responseCode = conn.getResponseCode();
-                    System.out.println("🌦️ API Météo Response Code: " + responseCode);
-
-                    if (responseCode == 200) {
+                    if (conn.getResponseCode() == 200) {
                         BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(conn.getInputStream())
-                        );
+                                new InputStreamReader(conn.getInputStream()));
                         StringBuilder response = new StringBuilder();
                         String line;
                         while ((line = reader.readLine()) != null) response.append(line);
@@ -175,12 +171,9 @@ public class DashboardAgriculteurController {
                             if (temperatureLabel != null) temperatureLabel.setText(temperature + " °C");
                             if (windspeedLabel   != null) windspeedLabel.setText(windspeed + " km/h");
                             if (weatherCodeLabel != null) weatherCodeLabel.setText(description);
-                            System.out.println("✅ Météo : " + temperature + "°C, " + description);
                         });
                     }
-
                 } catch (Exception e) {
-                    System.err.println("❌ Erreur API Météo : " + e.getMessage());
                     Platform.runLater(() -> {
                         if (temperatureLabel != null) temperatureLabel.setText("--");
                         if (windspeedLabel   != null) windspeedLabel.setText("--");
@@ -220,13 +213,8 @@ public class DashboardAgriculteurController {
     private void setupSidebarHover() {
         sidebarCollapsed.setOnMouseEntered(e -> expandSidebar());
         sidebarExpanded.setOnMouseEntered(e  -> expandSidebar());
-
-        sidebarCollapsed.setOnMouseExited(e -> {
-            if (!sidebarExpanded.isHover()) collapseSidebar();
-        });
-        sidebarExpanded.setOnMouseExited(e -> {
-            if (!sidebarCollapsed.isHover()) collapseSidebar();
-        });
+        sidebarCollapsed.setOnMouseExited(e  -> { if (!sidebarExpanded.isHover()) collapseSidebar(); });
+        sidebarExpanded.setOnMouseExited(e   -> { if (!sidebarCollapsed.isHover()) collapseSidebar(); });
     }
 
     private void expandSidebar() {
@@ -240,7 +228,7 @@ public class DashboardAgriculteurController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // SETUSER
+    // SET USER
     // ══════════════════════════════════════════════════════════════════════
     public void setUser(User user) {
         this.currentUser = user;
@@ -289,12 +277,13 @@ public class DashboardAgriculteurController {
         if (menuForum       != null) menuForum.setStyle(def);
         if (menuReclamation != null) menuReclamation.setStyle(def);
         if (menuBoutique    != null) menuBoutique.setStyle(def);
+        if (menuAnalyse     != null) menuAnalyse.setStyle(def);
 
         if (activeMenuItem  != null) activeMenuItem.setStyle(active);
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // MÉTHODE UTILITAIRE — charger un FXML dans le contentPane
+    // UTILITAIRE — charger un FXML dans le contentPane
     // ══════════════════════════════════════════════════════════════════════
     private FXMLLoader loadContent(String fxmlPath) {
         try {
@@ -321,6 +310,36 @@ public class DashboardAgriculteurController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    // ACCESSEURS POUR LES CONTRÔLEURS ENFANTS
+    // ══════════════════════════════════════════════════════════════════════
+
+    /**
+     * ✅ Expose le contentPane pour que CultureListController puisse
+     * y charger CultureForm directement (sans nouveau Stage).
+     */
+    public AnchorPane getContentPane() {
+        return contentPane;
+    }
+
+    /**
+     * ✅ Recharge la liste des cultures dans le contentPane.
+     * Appelé par CultureController après sauvegarde ou annulation.
+     */
+    public void handleShowCultureDirect() {
+        setActiveMenu(menuCulture);
+        FXMLLoader loader = loadContent("/CreerCultureList.fxml");
+        if (loader != null) {
+            try {
+                CultureListController ctrl = loader.getController();
+                if (ctrl != null) ctrl.setDashboardController(this);
+            } catch (Exception e) {
+                System.err.println("⚠️ Erreur rechargement liste cultures : " + e.getMessage());
+            }
+        }
+        System.out.println("📍 Retour liste cultures");
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     // NAVIGATION MENU
     // ══════════════════════════════════════════════════════════════════════
 
@@ -331,39 +350,15 @@ public class DashboardAgriculteurController {
         System.out.println("📍 Accueil");
     }
 
-    /**
-     * ✅ CORRIGÉ : charge la vraie liste de cultures dans le contentPane.
-     * Chemin à adapter selon votre structure resources/.
-     */
     @FXML
     private void handleShowCulture(MouseEvent event) {
-        setActiveMenu(menuCulture);
-        // ─── Adaptez le chemin si nécessaire ───────────────────────────
-        FXMLLoader loader = loadContent("/CreerCultureList.fxml");
-        // ───────────────────────────────────────────────────────────────
-        if (loader != null) {
-            try {
-                CultureListController ctrl = loader.getController();
-                if (ctrl != null) {
-                    ctrl.setDashboardController(this);
-                }
-            } catch (Exception e) {
-                System.err.println("⚠️ Impossible d'injecter le dashboard dans CultureListController : " + e.getMessage());
-            }
-        }
-        System.out.println("📍 Ma culture");
+        handleShowCultureDirect();
     }
 
-    /**
-     * ✅ CORRIGÉ : charge la vraie page de diagnostic dans le contentPane.
-     * Chemin à adapter selon votre structure resources/.
-     */
     @FXML
     private void handleShowProblems(MouseEvent event) {
         setActiveMenu(menuProblemes);
-        // ─── Adaptez le chemin si nécessaire ───────────────────────────
         FXMLLoader loader = loadContent("/DiagnosticForm.fxml");
-        // ───────────────────────────────────────────────────────────────
         if (loader != null) {
             try {
                 DiagnosticController ctrl = loader.getController();
@@ -372,7 +367,7 @@ public class DashboardAgriculteurController {
                     if (currentUser != null) ctrl.setUserId(currentUser.getId());
                 }
             } catch (Exception e) {
-                System.err.println("⚠️ Impossible d'injecter le dashboard dans DiagnosticController : " + e.getMessage());
+                System.err.println("⚠️ Erreur injection DiagnosticController : " + e.getMessage());
             }
         }
         System.out.println("📍 Problèmes / Diagnostic");
@@ -400,6 +395,64 @@ public class DashboardAgriculteurController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    // ANALYSE / PLANT DISEASE
+    // ══════════════════════════════════════════════════════════════════════
+    @FXML
+    public void goAnalyse(MouseEvent event) {
+        setActiveMenu(menuAnalyse);
+        System.out.println("🌿 Lancement de l'analyse maladie...");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PlantDiseaseApp.fxml"));
+            VBox plantDiseaseRoot = loader.load();
+
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(plantDiseaseRoot);
+
+            AnchorPane.setTopAnchor(plantDiseaseRoot,    0.0);
+            AnchorPane.setBottomAnchor(plantDiseaseRoot, 0.0);
+            AnchorPane.setLeftAnchor(plantDiseaseRoot,   0.0);
+            AnchorPane.setRightAnchor(plantDiseaseRoot,  0.0);
+
+            System.out.println("✅ PlantDiseaseApp chargé");
+        } catch (IOException e) {
+            System.err.println("❌ Erreur chargement PlantDiseaseApp.fxml");
+            e.printStackTrace();
+            showMessage("❌ Erreur lors du chargement de l'analyse");
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SCANNER PLANTE (PlantNet)
+    // ══════════════════════════════════════════════════════════════════════
+    @FXML
+    public void handleScanPlant(ActionEvent event) {
+        System.out.println("🌱 Lancement du scanner PlantNet...");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PlantNetView.fxml"));
+            VBox plantNetRoot = loader.load();
+
+            PlantNetController plantNetController = loader.getController();
+            if (plantNetController != null) {
+                plantNetController.setDashboardController(this);
+            }
+
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(plantNetRoot);
+
+            AnchorPane.setTopAnchor(plantNetRoot,    0.0);
+            AnchorPane.setBottomAnchor(plantNetRoot, 0.0);
+            AnchorPane.setLeftAnchor(plantNetRoot,   0.0);
+            AnchorPane.setRightAnchor(plantNetRoot,  0.0);
+
+            System.out.println("✅ PlantNet chargé");
+        } catch (IOException e) {
+            System.err.println("❌ Erreur chargement PlantNetView.fxml");
+            e.printStackTrace();
+            showMessage("❌ Erreur lors du chargement du scanner");
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     // PROFIL
     // ══════════════════════════════════════════════════════════════════════
     @FXML
@@ -421,7 +474,6 @@ public class DashboardAgriculteurController {
             AnchorPane.setRightAnchor(profilContent,  0.0);
 
             System.out.println("✅ Profil chargé");
-
         } catch (Exception e) {
             System.err.println("❌ Erreur chargement profil");
             e.printStackTrace();
@@ -440,7 +492,6 @@ public class DashboardAgriculteurController {
             stage.setTitle("AgriConnect - Login");
             stage.setMaximized(false);
             System.out.println("✅ Déconnexion");
-
         } catch (Exception e) {
             System.err.println("❌ Erreur déconnexion");
             e.printStackTrace();
@@ -466,11 +517,9 @@ public class DashboardAgriculteurController {
         reloadDashboardContent();
     }
 
-
-    /**
-     * ✅ AJOUTÉ : appelé depuis CultureListController.ouvrirDiagnostic()
-     * Charge la page diagnostic en pré-sélectionnant la culture choisie.
-     */
+    // ══════════════════════════════════════════════════════════════════════
+    // DIAGNOSTIC POUR UNE CULTURE SPÉCIFIQUE
+    // ══════════════════════════════════════════════════════════════════════
     public void ouvrirDiagnosticPourCulture(entities.Culture culture) {
         setActiveMenu(menuProblemes);
         FXMLLoader loader = loadContent("/DiagnosticForm.fxml");
@@ -488,65 +537,6 @@ public class DashboardAgriculteurController {
         }
         System.out.println("📍 Diagnostic pour culture : " + culture.getNom());
     }
-    @FXML
-    public void goAnalyse(MouseEvent event) {
-        System.out.println("Lancement du scanner...");
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PlantDiseaseApp.fxml"));
-            VBox plantDiseaseRoot = loader.load();
-
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(plantDiseaseRoot);
-
-            AnchorPane.setTopAnchor(plantDiseaseRoot, 0.0);
-            AnchorPane.setBottomAnchor(plantDiseaseRoot, 0.0);
-            AnchorPane.setLeftAnchor(plantDiseaseRoot, 0.0);
-            AnchorPane.setRightAnchor(plantDiseaseRoot, 0.0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    /**
-     * 📸 SCANNER UNE PLANTE - Charge l'interface PlantNet
-     */
-    @FXML
-    private void handleScanPlant(ActionEvent event) {
-        System.out.println("🌱 Lancement du scanner de plantes...");
-
-        try {
-            // Charger le FXML du scanner PlantNet
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PlantNetView.fxml"));
-            VBox plantNetRoot = loader.load();
-
-            // Récupérer le contrôleur PlantNet
-            PlantNetController plantNetController = loader.getController();
-
-            // ✅ IMPORTANT : Passer le dashboard controller pour pouvoir revenir
-            if (plantNetController != null) {
-                plantNetController.setDashboardController(this);
-            }
-
-            // Vider le contentPane et y ajouter le nouveau contenu
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(plantNetRoot);
-
-            // Ancrer le VBox pour qu'il remplisse tout le contentPane
-            AnchorPane.setTopAnchor(plantNetRoot, 0.0);
-            AnchorPane.setBottomAnchor(plantNetRoot, 0.0);
-            AnchorPane.setLeftAnchor(plantNetRoot, 0.0);
-            AnchorPane.setRightAnchor(plantNetRoot, 0.0);
-
-            System.out.println("✅ Interface PlantNet chargée avec succès");
-
-        } catch (IOException e) {
-            System.err.println("❌ Erreur lors du chargement de PlantNetView.fxml");
-            e.printStackTrace();
-            showMessage("❌ Erreur lors du chargement du scanner");
-        }
-    }
-
 
     // ══════════════════════════════════════════════════════════════════════
     // UTILITAIRES

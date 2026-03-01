@@ -5,8 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,15 +33,13 @@ public class CultureListController implements Initializable {
     // ══════════════════════════════════════════════════════════════════════
     // ÉTAT INTERNE
     // ══════════════════════════════════════════════════════════════════════
-    private final CultureService          service    = new CultureService();
-    private ObservableList<Culture>       masterData = FXCollections.observableArrayList();
-    private static final int              ITEMS_PER_PAGE = 6;
-
-    // ✅ AJOUTÉ : référence au dashboard pour navigation
+    private final CultureService        service        = new CultureService();
+    private ObservableList<Culture>     masterData     = FXCollections.observableArrayList();
+    private static final int            ITEMS_PER_PAGE = 6;
     private DashboardAgriculteurController dashboardController;
 
     // ══════════════════════════════════════════════════════════════════════
-    // SETTER — injecté depuis DashboardAgriculteurController
+    // SETTER
     // ══════════════════════════════════════════════════════════════════════
     public void setDashboardController(DashboardAgriculteurController dashboard) {
         this.dashboardController = dashboard;
@@ -67,16 +67,14 @@ public class CultureListController implements Initializable {
     private void setupTypeComboBox() {
         ObservableList<String> types = FXCollections.observableArrayList();
         for (Culture c : masterData) {
-            if (c.getType() != null && !types.contains(c.getType())) {
+            if (c.getType() != null && !types.contains(c.getType()))
                 types.add(c.getType());
-            }
         }
         FXCollections.sort(types);
         cbType.getItems().add("Tous les types");
         cbType.getItems().addAll(types);
         cbType.getSelectionModel().selectFirst();
-
-        cbType.valueProperty().addListener((obs, oldVal, newVal) -> filtrerParType());
+        cbType.valueProperty().addListener((obs, o, n) -> filtrerParType());
     }
 
     private void filtrerParType() {
@@ -85,11 +83,9 @@ public class CultureListController implements Initializable {
             boolean matchRecherche = txtRecherche.getText() == null
                     || txtRecherche.getText().isEmpty()
                     || c.getNom().toLowerCase().contains(txtRecherche.getText().toLowerCase());
-
             boolean matchType = selectedType == null
                     || selectedType.equals("Tous les types")
                     || (c.getType() != null && c.getType().equalsIgnoreCase(selectedType));
-
             return matchRecherche && matchType;
         });
         setupPagination(filtered);
@@ -99,7 +95,7 @@ public class CultureListController implements Initializable {
     // RECHERCHE
     // ══════════════════════════════════════════════════════════════════════
     private void ajouterRecherche() {
-        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerParType());
+        txtRecherche.textProperty().addListener((obs, o, n) -> filtrerParType());
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -108,7 +104,6 @@ public class CultureListController implements Initializable {
     private void setupPagination(ObservableList<Culture> data) {
         int pageCount = (int) Math.ceil((double) data.size() / ITEMS_PER_PAGE);
         if (pageCount == 0) pageCount = 1;
-
         pagination.setPageCount(pageCount);
         pagination.setPageFactory(pageIndex -> createPage(pageIndex, data));
     }
@@ -142,7 +137,6 @@ public class CultureListController implements Initializable {
             Button btnEdit       = new Button("✏");
             Button btnDelete     = new Button("🗑");
             Button btnDetails    = new Button("👁");
-            // ✅ AJOUTÉ : bouton Diagnostiquer directement depuis la liste
             Button btnDiagnostic = new Button("🔍");
 
             String baseStyle = """
@@ -156,10 +150,10 @@ public class CultureListController implements Initializable {
                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);
                 """;
 
-            btnEdit.setStyle(baseStyle      + "-fx-background-color: #6B8E23;");
-            btnDelete.setStyle(baseStyle    + "-fx-background-color: #C0392B;");
-            btnDetails.setStyle(baseStyle   + "-fx-background-color: #2E8B57;");
-            btnDiagnostic.setStyle(baseStyle+ "-fx-background-color: #1565C0;");
+            btnEdit.setStyle(baseStyle       + "-fx-background-color: #6B8E23;");
+            btnDelete.setStyle(baseStyle     + "-fx-background-color: #C0392B;");
+            btnDetails.setStyle(baseStyle    + "-fx-background-color: #2E8B57;");
+            btnDiagnostic.setStyle(baseStyle + "-fx-background-color: #1565C0;");
 
             addHoverEffect(btnEdit,       "#556B2F");
             addHoverEffect(btnDelete,     "#922B21");
@@ -168,8 +162,9 @@ public class CultureListController implements Initializable {
 
             actions.getChildren().addAll(btnEdit, btnDelete, btnDetails, btnDiagnostic);
 
-            // ── Actions ───────────────────────────────────
-            btnEdit.setOnAction(e -> ouvrirFormulaire(c));
+            btnEdit.setOnAction(e      -> ouvrirFormulaire(c));
+            btnDetails.setOnAction(e   -> afficherDetails(c));
+            btnDiagnostic.setOnAction(e-> ouvrirDiagnostic(c));
 
             btnDelete.setOnAction(e -> {
                 Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
@@ -186,20 +181,14 @@ public class CultureListController implements Initializable {
                 }
             });
 
-            btnDetails.setOnAction(e -> afficherDetails(c));
-
-            // ✅ AJOUTÉ : diagnostiquer via le dashboard (dans le contentPane)
-            btnDiagnostic.setOnAction(e -> ouvrirDiagnostic(c));
-
             card.getChildren().addAll(nom, type, superficie, actions);
             flow.getChildren().add(card);
         }
-
         return flow;
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // HOVER BOUTONS
+    // HOVER
     // ══════════════════════════════════════════════════════════════════════
     private void addHoverEffect(Button button, String hoverColor) {
         String normalStyle = button.getStyle();
@@ -218,61 +207,71 @@ public class CultureListController implements Initializable {
         cbType.getSelectionModel().selectFirst();
         masterData.setAll(service.getAll());
         setupPagination(masterData);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Liste mise à jour !");
-        alert.showAndWait();
+        new Alert(Alert.AlertType.INFORMATION, "Liste mise à jour !").showAndWait();
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // OUVRIR FORMULAIRE AJOUT / MODIFICATION (popup modale)
+    // HELPER : charger un FXML dans le contentPane du dashboard
+    // ══════════════════════════════════════════════════════════════════════
+    private void chargerDansContentPane(String fxmlPath, ContentPaneConsumer consumer) {
+        if (dashboardController == null) {
+            System.err.println("⚠️ dashboardController est null");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent content = loader.load();
+
+            // Passer le controller chargé au consumer pour injection
+            if (consumer != null) consumer.accept(loader.getController());
+
+            AnchorPane contentPane = dashboardController.getContentPane();
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(content);
+            AnchorPane.setTopAnchor(content,    0.0);
+            AnchorPane.setBottomAnchor(content, 0.0);
+            AnchorPane.setLeftAnchor(content,   0.0);
+            AnchorPane.setRightAnchor(content,  0.0);
+
+            System.out.println("✅ Chargé dans contentPane : " + fxmlPath);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur chargement " + fxmlPath + " : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FunctionalInterface
+    private interface ContentPaneConsumer {
+        void accept(Object controller);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // ✅ AJOUTER — s'ouvre dans le contentPane (pas un nouveau Stage)
     // ══════════════════════════════════════════════════════════════════════
     @FXML
     private void openAddForm() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CultureForm.fxml"));
-            Scene scene = new Scene(loader.load());
-
-            CultureController ctrl = loader.getController();
-            // ✅ Callback : rafraîchir la liste après ajout
-            ctrl.setOnSuccess(() -> {
-                masterData.setAll(service.getAll());
-                filtrerParType();
-            });
-
-            Stage stage = new Stage();
-            stage.setTitle("Nouvelle Culture");
-            stage.setScene(scene);
-            stage.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void ouvrirFormulaire(Culture c) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CultureForm.fxml"));
-            Scene scene = new Scene(loader.load());
-
-            CultureController ctrl = loader.getController();
-            // ✅ Callback : rafraîchir la liste après modification
-            ctrl.setOnSuccess(() -> {
-                masterData.setAll(service.getAll());
-                filtrerParType();
-            });
-            ctrl.remplirFormulaire(c);
-
-            Stage stage = new Stage();
-            stage.setTitle("Modifier Culture");
-            stage.setScene(scene);
-            stage.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        chargerDansContentPane("/CultureForm.fxml", ctrl -> {
+            CultureController c = (CultureController) ctrl;
+            c.setOnSuccess(() -> dashboardController.handleShowCultureDirect());
+            c.setOnCancel(() -> dashboardController.handleShowCultureDirect());
+        });
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // AFFICHER DÉTAILS (popup)
+    // ✅ MODIFIER — s'ouvre dans le contentPane (pas un nouveau Stage)
+    // ══════════════════════════════════════════════════════════════════════
+    private void ouvrirFormulaire(Culture culture) {
+        chargerDansContentPane("/CultureForm.fxml", ctrl -> {
+            CultureController c = (CultureController) ctrl;
+            c.remplirFormulaire(culture);
+            c.setOnSuccess(() -> dashboardController.handleShowCultureDirect());
+            c.setOnCancel(() -> dashboardController.handleShowCultureDirect());
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // DÉTAILS — reste en popup (fiche de lecture, pas d'édition)
     // ══════════════════════════════════════════════════════════════════════
     private void afficherDetails(Culture c) {
         try {
@@ -280,8 +279,6 @@ public class CultureListController implements Initializable {
             Scene scene = new Scene(loader.load());
 
             CultureDetailsController controller = loader.getController();
-            // ✅ AJOUTÉ : passe aussi le dashboard pour que le bouton
-            //            "Faire un diagnostic" dans la fiche détail fonctionne
             controller.setDashboardController(dashboardController);
             controller.setCulture(c);
 
@@ -296,27 +293,22 @@ public class CultureListController implements Initializable {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // ✅ OUVRIR DIAGNOSTIC — délègue au dashboard (contentPane)
+    // DIAGNOSTIC — dans le contentPane via dashboard
     // ══════════════════════════════════════════════════════════════════════
     private void ouvrirDiagnostic(Culture culture) {
         if (dashboardController != null) {
-            // Charge le diagnostic dans le contentPane du dashboard
             dashboardController.ouvrirDiagnosticPourCulture(culture);
         } else {
-            // Fallback : ouvrir en popup si pas de dashboard (accès standalone)
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/DiagnosticForm.fxml"));
                 Scene scene = new Scene(loader.load());
-
                 DiagnosticController ctrl = loader.getController();
                 ctrl.setCulture(culture);
-
                 Stage stage = new Stage();
                 stage.setTitle("🌱 Diagnostic de " + culture.getNom());
                 stage.setScene(scene);
                 stage.setMaximized(true);
                 stage.show();
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

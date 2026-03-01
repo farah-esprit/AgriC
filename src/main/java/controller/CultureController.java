@@ -27,7 +27,7 @@ public class CultureController {
     @FXML private Label      lblMessage;
     @FXML private Label      lblImage;
     @FXML private ImageView  imageView;
-    @FXML private Button     btnAction; // bouton unique (Ajouter / Modifier)
+    @FXML private Button     btnAction;
 
     // ══════════════════════════════════════════════════════════════════════
     // ÉTAT INTERNE
@@ -38,24 +38,30 @@ public class CultureController {
 
     private final CultureService service = new CultureService();
 
-    // ✅ AJOUTÉ : callback déclenché après ajout/modification
-    // Permet à CultureListController de rafraîchir sa liste automatiquement
+    // ✅ Callback après sauvegarde réussie (retour à la liste + refresh)
     private Runnable onSuccess;
 
+    // ✅ Callback après annulation (retour à la liste sans modification)
+    private Runnable onCancel;
+
     // ══════════════════════════════════════════════════════════════════════
-    // SETTER CALLBACK
+    // SETTERS CALLBACKS
     // ══════════════════════════════════════════════════════════════════════
 
     /**
-     * ✅ AJOUTÉ : appelé depuis CultureListController pour obtenir un
-     * rafraîchissement automatique de la liste après ajout/modification.
-     *
-     * Exemple dans CultureListController :
-     *   CultureController ctrl = loader.getController();
-     *   ctrl.setOnSuccess(() -> chargerCultures());
+     * Injecté depuis CultureListController.
+     * Déclenché après ajout/modification réussi → revient à la liste.
      */
     public void setOnSuccess(Runnable onSuccess) {
         this.onSuccess = onSuccess;
+    }
+
+    /**
+     * ✅ AJOUTÉ : injecté depuis CultureListController.
+     * Déclenché quand l'utilisateur clique "Annuler" → revient à la liste.
+     */
+    public void setOnCancel(Runnable onCancel) {
+        this.onCancel = onCancel;
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -78,25 +84,25 @@ public class CultureController {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // MODE MODIFICATION
+    // MODE MODIFICATION — pré-remplir le formulaire
     // ══════════════════════════════════════════════════════════════════════
     public void remplirFormulaire(Culture c) {
         if (c == null) return;
 
         cultureEnCours = c;
-        btnAction.setText("✏️ Modifier");
+        if (btnAction != null) btnAction.setText("✏️ Modifier");
 
         txtNom.setText(c.getNom());
-        txtType.setText(c.getType());
+        txtType.setText(c.getType() != null ? c.getType() : "");
         txtSuperficie.setText(String.valueOf(c.getSuperficie()));
-        txtLocalisation.setText(c.getLocalisation());
+        txtLocalisation.setText(c.getLocalisation() != null ? c.getLocalisation() : "");
 
         imagePath = c.getImage();
         if (imagePath != null) {
             File f = new File(imagePath);
             if (f.exists()) {
                 imageView.setImage(new Image(f.toURI().toString()));
-                lblImage.setText(f.getName());
+                if (lblImage != null) lblImage.setText(f.getName());
             }
         }
     }
@@ -118,15 +124,35 @@ public class CultureController {
                 afficherMessage("✏️ Culture modifiée !");
             }
 
-            // ✅ Déclencher le callback pour rafraîchir la liste
-            if (onSuccess != null) {
-                onSuccess.run();
-            }
-
-            fermerFenetre();
+            // ✅ Attendre 1s que le message soit lu, puis déclencher le retour
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
+            pause.setOnFinished(e -> {
+                if (onSuccess != null) {
+                    // Chargé dans le contentPane → callback de navigation
+                    onSuccess.run();
+                } else {
+                    // Fallback : ouvert en popup → fermer le Stage
+                    fermerStage();
+                }
+            });
+            pause.play();
 
         } catch (Exception e) {
-            lblMessage.setText("❌ " + e.getMessage());
+            if (lblMessage != null) lblMessage.setText("❌ " + e.getMessage());
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // ANNULER — ✅ CORRIGÉ : retour à la liste via callback
+    // ══════════════════════════════════════════════════════════════════════
+    @FXML
+    private void fermerFenetre() {
+        if (onCancel != null) {
+            // Chargé dans le contentPane → retour à la liste via dashboard
+            onCancel.run();
+        } else {
+            // Fallback : ouvert en popup → fermer le Stage
+            fermerStage();
         }
     }
 
@@ -184,15 +210,17 @@ public class CultureController {
     // UTILITAIRES
     // ══════════════════════════════════════════════════════════════════════
     private void afficherMessage(String msg) {
-        lblMessage.setText(msg);
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
-        pause.setOnFinished(e -> lblMessage.setText(""));
-        pause.play();
+        if (lblMessage != null) {
+            lblMessage.setText(msg);
+            lblMessage.setStyle("-fx-text-fill: #2e7d32; -fx-font-weight: bold;");
+        }
     }
 
-    @FXML
-    private void fermerFenetre() {
-        Stage stage = (Stage) txtNom.getScene().getWindow();
-        stage.close();
+    /** Ferme le Stage uniquement si le formulaire est ouvert en popup */
+    private void fermerStage() {
+        if (txtNom != null && txtNom.getScene() != null) {
+            Stage stage = (Stage) txtNom.getScene().getWindow();
+            if (stage != null) stage.close();
+        }
     }
 }
