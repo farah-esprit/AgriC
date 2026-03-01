@@ -36,7 +36,7 @@ public class HomeController {
     private static final String TEXTE_BIENVENUE = "Bienvenue, Fournisseur !";
     private static final String TEXTE_SOUS_TITRE = "Votre catalogue et vos commandes";
     private static final String WEATHER_API_KEY  = "c711cac8ab64b3ee5f16ef32e855562a";
-    private static final String COHERE_API_KEY   = "E5nVqROZQSligWMLfi3C4aL3aMmkhcF5Uqs9ESe2"; // ✅ Collez votre clé ici
+    private static final String COHERE_API_KEY   = ""; // ✅ Collez votre clé ici
     private static final String VILLE = "Ariana,TN";
     private Connection conn;
 
