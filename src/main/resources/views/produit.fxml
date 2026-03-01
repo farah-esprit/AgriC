@@ -29,8 +29,7 @@
                            style="-fx-text-fill: #e8f5e9; -fx-font-size: 13px;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="lblStatus"
-                       text="Prêt"
+                <Label fx:id="lblStatus" text="Prêt"
                        style="-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color: rgba(0,0,0,0.2); -fx-padding: 8 15; -fx-background-radius: 15;"/>
             </HBox>
         </VBox>
@@ -88,7 +87,18 @@
                         </VBox>
 
                         <Separator style="-fx-background-color: #e0e0e0;"/>
-
+                        <!-- ✅ WHATSAPP PROMO -->
+                        <VBox spacing="10" style="-fx-background-color: #fff8f0; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #f0ad4e; -fx-border-radius: 8; -fx-border-width: 1;">
+                            <Label text="📱 Notification WhatsApp"
+                                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #d9534f;"/>
+                            <CheckBox fx:id="cbPromo" text="🔥 Envoyer promo WhatsApp aux clients"
+                                      style="-fx-text-fill: #d9534f; -fx-font-weight: bold;"/>
+                            <TextField fx:id="tfRemise"
+                                       promptText="Remise % (ex: 20)"
+                                       prefHeight="38"
+                                       style="-fx-background-color: #f9f9f9; -fx-border-color: #f0ad4e;
+                                              -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;"/>
+                        </VBox>
                         <!-- CHAMPS -->
                         <GridPane hgap="15" vgap="18">
                             <columnConstraints>
@@ -143,12 +153,10 @@
                                         style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                                 <Button text="📤 Exporter CSV" onAction="#exporterCSV"
                                         prefWidth="175" prefHeight="45"
-
                                         style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                                 <Button text="📱 Générer QR Code" onAction="#handleGenererQR"
                                         maxWidth="Infinity" prefHeight="45"
-                                        style="-fx-background-color: #4a7c3a; -fx-text-fill: white; -fx-font-weight: bold;
-               -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
+                                        style="-fx-background-color: #4a7c3a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;"/>
                             </HBox>
                         </VBox>
                     </VBox>
@@ -158,11 +166,28 @@
             <!-- RIGHT - CARDS -->
             <VBox spacing="15" style="-fx-padding: 25;">
 
-                <HBox alignment="CENTER"
-                      style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <!-- ✅ HEADER CARDS AVEC RECHERCHE + TRI -->
+                <HBox alignment="CENTER_LEFT" spacing="15"
+                      style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <Label text="🗂️ Catalogue des Produits"
                            style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;"/>
                     <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- Barre de recherche -->
+                    <TextField fx:id="tfRecherche"
+                               promptText="🔍 Rechercher un produit..."
+                               prefWidth="220" prefHeight="38"
+                               style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a;
+                                      -fx-border-radius: 20; -fx-background-radius: 20;
+                                      -fx-padding: 0 15; -fx-font-size: 13px;"/>
+
+                    <!-- Bouton Tri A-Z / Z-A -->
+                    <Button fx:id="btnTri" text="🔍 Chercher" onAction="#handleTri"
+                            prefHeight="38" prefWidth="100"
+                            style="-fx-background-color: #5a8c4a; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-background-radius: 20;
+                                   -fx-cursor: hand; -fx-font-size: 12px;"/>
                 </HBox>
 
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"

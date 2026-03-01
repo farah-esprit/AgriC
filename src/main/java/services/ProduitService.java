@@ -8,9 +8,8 @@ import java.util.List;
 
 public class ProduitService {
 
-    // ✅ CORRECTION : Ajout du champ imagePath
     public void ajouter(Produit p) {
-        String sql = "INSERT INTO produit (nom, description, prix, categorie, actif, imagePath) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produit (nom, description, prix, categorie, actif, imagePath, promo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection cn = MyDatabase.getInstance().getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
 
@@ -19,16 +18,16 @@ public class ProduitService {
             ps.setDouble(3, p.getPrix());
             ps.setString(4, p.getCategorie());
             ps.setBoolean(5, p.isActif());
-            ps.setString(6, p.getImagePath()); // ✅ AJOUT
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isPromo()); // ✅
 
             ps.executeUpdate();
-            System.out.println("✅ Produit ajouté : " + p.getNom() + " | Image : " + p.getImagePath());
+            System.out.println("✅ Produit ajouté : " + p.getNom() + " | Promo : " + p.isPromo());
         } catch (SQLException e) {
             System.err.println("❌ Erreur ajout produit : " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 
     public List<Produit> getAllProduits() {
         List<Produit> list = new ArrayList<>();
@@ -47,10 +46,8 @@ public class ProduitService {
                 p.setCategorie(rs.getString("categorie"));
                 p.setActif(rs.getBoolean("actif"));
                 p.setImagePath(rs.getString("imagePath"));
+                p.setPromo(rs.getBoolean("promo")); // ✅
                 list.add(p);
-
-
-                System.out.println("📦 Produit chargé : " + p.getNom() + " | Image : " + p.getImagePath());
             }
         } catch (SQLException e) {
             System.err.println("❌ Erreur lecture produits : " + e.getMessage());
@@ -59,9 +56,8 @@ public class ProduitService {
         return list;
     }
 
-
     public void modifier(Produit p) {
-        String sql = "UPDATE produit SET nom=?, description=?, prix=?, categorie=?, actif=?, imagePath=? WHERE id_produit=?";
+        String sql = "UPDATE produit SET nom=?, description=?, prix=?, categorie=?, actif=?, imagePath=?, promo=? WHERE id_produit=?";
         try (Connection cn = MyDatabase.getInstance().getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
 
@@ -70,11 +66,12 @@ public class ProduitService {
             ps.setDouble(3, p.getPrix());
             ps.setString(4, p.getCategorie());
             ps.setBoolean(5, p.isActif());
-            ps.setString(6, p.getImagePath()); // ✅ AJOUT
-            ps.setLong(7, p.getIdProduit());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isPromo()); // ✅
+            ps.setLong(8, p.getIdProduit());
 
             ps.executeUpdate();
-            System.out.println("✅ Produit modifié : " + p.getNom() + " | Image : " + p.getImagePath());
+            System.out.println("✅ Produit modifié : " + p.getNom() + " | Promo : " + p.isPromo());
         } catch (SQLException e) {
             System.err.println("❌ Erreur modification produit : " + e.getMessage());
             e.printStackTrace();
@@ -94,7 +91,6 @@ public class ProduitService {
         }
     }
 
-
     public Produit getById(long id) {
         String sql = "SELECT * FROM produit WHERE id_produit = ?";
         try (Connection cn = MyDatabase.getInstance().getConnection();
@@ -110,7 +106,8 @@ public class ProduitService {
                     p.setPrix(rs.getDouble("prix"));
                     p.setCategorie(rs.getString("categorie"));
                     p.setActif(rs.getBoolean("actif"));
-                    p.setImagePath(rs.getString("imagePath")); // ✅ AJOUT
+                    p.setImagePath(rs.getString("imagePath"));
+                    p.setPromo(rs.getBoolean("promo")); // ✅
                     return p;
                 }
             }

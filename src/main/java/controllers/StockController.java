@@ -6,10 +6,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.utils.MyDatabase;
@@ -35,19 +39,25 @@ public class StockController {
     private VBox selectedCard = null;
     private ObservableList<StockData> stockList = FXCollections.observableArrayList();
 
+    // ═══════════════════════════════════════════════════════
+    // STOCK DATA
+    // ═══════════════════════════════════════════════════════
+
     public static class StockData {
         public final IntegerProperty idStock = new SimpleIntegerProperty();
         public final IntegerProperty idProduit = new SimpleIntegerProperty();
         public final StringProperty produit = new SimpleStringProperty();
         public final IntegerProperty quantite = new SimpleIntegerProperty();
         public final IntegerProperty seuilAlerte = new SimpleIntegerProperty();
+        public final StringProperty imagePath = new SimpleStringProperty(); // ✅
 
-        public StockData(int idStock, int idProduit, String produit, int quantite, int seuilAlerte) {
+        public StockData(int idStock, int idProduit, String produit, int quantite, int seuilAlerte, String imagePath) {
             this.idStock.set(idStock);
             this.idProduit.set(idProduit);
             this.produit.set(produit);
             this.quantite.set(quantite);
             this.seuilAlerte.set(seuilAlerte);
+            this.imagePath.set(imagePath != null ? imagePath : "");
         }
     }
 
@@ -59,7 +69,7 @@ public class StockController {
     }
 
     // ═══════════════════════════════════════════════════════
-    // CARDS
+    // CARDS AVEC IMAGE
     // ═══════════════════════════════════════════════════════
 
     private VBox createCard(StockData s) {
@@ -86,16 +96,55 @@ public class StockController {
                         "-fx-padding: 15; -fx-cursor: hand;"
         );
 
-        Label lblEmoji = new Label(emoji);
-        lblEmoji.setStyle("-fx-font-size: 32px;");
-        HBox emojiBox = new HBox(lblEmoji);
-        emojiBox.setStyle("-fx-alignment: center;");
+        // ✅ IMAGE CIRCULAIRE
+        StackPane imageContainer = new StackPane();
+        imageContainer.setPrefSize(90, 90);
+        imageContainer.setMaxSize(90, 90);
 
+        Circle bgCircle = new Circle(45);
+        bgCircle.setStyle("-fx-fill: #e8f5e9; -fx-stroke: " + couleurBadge + "; -fx-stroke-width: 2.5;");
+
+        ImageView iv = new ImageView();
+        iv.setFitWidth(86);
+        iv.setFitHeight(86);
+        iv.setPreserveRatio(false);
+        Circle clip = new Circle(43, 43, 43);
+        iv.setClip(clip);
+
+        Label iconFallback = new Label("🌿");
+        iconFallback.setStyle("-fx-font-size: 26px;");
+
+        // Badge emoji statut
+        Label lblEmoji = new Label(emoji);
+        lblEmoji.setStyle("-fx-font-size: 16px;");
+        StackPane.setAlignment(lblEmoji, Pos.TOP_RIGHT);
+
+        // Charger image produit
+        String imgPath = s.imagePath.get();
+        if (imgPath != null && !imgPath.isEmpty()) {
+            File f = new File(imgPath);
+            if (f.exists()) {
+                try {
+                    Image img = new Image(f.toURI().toString(), 86, 86, false, true);
+                    iv.setImage(img);
+                    iconFallback.setVisible(false);
+                } catch (Exception e) {
+                    iv.setImage(null);
+                }
+            }
+        }
+
+        imageContainer.getChildren().addAll(bgCircle, iv, iconFallback, lblEmoji);
+        HBox imgBox = new HBox(imageContainer);
+        imgBox.setStyle("-fx-alignment: center;");
+
+        // Nom produit
         Label lblNom = new Label(s.produit.get());
-        lblNom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-wrap-text: true;");
+        lblNom.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-wrap-text: true;");
         lblNom.setMaxWidth(185);
         lblNom.setWrapText(true);
 
+        // Badge statut
         Label lblStatut = new Label(statut);
         lblStatut.setStyle(
                 "-fx-background-color: " + couleurBadge + "; -fx-text-fill: white;" +
@@ -119,7 +168,7 @@ public class StockController {
         seuilVal.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #888;");
         seuilBox.getChildren().addAll(seuilLabel, seuilVal);
 
-        card.getChildren().addAll(emojiBox, lblNom, lblStatut, sep, qteBox, seuilBox);
+        card.getChildren().addAll(imgBox, lblNom, lblStatut, sep, qteBox, seuilBox);
 
         card.setOnMouseClicked(e -> selectCard(s, card, couleurBadge));
         card.setOnMouseEntered(e -> {
@@ -177,12 +226,11 @@ public class StockController {
     }
 
     // ═══════════════════════════════════════════════════════
-    // 🤖 ASSISTANT IA GEMINI
+    // 🤖 ASSISTANT IA
     // ═══════════════════════════════════════════════════════
 
     @FXML
     private void handleAssistantIA() {
-        // Préparer les données stock
         StringBuilder donnees = new StringBuilder();
         for (StockData s : stockList) {
             String etat = s.quantite.get() <= 0 ? "RUPTURE" :
@@ -199,9 +247,8 @@ public class StockController {
         VBox root = new VBox(15);
         root.setStyle("-fx-background-color: #f5f5dc; -fx-padding: 25;");
 
-        // Titre
         HBox titreBox = new HBox(10);
-        titreBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        titreBox.setAlignment(Pos.CENTER_LEFT);
         titreBox.setStyle(
                 "-fx-background-color: white; -fx-padding: 15;" +
                         "-fx-background-radius: 10;" +
@@ -209,12 +256,11 @@ public class StockController {
         );
         Label titre = new Label("🤖 Assistant Agricole IA");
         titre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;");
-        Label sousTitre = new Label("Propulsé par Google Gemini");
+        Label sousTitre = new Label("Propulsé par Cohere AI");
         sousTitre.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
         VBox titreVBox = new VBox(2, titre, sousTitre);
         titreBox.getChildren().add(titreVBox);
 
-        // Zone de chat
         TextArea chatArea = new TextArea();
         chatArea.setEditable(false);
         chatArea.setPrefHeight(350);
@@ -227,7 +273,6 @@ public class StockController {
         chatArea.setText("🌾 Bonjour ! Je suis votre assistant agricole IA.\n" +
                 "Analyse de votre stock en cours...\n\n");
 
-        // Input
         HBox inputRow = new HBox(10);
         TextField tfQuestion = new TextField();
         tfQuestion.setPromptText("Posez une question sur votre stock...");
@@ -245,12 +290,10 @@ public class StockController {
                         "-fx-font-weight: bold; -fx-background-radius: 8;" +
                         "-fx-cursor: hand; -fx-font-size: 13px; -fx-padding: 0 15;"
         );
-
         inputRow.getChildren().addAll(tfQuestion, btnEnvoyer);
 
-        // Boutons bas
         HBox boutons = new HBox(10);
-        boutons.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        boutons.setAlignment(Pos.CENTER_LEFT);
 
         Button btnAnalyser = new Button("📊 Analyser mon stock");
         btnAnalyser.setPrefHeight(40);
@@ -281,7 +324,6 @@ public class StockController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         boutons.getChildren().addAll(btnAnalyser, btnConseils, spacer, btnFermer);
 
-        // Action envoyer
         Runnable envoyerQuestion = () -> {
             String question = tfQuestion.getText().trim();
             if (question.isEmpty()) return;
@@ -289,7 +331,6 @@ public class StockController {
             chatArea.appendText("🧑 Vous : " + question + "\n\n");
             chatArea.appendText("🤖 IA : ⏳ Analyse en cours...\n");
             tfQuestion.clear();
-
             new Thread(() -> {
                 String reponse = GeminiService.poserQuestion(
                         "Tu es un assistant agricole expert. " +
@@ -298,8 +339,7 @@ public class StockController {
                                 "\nRéponds en français, de façon concise et utile."
                 );
                 javafx.application.Platform.runLater(() -> {
-                    String current = chatArea.getText();
-                    chatArea.setText(current.replace(
+                    chatArea.setText(chatArea.getText().replace(
                             "🤖 IA : ⏳ Analyse en cours...\n",
                             "🤖 IA : " + reponse + "\n\n"
                     ));
@@ -311,7 +351,6 @@ public class StockController {
         btnEnvoyer.setOnAction(e -> envoyerQuestion.run());
         tfQuestion.setOnAction(e -> envoyerQuestion.run());
 
-        // Analyse complète
         btnAnalyser.setOnAction(e -> {
             chatArea.appendText("─────────────────────\n");
             chatArea.appendText("📊 Analyse complète demandée...\n\n");
@@ -319,8 +358,7 @@ public class StockController {
             new Thread(() -> {
                 String reponse = GeminiService.analyserStock(donnees.toString());
                 javafx.application.Platform.runLater(() -> {
-                    String current = chatArea.getText();
-                    chatArea.setText(current.replace(
+                    chatArea.setText(chatArea.getText().replace(
                             "🤖 IA : ⏳ Analyse en cours...\n",
                             "🤖 IA : " + reponse + "\n\n"
                     ));
@@ -329,7 +367,6 @@ public class StockController {
             }).start();
         });
 
-        // Conseils agricoles
         btnConseils.setOnAction(e -> {
             chatArea.appendText("─────────────────────\n");
             chatArea.appendText("💡 Demande de conseils...\n\n");
@@ -342,8 +379,7 @@ public class StockController {
                                 "la gestion de ce stock agricole. Réponds en français."
                 );
                 javafx.application.Platform.runLater(() -> {
-                    String current = chatArea.getText();
-                    chatArea.setText(current.replace(
+                    chatArea.setText(chatArea.getText().replace(
                             "🤖 IA : ⏳ Préparation des conseils...\n",
                             "🤖 IA : " + reponse + "\n\n"
                     ));
@@ -353,13 +389,10 @@ public class StockController {
         });
 
         root.getChildren().addAll(titreBox, chatArea, inputRow, boutons);
-
-        Scene scene = new Scene(root, 580, 580);
-        iaStage.setScene(scene);
+        iaStage.setScene(new Scene(root, 580, 580));
         iaStage.setResizable(false);
         iaStage.show();
 
-        // Analyse automatique au démarrage
         new Thread(() -> {
             String reponse = GeminiService.analyserStock(donnees.toString());
             javafx.application.Platform.runLater(() -> {
@@ -486,8 +519,6 @@ public class StockController {
                 showSuccessAlert("Stock ajouté !", "ID: " + id);
                 clearInputs();
                 chargerStock();
-
-                // ✅ Alerte email si stock bas
                 for (StockData s : stockList) {
                     if (s.quantite.get() <= s.seuilAlerte.get() && s.quantite.get() > 0) {
                         BrevoEmailService.envoyerAlerteStock(
@@ -572,7 +603,7 @@ public class StockController {
         stockList.clear();
         cardsContainer.getChildren().clear();
         String sql = """
-            SELECT s.idStock, s.idProduit, s.quantite, s.seuilAlert, p.nom
+            SELECT s.idStock, s.idProduit, s.quantite, s.seuilAlert, p.nom, p.imagePath
             FROM stock s LEFT JOIN produit p ON p.id_produit = s.idProduit
             ORDER BY s.idStock DESC""";
         try (Statement st = conn.createStatement();
@@ -583,7 +614,8 @@ public class StockController {
                         rs.getInt("idProduit"),
                         rs.getString("nom") != null ? rs.getString("nom") : "Inconnu",
                         rs.getInt("quantite"),
-                        rs.getInt("seuilAlert")
+                        rs.getInt("seuilAlert"),
+                        rs.getString("imagePath") // ✅ IMAGE
                 );
                 stockList.add(data);
                 cardsContainer.getChildren().add(createCard(data));

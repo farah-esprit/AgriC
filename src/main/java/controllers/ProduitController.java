@@ -18,8 +18,9 @@ import javafx.scene.shape.Circle;
 import services.ProduitService;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import org.example.utils.QRCodeGenerator;
+import services.WhatsAppService;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,18 +30,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProduitController {
 
     @FXML private TextField tfNom, tfDescription, tfPrix;
     @FXML private TextField tfImagePath;
+    @FXML private TextField tfRecherche;
     @FXML private Button btnParcourir;
+    @FXML private Button btnTri;
     @FXML private ImageView imagePreview;
     @FXML private Label defaultImageIcon;
     @FXML private ComboBox<String> cbCategorie;
     @FXML private Button btnAjouter, btnModifier, btnSupprimer, btnActualiser;
     @FXML private FlowPane cardsContainer;
     @FXML private Label lblStatus;
+    @FXML private CheckBox cbPromo;
+    @FXML private TextField tfRemise;
 
     private ProduitService produitService = new ProduitService();
     private ProduitData currentSelection = null;
@@ -48,6 +55,13 @@ public class ProduitController {
     private String selectedImagePath = null;
     private static final String IMAGE_DIRECTORY = "images/produits/";
     private ObservableList<ProduitData> produitsList = FXCollections.observableArrayList();
+    private ObservableList<ProduitData> tousLesProduits = FXCollections.observableArrayList();
+
+    private boolean triAZ = true;
+
+    // ═══════════════════════════════════════════════════════
+    // PRODUIT DATA
+    // ═══════════════════════════════════════════════════════
 
     public static class ProduitData {
         public final LongProperty id = new SimpleLongProperty();
@@ -56,17 +70,22 @@ public class ProduitController {
         public final DoubleProperty prix = new SimpleDoubleProperty();
         public final StringProperty categorie = new SimpleStringProperty();
         public final StringProperty imagePath = new SimpleStringProperty();
+        public final BooleanProperty promo = new SimpleBooleanProperty(); // ✅
 
         public ProduitData(long id, String nom, String description, double prix,
-                           String categorie, String imagePath) {
+                           String categorie, String imagePath, boolean promo) {
             this.id.set(id);
             this.nom.set(nom);
             this.description.set(description);
             this.prix.set(prix);
             this.categorie.set(categorie);
             this.imagePath.set(imagePath != null ? imagePath : "");
+            this.promo.set(promo); // ✅
         }
     }
+
+
+
 
     @FXML
     public void initialize() {
@@ -76,11 +95,55 @@ public class ProduitController {
                 "Produits laitiers", "Miel", "Viandes", "Autres"
         ));
         chargerProduits();
+
+        if (tfRecherche != null) {
+            tfRecherche.textProperty().addListener((obs, old, newVal) -> filtrerProduits(newVal));
+        }
+
+        if (cbPromo != null && tfRemise != null) {
+            tfRemise.setVisible(false);
+            tfRemise.setManaged(false);
+            cbPromo.selectedProperty().addListener((obs, old, selected) -> {
+                tfRemise.setVisible(selected);
+                tfRemise.setManaged(selected);
+            });
+        }
     }
 
     // ═══════════════════════════════════════════════════════
-    // CARDS
+    // RECHERCHE ET TRI
     // ═══════════════════════════════════════════════════════
+
+    @FXML
+    private void handleTri() {
+        triAZ = !triAZ;
+        btnTri.setText(triAZ ? "🔤 A → Z" : "🔤 Z → A");
+        btnTri.setStyle(
+                "-fx-background-color: " + (triAZ ? "#5a8c4a" : "#7b68ee") + "; " +
+                        "-fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-background-radius: 20; -fx-cursor: hand; -fx-font-size: 12px;"
+        );
+        filtrerProduits(tfRecherche != null ? tfRecherche.getText() : "");
+    }
+
+    private void filtrerProduits(String recherche) {
+        List<ProduitData> filtres = tousLesProduits.stream()
+                .filter(p -> recherche == null || recherche.isEmpty() ||
+                        p.nom.get().toLowerCase().startsWith(recherche.toLowerCase()))
+                .sorted((a, b) -> triAZ
+                        ? a.nom.get().compareToIgnoreCase(b.nom.get())
+                        : b.nom.get().compareToIgnoreCase(a.nom.get()))
+                .collect(Collectors.toList());
+
+        cardsContainer.getChildren().clear();
+        for (ProduitData p : filtres) {
+            cardsContainer.getChildren().add(createCard(p));
+        }
+
+        if (lblStatus != null)
+            lblStatus.setText(filtres.size() + " produit(s) affiché(s)");
+    }
+
 
     private VBox createCard(ProduitData p) {
         VBox card = new VBox(10);
@@ -88,14 +151,25 @@ public class ProduitController {
         card.setMaxWidth(200);
         card.setStyle(
                 "-fx-background-color: white;" +
-                        "-fx-background-radius: 12;" +
-                        "-fx-border-radius: 12;" +
+                        "-fx-background-radius: 12; -fx-border-radius: 12;" +
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
-                        "-fx-padding: 15;" +
-                        "-fx-cursor: hand;"
+                        "-fx-padding: 15; -fx-cursor: hand;"
         );
 
-        // Image circulaire
+        // ✅ Badge PROMO en haut de la carte
+        if (p.promo.get()) {
+            HBox badgeBox = new HBox();
+            badgeBox.setAlignment(Pos.CENTER_RIGHT);
+            Label lblPromo = new Label("🔥 PROMO");
+            lblPromo.setStyle(
+                    "-fx-background-color: #d9534f; -fx-text-fill: white;" +
+                            "-fx-font-size: 11px; -fx-font-weight: bold;" +
+                            "-fx-padding: 3 10; -fx-background-radius: 10;"
+            );
+            badgeBox.getChildren().add(lblPromo);
+            card.getChildren().add(badgeBox);
+        }
+
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefSize(100, 100);
         imageContainer.setMaxSize(100, 100);
@@ -131,31 +205,24 @@ public class ProduitController {
         HBox imgBox = new HBox(imageContainer);
         imgBox.setStyle("-fx-alignment: center;");
 
-        // Nom
         Label lblNom = new Label(p.nom.get());
-        lblNom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-wrap-text: true;");
+        lblNom.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;");
         lblNom.setMaxWidth(170);
         lblNom.setWrapText(true);
 
-        // Badge catégorie
         Label lblCat = new Label("🏷 " + p.categorie.get());
         lblCat.setStyle(
-                "-fx-background-color: #e8f5e9;" +
-                        "-fx-text-fill: #4a7c3a;" +
-                        "-fx-font-size: 11px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-padding: 3 8;" +
-                        "-fx-background-radius: 10;"
+                "-fx-background-color: #e8f5e9; -fx-text-fill: #4a7c3a;" +
+                        "-fx-font-size: 11px; -fx-font-weight: bold;" +
+                        "-fx-padding: 3 8; -fx-background-radius: 10;"
         );
 
-        // Description
         String desc = p.description.get() != null ? p.description.get() : "";
         Label lblDesc = new Label(desc.length() > 60 ? desc.substring(0, 57) + "..." : desc);
         lblDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #777; -fx-wrap-text: true;");
         lblDesc.setMaxWidth(170);
         lblDesc.setWrapText(true);
 
-        // Prix
         Label lblPrix = new Label(String.format("%.2f DT", p.prix.get()));
         lblPrix.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #5a8c4a;");
 
@@ -163,6 +230,17 @@ public class ProduitController {
         sep.setStyle("-fx-background-color: #e0e0e0;");
 
         card.getChildren().addAll(imgBox, lblNom, lblCat, lblDesc, sep, lblPrix);
+
+       
+        if (p.promo.get()) {
+            card.setStyle(
+                    "-fx-background-color: #fff8f0;" +
+                            "-fx-background-radius: 12; -fx-border-radius: 12;" +
+                            "-fx-border-color: #d9534f; -fx-border-width: 2;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(217,83,79,0.3), 10, 0, 0, 3);" +
+                            "-fx-padding: 15; -fx-cursor: hand;"
+            );
+        }
 
         card.setOnMouseClicked(e -> selectCard(p, card));
         card.setOnMouseEntered(e -> {
@@ -178,12 +256,22 @@ public class ProduitController {
         });
         card.setOnMouseExited(e -> {
             if (currentSelection == null || currentSelection.id.get() != p.id.get()) {
-                card.setStyle(
-                        "-fx-background-color: white;" +
-                                "-fx-background-radius: 12; -fx-border-radius: 12;" +
-                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
-                                "-fx-padding: 15; -fx-cursor: hand;"
-                );
+                if (p.promo.get()) {
+                    card.setStyle(
+                            "-fx-background-color: #fff8f0;" +
+                                    "-fx-background-radius: 12; -fx-border-radius: 12;" +
+                                    "-fx-border-color: #d9534f; -fx-border-width: 2;" +
+                                    "-fx-effect: dropshadow(gaussian, rgba(217,83,79,0.3), 10, 0, 0, 3);" +
+                                    "-fx-padding: 15; -fx-cursor: hand;"
+                    );
+                } else {
+                    card.setStyle(
+                            "-fx-background-color: white;" +
+                                    "-fx-background-radius: 12; -fx-border-radius: 12;" +
+                                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);" +
+                                    "-fx-padding: 15; -fx-cursor: hand;"
+                    );
+                }
             }
         });
 
@@ -214,6 +302,9 @@ public class ProduitController {
         tfPrix.setText(String.format(java.util.Locale.US, "%.2f", p.prix.get()));
         cbCategorie.setValue(p.categorie.get());
 
+        // ✅ Cocher la checkbox si le produit est en promo
+        if (cbPromo != null) cbPromo.setSelected(p.promo.get());
+
         String imgPath = p.imagePath.get();
         if (imgPath != null && !imgPath.isEmpty()) {
             tfImagePath.setText(imgPath);
@@ -228,13 +319,13 @@ public class ProduitController {
     }
 
     // ═══════════════════════════════════════════════════════
-    // QR CODE — SANS SWING
+    // QR CODE
     // ═══════════════════════════════════════════════════════
 
     @FXML
     private void handleGenererQR() {
         if (currentSelection == null) {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit pour générer son QR Code.");
+            showWarningAlert("Aucune sélection", "Veuillez sélectionner un produit.");
             return;
         }
         try {
@@ -293,8 +384,7 @@ public class ProduitController {
         boutons.getChildren().addAll(btnSauvegarder, btnFermer);
         root.getChildren().addAll(titre, sousTitre, qrView, info, boutons);
 
-        Scene scene = new Scene(root, 400, 480);
-        popupStage.setScene(scene);
+        popupStage.setScene(new Scene(root, 400, 480));
         popupStage.setResizable(false);
         popupStage.show();
     }
@@ -323,9 +413,6 @@ public class ProduitController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════
-    // IMAGE
-    // ═══════════════════════════════════════════════════════
 
     @FXML
     private void handleParcourir() {
@@ -345,7 +432,7 @@ public class ProduitController {
                 tfImagePath.setText(selectedImagePath);
                 loadImagePreview(selectedImagePath);
             } catch (IOException e) {
-                showErrorAlert("Erreur de copie", "Impossible de copier l'image : " + e.getMessage());
+                showErrorAlert("Erreur de copie", e.getMessage());
             }
         }
     }
@@ -355,7 +442,7 @@ public class ProduitController {
             Path path = Paths.get(IMAGE_DIRECTORY);
             if (!Files.exists(path)) Files.createDirectories(path);
         } catch (IOException e) {
-            System.err.println("❌ Erreur création dossier images : " + e.getMessage());
+            System.err.println("❌ Erreur création dossier : " + e.getMessage());
         }
     }
 
@@ -365,8 +452,7 @@ public class ProduitController {
             try {
                 File file = new File(imagePath);
                 if (file.exists()) {
-                    Image image = new Image(file.toURI().toString(), 174, 174, false, true);
-                    imagePreview.setImage(image);
+                    imagePreview.setImage(new Image(file.toURI().toString(), 174, 174, false, true));
                     if (defaultImageIcon != null) defaultImageIcon.setVisible(false);
                 } else {
                     imagePreview.setImage(null);
@@ -390,14 +476,30 @@ public class ProduitController {
     private void handleAjouter() {
         if (!validateInput()) return;
         try {
+            boolean isPromo = cbPromo != null && cbPromo.isSelected();
+
             Produit p = new Produit(
-                    tfNom.getText().trim(),
-                    tfDescription.getText().trim(),
+                    tfNom.getText().trim(), tfDescription.getText().trim(),
                     Double.parseDouble(tfPrix.getText().trim()),
-                    cbCategorie.getValue(),
-                    selectedImagePath
+                    cbCategorie.getValue(), selectedImagePath, isPromo // ✅
             );
             produitService.ajouter(p);
+
+            // ✅ Envoi WhatsApp si promo cochée
+            if (isPromo) {
+                double remise = 0;
+                if (tfRemise != null && !tfRemise.getText().trim().isEmpty()) {
+                    try { remise = Double.parseDouble(tfRemise.getText().trim()); }
+                    catch (NumberFormatException ignored) {}
+                }
+                WhatsAppService.envoyerPromo(
+                        tfNom.getText().trim(),
+                        Double.parseDouble(tfPrix.getText().trim()),
+                        remise
+                );
+                showInfoAlert("WhatsApp envoyé !", "🔥 Promo envoyée via WhatsApp avec succès !");
+            }
+
             showSuccessAlert("Produit ajouté !", "Le produit a bien été enregistré.");
             clearInputs();
             chargerProduits();
@@ -414,21 +516,36 @@ public class ProduitController {
         }
         if (!validateInput()) return;
         try {
+            boolean isPromo = cbPromo != null && cbPromo.isSelected();
+
             Produit p = new Produit(
-                    currentSelection.id.get(),
-                    tfNom.getText().trim(),
+                    currentSelection.id.get(), tfNom.getText().trim(),
                     tfDescription.getText().trim(),
                     Double.parseDouble(tfPrix.getText().trim()),
-                    cbCategorie.getValue(),
-                    true,
-                    selectedImagePath
+                    cbCategorie.getValue(), true, selectedImagePath, isPromo // ✅
             );
             produitService.modifier(p);
-            showSuccessAlert("Produit modifié !", "Les modifications ont été enregistrées.");
+
+            // ✅ Envoi WhatsApp si promo cochée
+            if (isPromo) {
+                double remise = 0;
+                if (tfRemise != null && !tfRemise.getText().trim().isEmpty()) {
+                    try { remise = Double.parseDouble(tfRemise.getText().trim()); }
+                    catch (NumberFormatException ignored) {}
+                }
+                WhatsAppService.envoyerPromo(
+                        tfNom.getText().trim(),
+                        Double.parseDouble(tfPrix.getText().trim()),
+                        remise
+                );
+                showInfoAlert("WhatsApp envoyé !", "🔥 Promo mise à jour envoyée via WhatsApp !");
+            }
+
+            showSuccessAlert("Produit modifié !", "Modifications enregistrées.");
             clearInputs();
             chargerProduits();
         } catch (Exception e) {
-            showErrorAlert("Erreur lors de la modification", e.getMessage());
+            showErrorAlert("Erreur modification", e.getMessage());
         }
     }
 
@@ -465,23 +582,23 @@ public class ProduitController {
     private void handleActualiser() {
         clearInputs();
         chargerProduits();
-        lblStatus.setText("Actualisé : " + produitsList.size() + " produits");
     }
 
     @FXML
     private void exporterCSV() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Exporter les produits en CSV");
+        fileChooser.setTitle("Exporter en CSV");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         fileChooser.setInitialFileName("produits_" + LocalDate.now() + ".csv");
         File file = fileChooser.showSaveDialog(cardsContainer.getScene().getWindow());
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                writer.append("Nom,Description,Prix (DT),Catégorie\n");
-                for (ProduitData p : produitsList) {
-                    writer.append(String.format("\"%s\",\"%s\",%.2f,\"%s\"\n",
+                writer.append("Nom,Description,Prix (DT),Catégorie,Promo\n");
+                for (ProduitData p : tousLesProduits) {
+                    writer.append(String.format("\"%s\",\"%s\",%.2f,\"%s\",\"%s\"\n",
                             escapeCsv(p.nom.get()), escapeCsv(p.description.get()),
-                            p.prix.get(), escapeCsv(p.categorie.get())));
+                            p.prix.get(), escapeCsv(p.categorie.get()),
+                            p.promo.get() ? "Oui" : "Non"));
                 }
                 showSuccessAlert("Export réussi", "Fichier : " + file.getAbsolutePath());
             } catch (IOException e) {
@@ -498,6 +615,7 @@ public class ProduitController {
             Stage homeStage = new Stage();
             homeStage.setScene(new Scene(root, 1400, 850));
             homeStage.setTitle("Accueil - AgriConnect");
+            homeStage.setMaximized(true);
             Stage currentStage = (Stage) tfNom.getScene().getWindow();
             currentStage.close();
             homeStage.show();
@@ -534,7 +652,20 @@ public class ProduitController {
             }
         }
         if (cbCategorie.getValue() == null) errors.append("• La catégorie est obligatoire.\n");
-        if (errors.length() > 0) { showErrorAlert("Champs invalides", errors.toString()); return false; }
+        if (cbPromo != null && cbPromo.isSelected() && tfRemise != null
+                && !tfRemise.getText().trim().isEmpty()) {
+            try {
+                double remise = Double.parseDouble(tfRemise.getText().trim());
+                if (remise < 0 || remise > 100)
+                    errors.append("• La remise doit être entre 0 et 100%.\n");
+            } catch (NumberFormatException e) {
+                errors.append("• La remise doit être un nombre valide.\n");
+            }
+        }
+        if (errors.length() > 0) {
+            showErrorAlert("Champs invalides", errors.toString());
+            return false;
+        }
         return true;
     }
 
@@ -544,23 +675,31 @@ public class ProduitController {
         selectedImagePath = null;
         if (imagePreview != null) imagePreview.setImage(null);
         if (defaultImageIcon != null) defaultImageIcon.setVisible(true);
+        if (cbPromo != null) cbPromo.setSelected(false);
+        if (tfRemise != null) { tfRemise.clear(); tfRemise.setVisible(false); tfRemise.setManaged(false); }
         currentSelection = null;
         selectedCard = null;
     }
 
     private void chargerProduits() {
         produitsList.clear();
+        tousLesProduits.clear();
         cardsContainer.getChildren().clear();
+
         for (Produit p : produitService.getAllProduits()) {
             ProduitData data = new ProduitData(
                     p.getIdProduit(), p.getNom(), p.getDescription(),
-                    p.getPrix(), p.getCategorie(), p.getImagePath()
+                    p.getPrix(), p.getCategorie(), p.getImagePath(),
+                    p.isPromo() // ✅
             );
             produitsList.add(data);
-            cardsContainer.getChildren().add(createCard(data));
+            tousLesProduits.add(data);
         }
+
+        filtrerProduits(tfRecherche != null ? tfRecherche.getText() : "");
+
         if (lblStatus != null)
-            lblStatus.setText("Liste chargée : " + produitsList.size() + " produits");
+            lblStatus.setText("Liste chargée : " + tousLesProduits.size() + " produits");
     }
 
     // ═══════════════════════════════════════════════════════
@@ -571,17 +710,14 @@ public class ProduitController {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setTitle("Succès"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showErrorAlert(String title, String content) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setTitle("Erreur"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showWarningAlert(String title, String content) {
         Alert a = new Alert(Alert.AlertType.WARNING);
         a.setTitle("Attention"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();
     }
-
     private void showInfoAlert(String title, String content) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setTitle("Info"); a.setHeaderText(title); a.setContentText(content); a.showAndWait();

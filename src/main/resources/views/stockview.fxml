@@ -147,5 +147,8 @@
         </HBox>
     </bottom>
 
-
+    <CheckBox fx:id="cbPromo" text="🔥 Envoyer promo WhatsApp"
+              style="-fx-text-fill: #d9534f; -fx-font-weight: bold;"/>
+    <TextField fx:id="tfRemise" promptText="Remise % (ex: 20)"
+               style="-fx-background-radius: 8;"/>
 </BorderPane>
