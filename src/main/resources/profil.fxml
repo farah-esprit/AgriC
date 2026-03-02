@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<!-- ✅ AJOUT DE fx:id="contentPane" ICI -->
+
+<AnchorPane fx:id="contentPane" prefHeight="572.0" prefWidth="446.0" style="-fx-background-color: #f0f4f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilController">
+    <children>
+        <!-- ==================== HEADER AVEC MENU DÉROULANT ==================== -->
+        <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="25.0" spacing="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="25.0">
+            <children>
+
+                <!-- Titre -->
+                <VBox HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="👤 Mon Profil" textFill="#1e293b">
+                            <font><Font name="System Bold" size="28.0" /></font>
+                        </Label>
+                        <Label text="Gérez vos informations personnelles" textFill="#64748b">
+                            <font><Font size="13.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <!-- MENU DÉROULANT -->
+                <MenuButton style="-fx-background-color: white;                                -fx-cursor: hand;                                -fx-background-radius: 50%;                                -fx-min-width: 50;                                -fx-min-height: 50;                                -fx-font-size: 20px;                                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" text="⚙">
+                    <items>
+                        <MenuItem fx:id="menuModifier" onAction="#handleModifierProfil" style="-fx-padding: 10;" text="Modifier le profil" />
+
+                        <MenuItem onAction="#handleChangePassword" style="-fx-padding: 10;" text="Changer mot de passe" />
+
+                        <MenuItem onAction="#handleManage2FA" style="-fx-padding: 10;" text="Gérer l'authentification 2FA" />
+
+                        <MenuItem fx:id="menuSupprimer" onAction="#handleSupprimerProfil" style="-fx-padding: 10; -fx-text-fill: #dc2626;" text="Supprimer le profil" />
+                    </items>
+                </MenuButton>
+
+            </children>
+        </HBox>
+
+        <!-- MESSAGE LABEL -->
+        <Label fx:id="messageLabel" layoutX="30.0" layoutY="115.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="115.0">
+            <font><Font name="System Bold" size="13.0" /></font>
+        </Label>
+
+        <!-- ==================== CARTE PROFIL ==================== -->
+        <VBox layoutX="30.0" layoutY="150.0" spacing="25.0" style="-fx-background-color: white;                  -fx-background-radius: 20;                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
+            <children>
+
+                <!-- EN-TÊTE AVEC AVATAR -->
+                <HBox alignment="CENTER_LEFT" spacing="25.0">
+                    <children>
+                        <!-- Avatar -->
+                        <VBox alignment="CENTER">
+                            <children>
+                                <Circle fx:id="profileCircle" fill="#2e7d32" radius="50.0" stroke="#e2e8f0" strokeWidth="4.0" />
+                            </children>
+                        </VBox>
+
+                        <!-- Info principale -->
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                    <children>
+                                        <Label fx:id="nomLabel" text="Non renseigné" textFill="#1e293b">
+                                            <font><Font name="System Bold" size="26.0" /></font>
+                                        </Label>
+                                        <Label fx:id="prenomLabel" text="" textFill="#1e293b">
+                                            <font><Font name="System Bold" size="26.0" /></font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+
+                                <Label fx:id="emailLabel" text="email@exemple.com" textFill="#64748b">
+                                    <font><Font size="14.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- LIGNE SÉPARATRICE -->
+                <VBox style="-fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;" />
+
+                <!-- INFORMATIONS DÉTAILLÉES -->
+                <VBox spacing="20.0">
+                    <children>
+                        <Label text="📋 Informations du profil" textFill="#1e293b">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+
+                        <!-- Grille d'infos -->
+                        <HBox spacing="40.0">
+                            <children>
+
+                                <!-- Colonne 1 -->
+                                <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <!-- Téléphone -->
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="📞 Téléphone" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label fx:id="telephoneLabel" text="Non renseigné" textFill="#1e293b">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Colonne 2 -->
+                                <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <!-- Biographie -->
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="📝 Biographie" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label fx:id="bioLabel" maxWidth="400.0" text="Aucune biographie" textFill="#1e293b" wrapText="true">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- BOUTON CRÉER PROFIL (visible si pas de profil) -->
+                <Button fx:id="createProfilButton" onAction="#handleCreateProfil" prefHeight="50.0" prefWidth="300.0" style="-fx-background-color: #2e7d32;                            -fx-text-fill: white;                            -fx-cursor: hand;                            -fx-background-radius: 12;                            -fx-effect: dropshadow(gaussian, rgba(46, 125, 50, 0.3), 10, 0, 0, 4);" text="Créer mon profil" visible="false">
+                    <font><Font name="System Bold" size="14.0" /></font>
+                </Button>
+
+            </children>
+            <padding><Insets bottom="35.0" left="35.0" right="35.0" top="35.0" /></padding>
+        </VBox>
+
+    </children>
+</AnchorPane>

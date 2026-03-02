@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/fxml/"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ModifierResponseController"
+            styleClass="comment-root"
+            stylesheets="@CommentaireStyle.css"
+            prefWidth="600" prefHeight="400">
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    HEADER SECTION                        -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox styleClass="header-wrapper">
+            <HBox styleClass="comment-header" alignment="CENTER_LEFT" spacing="16">
+                <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+
+                <!-- Header Icon -->
+                <StackPane styleClass="header-icon-container">
+                    <Label text="✏" styleClass="header-icon"/>
+                </StackPane>
+
+                <!-- Title Section -->
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Modifier le commentaire" styleClass="comment-header-title"/>
+                    <Label fx:id="threadTitleLabel" text="" styleClass="comment-header-sub"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Close Button -->
+                <Button text="✕" styleClass="close-btn" onAction="#closeWindow"/>
+            </HBox>
+
+            <!-- Elegant separator -->
+            <Separator styleClass="header-separator"/>
+        </VBox>
+    </top>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    FORM BODY                             -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="form-scroll" VBox.vgrow="ALWAYS">
+            <VBox spacing="20" styleClass="comment-body">
+                <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
+
+                <!-- ─────────────────────────────────────────────── -->
+                <!--          COMMENT TEXT AREA SECTION              -->
+                <!-- ─────────────────────────────────────────────── -->
+                <VBox spacing="8" styleClass="field-group">
+                    <Label text="Votre commentaire *" styleClass="field-label"/>
+
+                    <TextArea fx:id="contenuField"
+                              promptText="Modifiez votre commentaire..."
+                              styleClass="comment-textarea"
+                              prefHeight="200"
+                              wrapText="true"/>
+
+                    <Label fx:id="contenuError" text="" styleClass="error-label"/>
+
+                    <Label text="💡 Soyez constructif et respectueux"
+                           styleClass="hint-label"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                  FOOTER ACTION BUTTONS                   -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <bottom>
+        <VBox styleClass="footer-wrapper">
+            <Separator styleClass="footer-separator"/>
+
+            <HBox styleClass="comment-footer" alignment="CENTER_RIGHT" spacing="14">
+                <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+
+                <Button text="Annuler"
+                        styleClass="btn-cancel"
+                        onAction="#closeWindow"/>
+
+                <Button fx:id="submitBtn"
+                        text="💾 Enregistrer les modifications"
+                        styleClass="btn-submit"
+                        onAction="#submitModification"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

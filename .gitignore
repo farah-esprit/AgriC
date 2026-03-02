@@ -36,3 +36,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Secrets / local keys ###
+src/main/resources/config.properties
+src/main/java/service/WhatsAppService.java
+src/main/java/service/BrevoEmailService.java
+src/main/java/service/StripePayment.java
+src/main/java/controller/HomeController.java

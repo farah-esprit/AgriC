@@ -1,0 +1,119 @@
+package service;
+
+import entities.Produit;
+import utils.MyDataBase;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProduitService {
+
+    public void ajouter(Produit p) {
+        String sql = "INSERT INTO produit (nom, description, prix, categorie, actif, imagePath, promo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection cn = MyDataBase.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, p.getNom());
+            ps.setString(2, p.getDescription());
+            ps.setDouble(3, p.getPrix());
+            ps.setString(4, p.getCategorie());
+            ps.setBoolean(5, p.isActif());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isPromo()); // ✅
+
+            ps.executeUpdate();
+            System.out.println("✅ Produit ajouté : " + p.getNom() + " | Promo : " + p.isPromo());
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur ajout produit : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public List<Produit> getAllProduits() {
+        List<Produit> list = new ArrayList<>();
+        String sql = "SELECT * FROM produit";
+
+        try (Connection cn = MyDataBase.getConnection();
+             Statement st = cn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Produit p = new Produit();
+                p.setIdProduit(rs.getLong("id_produit"));
+                p.setNom(rs.getString("nom"));
+                p.setDescription(rs.getString("description"));
+                p.setPrix(rs.getDouble("prix"));
+                p.setCategorie(rs.getString("categorie"));
+                p.setActif(rs.getBoolean("actif"));
+                p.setImagePath(rs.getString("imagePath"));
+                p.setPromo(rs.getBoolean("promo")); // ✅
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lecture produits : " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void modifier(Produit p) {
+        String sql = "UPDATE produit SET nom=?, description=?, prix=?, categorie=?, actif=?, imagePath=?, promo=? WHERE id_produit=?";
+        try (Connection cn = MyDataBase.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, p.getNom());
+            ps.setString(2, p.getDescription());
+            ps.setDouble(3, p.getPrix());
+            ps.setString(4, p.getCategorie());
+            ps.setBoolean(5, p.isActif());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isPromo()); // ✅
+            ps.setLong(8, p.getIdProduit());
+
+            ps.executeUpdate();
+            System.out.println("✅ Produit modifié : " + p.getNom() + " | Promo : " + p.isPromo());
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur modification produit : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void supprimer(Long id) {
+        String sql = "DELETE FROM produit WHERE id_produit=?";
+        try (Connection cn = MyDataBase.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            ps.executeUpdate();
+            System.out.println("✅ Produit supprimé ID=" + id);
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur suppression produit : " + e.getMessage());
+        }
+    }
+
+    public Produit getById(long id) {
+        String sql = "SELECT * FROM produit WHERE id_produit = ?";
+        try (Connection cn = MyDataBase.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Produit p = new Produit();
+                    p.setIdProduit(rs.getLong("id_produit"));
+                    p.setNom(rs.getString("nom"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrix(rs.getDouble("prix"));
+                    p.setCategorie(rs.getString("categorie"));
+                    p.setActif(rs.getBoolean("actif"));
+                    p.setImagePath(rs.getString("imagePath"));
+                    p.setPromo(rs.getBoolean("promo")); // ✅
+                    return p;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getById(" + id + ") : " + e.getMessage());
+        }
+        return null;
+    }
+}

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="750.0" minWidth="1280.0" style="-fx-background-color: #f0f4f0;" stylesheets="@dashboard-styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardAgriculteurController">
+    <children>
+
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- SIDEBAR COLLAPSED (66px) - TOUJOURS VISIBLE                   -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <AnchorPane fx:id="sidebarCollapsed" prefHeight="750.0" prefWidth="66.0" style="-fx-background-color: #388e3c;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+
+                <!-- Logo -->
+                <ImageView fitHeight="108.0" fitWidth="42.0" layoutX="11.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo1.png" /></image>
+                </ImageView>
+
+                <!-- Icônes menu -->
+                <VBox layoutX="3.0" layoutY="124.0" prefWidth="62.0" spacing="18.0">
+                    <children>
+
+                        <!-- Accueil -->
+                        <StackPane onMouseClicked="#handleShowHome" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#4CAF5033" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/home.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Ma culture -->
+                        <StackPane onMouseClicked="#handleShowCulture" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/plant.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Problèmes -->
+                        <StackPane onMouseClicked="#handleShowProblems" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/alert-circle.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Analyse -->
+                        <StackPane onMouseClicked="#goAnalyse" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/chart-arcs.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Forum -->
+                        <StackPane onMouseClicked="#handleShowForum" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/message.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Réclamation -->
+                        <StackPane onMouseClicked="#handleShowReclamation" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/clipboard-list.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Boutique -->
+                        <StackPane onMouseClicked="#handleShowBoutique" style="-fx-cursor: hand;">
+                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="transparent" height="42.0" width="42.0" />
+                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                <image><Image url="@images/icons/shopping-cart.png" /></image>
+                            </ImageView>
+                        </StackPane>
+
+                    </children>
+                </VBox>
+
+                <VBox alignment="CENTER" spacing="6.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <children>
+
+                        <StackPane onMouseClicked="#handleGoToProfil" prefHeight="61.0" prefWidth="48.0" style="-fx-cursor: hand;">
+                            <Circle fill="#4CAF5033" radius="21.0" />
+                            <Circle fill="#2e4d2e" radius="24.0" />
+                            <Label style="-fx-font-size: 16px;" text="👨‍🌾" textFill="#a9a9a9" />
+                        </StackPane>
+
+                        <Button onMouseClicked="#handleLogout" prefHeight="42.0" prefWidth="45.0" style="-fx-background-color: #000000; -fx-text-fill: #ffffff;                                        -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 16px;" text="⏻" />
+
+                    </children>
+                </VBox>
+
+            </children>
+        </AnchorPane>
+
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- SIDEBAR EXPANDED (246px) - APPARAÎT AU HOVER                  -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <AnchorPane fx:id="sidebarExpanded" layoutX="65.0" prefHeight="750.0" prefWidth="246.0" style="-fx-background-color: #388e3c;                            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 18, 0, 6, 0);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+
+                <!-- Logo + titre -->
+                <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="18.0" spacing="10.0">
+                    <VBox spacing="2.0">
+                        <Label style="-fx-font-size: 17px; -fx-font-weight: bold;" text="AgriConnect" textFill="#ffffff" />
+                        <Label style="-fx-font-size: 10px;" text="Espace Agriculteur" textFill="#A7C09A" />
+                    </VBox>
+                </HBox>
+
+                <!-- Menu items -->
+                <VBox layoutX="14.0" layoutY="124.0" prefWidth="214.0" spacing="16.0">
+                    <children>
+
+                        <HBox fx:id="menuHome" alignment="CENTER_LEFT" onMouseClicked="#handleShowHome" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-color: #4CAF50;                                      -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Dashboard" textFill="#ffffff" />
+                        </HBox>
+
+                        <HBox fx:id="menuCulture" alignment="CENTER_LEFT" onMouseClicked="#handleShowCulture" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Ma culture" textFill="#ffffffcc" />
+                        </HBox>
+
+                        <HBox fx:id="menuProblemes" alignment="CENTER_LEFT" onMouseClicked="#handleShowProblems" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Problèmes" textFill="#ffffffcc" />
+                        </HBox>
+
+                        <HBox fx:id="menuAnalyse" alignment="CENTER_LEFT" onMouseClicked="#goAnalyse" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Analyse" textFill="#ffffffcc" />
+                        </HBox>
+
+                        <HBox fx:id="menuForum" alignment="CENTER_LEFT" onMouseClicked="#handleShowForum" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Forum" textFill="#ffffffcc" />
+                        </HBox>
+
+                        <HBox fx:id="menuReclamation" alignment="CENTER_LEFT" onMouseClicked="#handleShowReclamation" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Réclamation" textFill="#ffffffcc" />
+                        </HBox>
+
+                        <HBox fx:id="menuBoutique" alignment="CENTER_LEFT" onMouseClicked="#handleShowBoutique" prefHeight="44.0" prefWidth="216.0" spacing="14.0" style="-fx-cursor: hand; -fx-background-radius: 10; -fx-padding: 0 16;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Boutique" textFill="#ffffffcc" />
+                        </HBox>
+
+                    </children>
+                </VBox>
+
+                <!-- Profil + logout bas expanded -->
+                <VBox prefHeight="121.0" prefWidth="222.0" spacing="8.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" onMouseClicked="#handleGoToProfil" prefHeight="66.0" prefWidth="222.0" spacing="12.0" style="-fx-cursor: hand; -fx-background-color: #ffffff12;                                      -fx-background-radius: 12; -fx-padding: 10 14;">
+                            <StackPane>
+                                <Circle fill="#2e4d2e" radius="20.0" />
+                                <Label style="-fx-font-size: 16px;" text="👨‍🌾" textFill="DARKGRAY" />
+                            </StackPane>
+                            <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                                <Label fx:id="userNameLabel" style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Agriculteur" textFill="#ffffff" />
+                                <Label style="-fx-font-size: 10px;" text="Voir mon profil →" textFill="#A7C09A" />
+                            </VBox>
+                        </HBox>
+
+                        <Button onMouseClicked="#handleLogout" prefHeight="36.0" prefWidth="216.0" style="-fx-background-color: #000000; -fx-text-fill: #ffffff;                                        -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 12px;                                        -fx-border-color: #ff444430; -fx-border-radius: 10; -fx-border-width: 1;" text="⏻  Log Out" />
+                    </children>
+                </VBox>
+
+            </children>
+        </AnchorPane>
+
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- CONTENT PANE - ZONE DE CONTENU PRINCIPAL                      -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <AnchorPane fx:id="contentPane" layoutX="66.0" layoutY="0.0" style="-fx-background-color: #f0f4f0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+
+                <!-- ════════════════════════════════════════════════════════ -->
+                <!-- TOPBAR                                                  -->
+                <!-- ════════════════════════════════════════════════════════ -->
+                <HBox alignment="CENTER_LEFT" layoutX="0.0" layoutY="0.0" prefHeight="70.0" style="-fx-background-color: #f0f4f0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <padding><Insets left="30.0" right="28.0" /></padding>
+                    <children>
+                        <!-- Titre + bienvenue -->
+                        <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                            <Label fx:id="welcomeLabel" style="-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Bonjour, Agriculteur 👋">
+                                <font><Font size="15.0" /></font>
+                            </Label>
+                            <Label fx:id="dateLabel" style="-fx-font-size: 11px; -fx-text-fill: #999;" text="Lundi, 23 février 2026" />
+                        </VBox>
+
+                        <!-- Recherche + boutons -->
+                        <HBox alignment="CENTER" spacing="10.0">
+
+                            <ToggleButton fx:id="themeToggle" onAction="#handleToggleTheme" prefHeight="36.0" prefWidth="36.0" styleClass="topbar-button" text="🌙" />
+
+                            <StackPane>
+                                <Button prefHeight="36.0" prefWidth="36.0" styleClass="topbar-button" text="🔔" />
+                                <StackPane translateX="3.0" translateY="-3.0" StackPane.alignment="TOP_RIGHT">
+                                    <Circle fill="#ff4444" radius="5.5" />
+                                    <Label style="-fx-font-size: 7px; -fx-font-weight: bold;" text="3" textFill="white" />
+                                </StackPane>
+                            </StackPane>
+                        </HBox>
+                    </children>
+                </HBox>
+
+                <!-- MESSAGE LABEL -->
+                <Label fx:id="messageLabel" layoutX="45.0" layoutY="80.0" style="-fx-font-size: 12px; -fx-font-weight: bold;" AnchorPane.leftAnchor="45.0" AnchorPane.topAnchor="80.0" />
+
+                <!-- ════════════════════════════════════════════════════════ -->
+                <!-- DASHBOARD STATIQUE (visible par défaut)                 -->
+                <!-- ════════════════════════════════════════════════════════ -->
+                <VBox fx:id="dashboardStaticContent" layoutX="35.0" layoutY="100.0" spacing="20.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="100.0">
+                    <children>
+
+                        <!-- 4 CARTES STATISTIQUES -->
+                        <HBox spacing="18.0">
+                            <children>
+
+                                <!-- Cultures -->
+                                <VBox spacing="8.0" styleClass="stat-card, stat-card-culture" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                        <StackPane styleClass="icon-circle">
+                                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#4CAF5018" height="38.0" width="38.0" />
+                                            <Label style="-fx-font-size: 17px;" text="🌾" />
+                                        </StackPane>
+                                        <VBox spacing="1.0">
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #999;" text="Mes Cultures" />
+                                            <Label fx:id="culturesCountLabel" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="0" />
+                                        </VBox>
+                                    </HBox>
+                                    <Label style="-fx-font-size: 10px; -fx-text-fill: #4CAF50;" text="↑ actives" />
+                                </VBox>
+
+                                <!-- Problèmes -->
+                                <VBox spacing="8.0" styleClass="stat-card, stat-card-problem" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                        <StackPane styleClass="icon-circle">
+                                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#ff980018" height="38.0" width="38.0" />
+                                            <Label style="-fx-font-size: 17px;" text="⚡" />
+                                        </StackPane>
+                                        <VBox spacing="1.0">
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #999;" text="Problèmes" />
+                                            <Label fx:id="problemsCountLabel" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="0" />
+                                        </VBox>
+                                    </HBox>
+                                    <Label style="-fx-font-size: 10px; -fx-text-fill: #ff9800;" text="signalés" />
+                                </VBox>
+
+                                <!-- Commandes -->
+                                <VBox spacing="8.0" styleClass="stat-card, stat-card-order" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                        <StackPane styleClass="icon-circle">
+                                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#2196f318" height="38.0" width="38.0" />
+                                            <Label style="-fx-font-size: 17px;" text="🛒" />
+                                        </StackPane>
+                                        <VBox spacing="1.0">
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #999;" text="Commandes" />
+                                            <Label fx:id="ordersCountLabel" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="0" />
+                                        </VBox>
+                                    </HBox>
+                                    <Label style="-fx-font-size: 10px; -fx-text-fill: #2196f3;" text="en cours" />
+                                </VBox>
+
+                                <!-- Messages -->
+                                <VBox spacing="8.0" styleClass="stat-card, stat-card-message" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                        <StackPane styleClass="icon-circle">
+                                            <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#9c27b018" height="38.0" width="38.0" />
+                                            <Label style="-fx-font-size: 17px;" text="💬" />
+                                        </StackPane>
+                                        <VBox spacing="1.0">
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #999;" text="Messages" />
+                                            <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="0" />
+                                        </VBox>
+                                    </HBox>
+                                    <Label style="-fx-font-size: 10px; -fx-text-fill: #9c27b0;" text="non lus" />
+                                </VBox>
+
+                            </children>
+                        </HBox>
+
+                        <!-- MÉTÉO + CONSEIL DU JOUR -->
+                        <HBox spacing="18.0">
+                            <children>
+
+                                <!-- CARTE MÉTÉO -->
+                                <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25;                                              -fx-background-radius: 20;                                              -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 5);" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                        <Label style="-fx-font-size: 20px;" text="🌦" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #8E9AAF; -fx-font-size: 12px;" text="MÉTÉO ACTUELLE" />
+                                    </HBox>
+                                    <Separator />
+                                    <VBox spacing="12">
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label style="-fx-text-fill: #4A5568;" text="Température :" />
+                                            <Label fx:id="temperatureLabel" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2D3436;" text="--" />
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label style="-fx-text-fill: #4A5568;" text="Vent :" />
+                                            <Label fx:id="windspeedLabel" style="-fx-font-weight: bold; -fx-text-fill: #2D3436;" text="--" />
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label style="-fx-text-fill: #4A5568;" text="Conditions :" />
+                                            <Label fx:id="weatherCodeLabel" style="-fx-font-weight: bold; -fx-text-fill: #E67E22;" text="Chargement..." />
+                                        </HBox>
+                                    </VBox>
+                                </VBox>
+
+                                <!-- CONSEIL DU JOUR -->
+                                <VBox spacing="15" style="-fx-background-color: #3E6B27; -fx-padding: 25;                                              -fx-background-radius: 20;                                              -fx-effect: dropshadow(three-pass-box, rgba(62,107,39,0.2), 15, 0, 0, 5);" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                        <Label style="-fx-font-size: 20px;" text="💡" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #A7C09A; -fx-font-size: 12px;" text="CONSEIL DU JOUR" />
+                                    </HBox>
+                                    <Label style="-fx-text-fill: white; -fx-font-size: 15px;                                                   -fx-font-weight: bold; -fx-line-spacing: 5;" text="Vérifiez l'humidité de vos sols — une irrigation adaptée améliore le rendement de 30%." wrapText="true" />
+                                    <Region VBox.vgrow="ALWAYS" />
+                                    <Button onAction="#handleScanPlant" prefHeight="42.0" style="-fx-background-color: #000000; -fx-text-fill: white;                                                    -fx-background-radius: 10; -fx-cursor: hand;" text="Scanner une plante" />
+                                </VBox>
+
+                            </children>
+                        </HBox>
+
+                        <!-- HERO + ACTIONS RAPIDES -->
+                        <HBox spacing="18.0">
+                            <children>
+
+                                <!-- HERO CARD -->
+                                <VBox spacing="18.0" style="-fx-background-color: #3E6B27;" styleClass="hero-card" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-font-size: 42px;" text="🌿" textFill="#4caf50" />
+                                    <VBox spacing="8.0">
+                                        <Label style="-fx-font-size: 19px; -fx-font-weight: bold;" text="Votre Espace Agricole" textFill="#ffffff" />
+                                        <Label style="-fx-font-size: 12px;" text="Gérez vos cultures, consultez des experts et suivez vos commandes en temps réel." textFill="#ffffffbb" wrapText="true" />
+                                    </VBox>
+                                    <HBox spacing="10.0">
+                                        <Button onMouseClicked="#handleShowCulture" prefHeight="34.0" style="-fx-background-color: #000000; -fx-text-fill: white;                                                        -fx-background-radius: 10; -fx-cursor: hand;                                                        -fx-font-size: 12px; -fx-font-weight: bold;                                                        -fx-padding: 0 16;" text="Mes cultures →" />
+                                        <Button onMouseClicked="#handleGoToProfil" prefHeight="34.0" style="-fx-background-color: transparent; -fx-text-fill: #4CAF50;                                                        -fx-background-radius: 10; -fx-cursor: hand;                                                        -fx-font-size: 12px; -fx-border-color: #4CAF5055;                                                        -fx-border-radius: 10; -fx-border-width: 1;                                                        -fx-padding: 0 16;" text="Mon profil" />
+                                    </HBox>
+                                </VBox>
+
+                                <!-- ACTIONS RAPIDES -->
+                                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-font-size: 9px; -fx-text-fill: #aaa;                                                   -fx-letter-spacing: 1px;" text="ACCÈS RAPIDE" />
+
+                                    <HBox alignment="CENTER_LEFT" onMouseClicked="#handleShowProblems" prefHeight="52.0" spacing="14.0" styleClass="action-card">
+                                        <StackPane>
+                                            <Circle fill="#ff980015" radius="16.0" />
+                                            <Label style="-fx-font-size: 14px;" text="⚡" />
+                                        </StackPane>
+                                        <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                                            <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Signaler un problème" />
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #aaa;" text="Consulter vos signalements" />
+                                        </VBox>
+                                        <Label style="-fx-font-size: 16px; -fx-text-fill: #ccc;" text="›" />
+                                    </HBox>
+
+                                    <HBox alignment="CENTER_LEFT" onMouseClicked="#handleShowForum" prefHeight="52.0" spacing="14.0" styleClass="action-card">
+                                        <StackPane>
+                                            <Circle fill="#4CAF5015" radius="16.0" />
+                                            <Label style="-fx-font-size: 14px;" text="💬" />
+                                        </StackPane>
+                                        <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                                            <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Forum agriculteurs" />
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #aaa;" text="Échangez avec la communauté" />
+                                        </VBox>
+                                        <Label style="-fx-font-size: 16px; -fx-text-fill: #ccc;" text="›" />
+                                    </HBox>
+
+                                    <HBox alignment="CENTER_LEFT" onMouseClicked="#handleShowBoutique" prefHeight="52.0" spacing="14.0" styleClass="action-card">
+                                        <StackPane>
+                                            <Circle fill="#2196f315" radius="16.0" />
+                                            <Label style="-fx-font-size: 14px;" text="🛒" />
+                                        </StackPane>
+                                        <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                                            <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Boutique" />
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #aaa;" text="Commandez vos produits" />
+                                        </VBox>
+                                        <Label style="-fx-font-size: 16px; -fx-text-fill: #ccc;" text="›" />
+                                    </HBox>
+
+                                    <HBox alignment="CENTER_LEFT" onMouseClicked="#handleShowReclamation" prefHeight="52.0" spacing="14.0" styleClass="action-card">
+                                        <StackPane>
+                                            <Circle fill="#e91e6315" radius="16.0" />
+                                            <Label style="-fx-font-size: 14px;" text="📋" />
+                                        </StackPane>
+                                        <VBox spacing="1.0" HBox.hgrow="ALWAYS">
+                                            <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2e4d2e;" text="Réclamation" />
+                                            <Label style="-fx-font-size: 10px; -fx-text-fill: #aaa;" text="Soumettre une réclamation" />
+                                        </VBox>
+                                        <Label style="-fx-font-size: 16px; -fx-text-fill: #ccc;" text="›" />
+                                    </HBox>
+
+                                </VBox>
+
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+
+                <!-- ════════════════════════════════════════════════════════ -->
+                <!-- ✅ ZONE DYNAMIQUE : chargée par loadContent()           -->
+                <!-- Cachée par défaut, visible quand une vue est chargée    -->
+                <!-- ════════════════════════════════════════════════════════ -->
+                <AnchorPane fx:id="dynamicContent" managed="false" style="-fx-background-color: #f0f4f0;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0" />
+
+            </children>
+        </AnchorPane>
+
+    </children>
+</AnchorPane>

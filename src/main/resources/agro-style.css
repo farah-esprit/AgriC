@@ -1,0 +1,256 @@
+/* =========================================================
+   AGROCONNECT — FORM STYLE  (matches ForumDashboard)
+   Colors pulled from Dashboard.css exactly:
+     sidebar green:   #388E3C
+     dark green:      #2E7D32  /  #1B5E20
+     accent:          #43A047  /  #4CAF50
+     light bg:        #F0F2F5
+     card bg:         #FFFFFF
+     border:          #E4E6EA
+========================================================= */
+
+/* ── Root / scroll background ─────────────────────────── */
+.root-background {
+    -fx-background-color: #F0F2F5;
+}
+
+.root-background > .viewport {
+    -fx-background-color: #F0F2F5;
+}
+
+.scroll-pane {
+    -fx-background-color: #F0F2F5;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #F0F2F5;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: #F0F2F5;
+}
+
+/* ── Scrollbar — matches Dashboard ───────────────────── */
+.scroll-pane .scroll-bar:vertical {
+    -fx-pref-width: 7;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: rgba(0,0,0,0.10);
+    -fx-background-radius: 4;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(46,125,50,0.30);
+    -fx-background-radius: 4;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(46,125,50,0.55);
+}
+
+.scroll-pane .scroll-bar:vertical .increment-button,
+.scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ── Topbar strip at top of form ─────────────────────── */
+.form-topbar {
+    -fx-background-color: #388E3C;
+    -fx-padding: 0 0 0 0;
+    -fx-min-height: 6;
+    -fx-max-height: 6;
+}
+
+/* ── Main card ───────────────────────────────────────── */
+.form-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: #E4E6EA;
+    -fx-border-width: 1;
+    -fx-padding: 40 48 40 48;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0.04, 0, 6);
+}
+
+/* ── Page header title ───────────────────────────────── */
+.header-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #163B18;
+    -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
+}
+
+/* ── Green accent bar under title ────────────────────── */
+.header-accent {
+    -fx-background-color: linear-gradient(to right, #43A047, #1B5E20);
+    -fx-min-height: 4;
+    -fx-max-height: 4;
+    -fx-background-radius: 2;
+}
+
+/* ── Section labels ──────────────────────────────────── */
+.section-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E7D32;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* ── Input fields ────────────────────────────────────── */
+.input-field {
+    -fx-background-color: #F4F5F7;
+    -fx-text-fill: #1A1A1A;
+    -fx-border-color: #DADDE1;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 11 14 11 14;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-caret-color: #2E7D32;
+    -fx-prompt-text-fill: #ADADAD;
+}
+
+.input-field:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #2E7D32;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(46,125,50,0.18), 10, 0, 0, 3);
+}
+
+.input-field:hover {
+    -fx-border-color: #4CAF50;
+    -fx-background-color: #EEEEEE;
+}
+
+/* Fix TextArea inner background */
+.text-area .content {
+    -fx-background-color: #F4F5F7;
+    -fx-background-radius: 10;
+}
+
+.text-area:focused .content {
+    -fx-background-color: #FFFFFF;
+}
+
+/* ComboBox arrow */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #2E7D32;
+}
+
+/* ── Image container ─────────────────────────────────── */
+.image-container {
+    -fx-background-color: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    -fx-border-color: #A5D6A7;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 30;
+}
+
+/* ── Primary button — matches Dashboard add-btn / comment-btn ── */
+.primary-button {
+    -fx-background-color: linear-gradient(to bottom right, #43A047, #1B5E20);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 11 28 11 28;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(27,94,32,0.40), 10, 0.1, 0, 4);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #66BB6A, #2E7D32);
+    -fx-effect: dropshadow(gaussian, rgba(27,94,32,0.60), 14, 0.1, 0, 5);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #1B5E20;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+    -fx-effect: dropshadow(gaussian, rgba(27,94,32,0.25), 5, 0, 0, 2);
+}
+
+/* ── Cancel button — matches Dashboard edit-btn style ── */
+.cancel-button {
+    -fx-background-color: #FFF8E1;
+    -fx-text-fill: #E65100;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #FFB300;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0, 0, 2);
+}
+
+.cancel-button:hover {
+    -fx-background-color: #FFE082;
+    -fx-border-color: #FF8F00;
+    -fx-effect: dropshadow(gaussian, rgba(255,143,0,0.28), 8, 0, 0, 3);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.cancel-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ── Image choose button — matches Dashboard view-btn ─── */
+.image-button {
+    -fx-background-color: #1565C0;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #1565C0;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.35), 7, 0, 0, 3);
+}
+
+.image-button:hover {
+    -fx-background-color: #1976D2;
+    -fx-border-color: #1976D2;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.55), 10, 0, 0, 4);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.image-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ── Footer text ─────────────────────────────────────── */
+.footer-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #8A8D91;
+    -fx-font-style: italic;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* ── Separator ───────────────────────────────────────── */
+.section-sep {
+    -fx-background-color: #E4E6EA;
+    -fx-opacity: 0.8;
+}

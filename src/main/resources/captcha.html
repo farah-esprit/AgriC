@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Captcha</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h3 {
+            color: #388e3c;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3>🔒 Vérification de sécurité</h3>
+    <div class="g-recaptcha"
+         data-sitekey="6Lcip3MsAAAAAMhGst1K_dsCC98oBcwGU6UNcRgP"
+         data-callback="onCaptchaSuccess">
+    </div>
+</div>
+
+<script>
+    function onCaptchaSuccess(token) {
+        // ✅ Envoyer le token à JavaFX
+        window.javaConnector.captchaVerified(token);
+    }
+</script>
+</body>
+</html>

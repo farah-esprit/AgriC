@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/fxml/"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AddCommentaireController"
+            styleClass="comment-root"
+            stylesheets="@CommentaireStyle.css"
+            prefWidth="600" prefHeight="520">
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    HEADER SECTION                        -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox styleClass="header-wrapper">
+            <HBox styleClass="comment-header" alignment="CENTER_LEFT" spacing="16">
+                <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+                
+                <!-- Header Icon -->
+                <StackPane styleClass="header-icon-container">
+                    <Label text="💬" styleClass="header-icon"/>
+                </StackPane>
+                
+                <!-- Title Section -->
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Ajouter un commentaire" styleClass="comment-header-title"/>
+                    <Label fx:id="threadTitleLabel" text="" styleClass="comment-header-sub"/>
+                </VBox>
+                
+                <Region HBox.hgrow="ALWAYS"/>
+                
+                <!-- Close Button -->
+                <Button text="✕" styleClass="close-btn" onAction="#closeWindow"/>
+            </HBox>
+            
+            <!-- Elegant separator -->
+            <Separator styleClass="header-separator"/>
+        </VBox>
+    </top>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    FORM BODY                             -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="form-scroll" VBox.vgrow="ALWAYS">
+            <VBox spacing="20" styleClass="comment-body">
+                <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
+
+                <!-- ─────────────────────────────────────────────── -->
+                <!--          COMMENT TEXT AREA SECTION              -->
+                <!-- ─────────────────────────────────────────────── -->
+                <VBox spacing="8" styleClass="field-group">
+                    <Label text="Votre commentaire *" styleClass="field-label"/>
+                    
+                    <TextArea fx:id="contenuField"
+                              promptText="Partagez votre expérience, posez une question ou donnez votre avis..."
+                              styleClass="comment-textarea"
+                              prefHeight="160"
+                              wrapText="true"/>
+                    
+                    <Label fx:id="contenuError" text="" styleClass="error-label"/>
+                    
+                    <!-- Character hint -->
+                    <Label text="💡 Soyez constructif et respectueux" 
+                           styleClass="hint-label"/>
+                </VBox>
+
+                <!-- ─────────────────────────────────────────────── -->
+                <!--            MEDIA UPLOAD SECTION                 -->
+                <!-- ─────────────────────────────────────────────── -->
+                <VBox spacing="12" styleClass="media-section">
+                    <Label text="📎 Joindre un média (optionnel)" styleClass="field-label"/>
+
+                    <!-- Media Action Buttons -->
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button fx:id="importImageBtn" 
+                                text="🖼 Ajouter une image"
+                                styleClass="media-btn" 
+                                onAction="#importImage"/>
+                                
+                        <Button fx:id="importVideoBtn" 
+                                text="🎬 Ajouter une vidéo"
+                                styleClass="media-btn" 
+                                onAction="#importVideo"/>
+                                
+                        <Region HBox.hgrow="ALWAYS"/>
+                        
+                        <Button fx:id="cancelMediaBtn" 
+                                text="✕ Supprimer le média"
+                                styleClass="cancel-media-btn"
+                                onAction="#cancelMedia"
+                                visible="false" 
+                                managed="false"/>
+                    </HBox>
+
+                    <!-- ──────────────────────────────────────────── -->
+                    <!--         MEDIA PREVIEW CONTAINER              -->
+                    <!-- ──────────────────────────────────────────── -->
+                    <StackPane fx:id="previewContainer" 
+                               styleClass="preview-container"
+                               visible="false" 
+                               managed="false" 
+                               prefHeight="200">
+                        
+                        <!-- Image Preview -->
+                        <ImageView fx:id="imagePreview"
+                                   fitWidth="540" 
+                                   fitHeight="200"
+                                   preserveRatio="true" 
+                                   smooth="true"
+                                   styleClass="preview-image"
+                                   visible="false" 
+                                   managed="false"/>
+                        
+                        <!-- Video Placeholder -->
+                        <VBox fx:id="videoPlaceholder" 
+                              alignment="CENTER" 
+                              spacing="10"
+                              visible="false" 
+                              managed="false" 
+                              styleClass="video-placeholder">
+                            
+                            <StackPane styleClass="video-icon-container">
+                                <Label text="🎬" style="-fx-font-size: 48px;"/>
+                            </StackPane>
+                            
+                            <Label fx:id="videoNameLabel" 
+                                   text="" 
+                                   styleClass="video-name-label"/>
+                            
+                            <Label text="Fichier vidéo sélectionné" 
+                                   styleClass="video-hint-label"/>
+                        </VBox>
+                    </StackPane>
+                    
+                    <!-- Media format hint -->
+                    <Label text="💡 Formats acceptés : Images (PNG, JPG, GIF) • Vidéos (MP4, AVI, MOV)" 
+                           styleClass="hint-label"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                  FOOTER ACTION BUTTONS                   -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <bottom>
+        <VBox styleClass="footer-wrapper">
+            <Separator styleClass="footer-separator"/>
+            
+            <HBox styleClass="comment-footer" alignment="CENTER_RIGHT" spacing="14">
+                <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+                
+                <Button text="Annuler" 
+                        styleClass="btn-cancel" 
+                        onAction="#closeWindow"/>
+                        
+                <Button fx:id="submitBtn" 
+                        text="Envoyer le commentaire 💬"
+                        styleClass="btn-submit" 
+                        onAction="#submitComment"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

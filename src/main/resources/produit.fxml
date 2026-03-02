@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="900" prefWidth="1600" style="-fx-background-color: #f5f5dc;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProduitController">
+
+    <!-- HEADER -->
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #5a8c4a, #4a7c3a);">
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 20 30; -fx-background-color: #f0f4f0;">
+                <Region prefWidth="20" />
+                <VBox spacing="2">
+                    <Label style="-fx-text-fill: black; -fx-font-size: 26px; -fx-font-weight: bold;" text="AgriConnect - Gestion des Produits" />
+                    <Label style="-fx-text-fill: black; -fx-font-size: 13px;" text="Gérez votre catalogue complet" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblStatus" style="-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color: rgba(0,0,0,0.2); -fx-padding: 8 15; -fx-background-radius: 15;" text="Prêt" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <SplitPane dividerPositions="0.38" style="-fx-background-color: #f5f5dc;">
+
+            <!-- LEFT - FORMULAIRE -->
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED">
+                <VBox spacing="15" style="-fx-padding: 25; -fx-background-color: #f0f4f0;">
+
+                    <HBox alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="📝 Formulaire Produit" />
+                    </HBox>
+
+                    <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <!-- IMAGE -->
+                        <VBox alignment="CENTER" spacing="15">
+                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="Photo du produit" />
+                            <StackPane prefHeight="180" prefWidth="180">
+                                <Circle radius="90" style="-fx-fill: #e8f5e9; -fx-stroke: #4a7c3a; -fx-stroke-width: 3;" />
+                                <StackPane>
+                                    <Circle radius="87" style="-fx-fill: white;" />
+                                    <ImageView fx:id="imagePreview" fitHeight="174" fitWidth="174" preserveRatio="false">
+                                        <clip>
+                                            <Circle centerX="87" centerY="87" radius="87" />
+                                        </clip>
+                                    </ImageView>
+                                </StackPane>
+                                <Label fx:id="defaultImageIcon" style="-fx-font-size: 48px; -fx-text-fill: #4a7c3a;" text="📷" />
+                            </StackPane>
+
+                            <Button fx:id="btnParcourir" onAction="#handleParcourir" prefHeight="45" prefWidth="200" style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 25; -fx-cursor: hand;" text="📁 Choisir une image" />
+
+                            <TextField fx:id="tfImagePath" editable="false" prefHeight="32" promptText="Aucune image sélectionnée" style="-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 11px; -fx-text-fill: #666;" />
+                        </VBox>
+
+                        <Separator style="-fx-background-color: #e0e0e0;" />
+                        <!-- ✅ WHATSAPP PROMO -->
+                        <VBox spacing="10" style="-fx-background-color: #fff8f0; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #f0ad4e; -fx-border-radius: 8; -fx-border-width: 1;">
+                            <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #d9534f;" text="📱 Notification WhatsApp" />
+                            <CheckBox fx:id="cbPromo" style="-fx-text-fill: #d9534f; -fx-font-weight: bold;" text="🔥 Envoyer promo WhatsApp aux clients" />
+                            <TextField fx:id="tfRemise" prefHeight="38" promptText="Remise % (ex: 20)" style="-fx-background-color: #f9f9f9; -fx-border-color: #f0ad4e;                                               -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;" />
+                        </VBox>
+                        <!-- CHAMPS -->
+                        <GridPane hgap="15" vgap="18">
+                            <columnConstraints>
+                                <ColumnConstraints halignment="RIGHT" minWidth="100" prefWidth="110" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="250" />
+                            </columnConstraints>
+
+                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="Nom :" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                            <TextField fx:id="tfNom" prefHeight="40" promptText="Ex: Huile d'olive extra vierge" style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                            <TextField fx:id="tfDescription" prefHeight="40" promptText="Description du produit..." style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="Prix (DT) :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                            <TextField fx:id="tfPrix" prefHeight="40" promptText="Ex: 28.50" style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-size: 13px;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="Catégorie :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                            <ComboBox fx:id="cbCategorie" maxWidth="Infinity" prefHeight="40" promptText="Sélectionnez une catégorie..." style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a; -fx-border-radius: 5; -fx-background-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
+
+                        <Separator style="-fx-background-color: #e0e0e0;" />
+
+                        <!-- BOUTONS -->
+                        <VBox alignment="CENTER" spacing="15">
+                            <HBox alignment="CENTER" spacing="12">
+                                <Button fx:id="btnAjouter" onAction="#handleAjouter" prefHeight="45" prefWidth="115" style="-fx-background-color: #5a8c4a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="➕ Ajouter" />
+                                <Button fx:id="btnModifier" onAction="#handleModifier" prefHeight="45" prefWidth="115" style="-fx-background-color: #f0ad4e; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="✏️ Modifier" />
+                                <Button fx:id="btnSupprimer" onAction="#handleSupprimer" prefHeight="45" prefWidth="115" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="🗑️ Supprimer" />
+                            </HBox>
+                            <HBox alignment="CENTER" spacing="12">
+                                <Button fx:id="btnActualiser" onAction="#handleActualiser" prefHeight="45" prefWidth="175" style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="🔄 Actualiser" />
+                                <Button onAction="#exporterCSV" prefHeight="45" prefWidth="175" style="-fx-background-color: #5bc0de; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="📤 Exporter CSV" />
+                                <Button maxWidth="Infinity" onAction="#handleGenererQR" prefHeight="45" style="-fx-background-color: #4a7c3a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px;" text="📱 Générer QR Code" />
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- RIGHT - CARDS -->
+            <VBox spacing="15" style="-fx-padding: 25; -fx-background-color: #f0f4f0;">
+
+                <!-- ✅ HEADER CARDS AVEC RECHERCHE + TRI -->
+                <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #4a7c3a;" text="🗂️ Catalogue des Produits" />
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <!-- Barre de recherche -->
+                    <TextField fx:id="tfRecherche" prefHeight="38" prefWidth="220" promptText="🔍 Rechercher un produit..." style="-fx-background-color: #f9f9f9; -fx-border-color: #4a7c3a;                                       -fx-border-radius: 20; -fx-background-radius: 20;                                       -fx-padding: 0 15; -fx-font-size: 13px;" />
+
+                    <!-- Bouton Tri A-Z / Z-A -->
+                    <Button fx:id="btnTri" onAction="#handleTri" prefHeight="38" prefWidth="100" style="-fx-background-color: #5a8c4a; -fx-text-fill: white;                                    -fx-font-weight: bold; -fx-background-radius: 20;                                    -fx-cursor: hand; -fx-font-size: 12px;" text="🔍 Chercher" />
+                </HBox>
+
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                    <FlowPane fx:id="cardsContainer" hgap="15" prefWrapLength="900" style="-fx-padding: 10; -fx-background-color: transparent;" vgap="15" />
+                </ScrollPane>
+            </VBox>
+
+        </SplitPane>
+    </center>
+
+</BorderPane>

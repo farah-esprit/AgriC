@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="750" prefWidth="1100" style="-fx-background-color: #f0f4f0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="controller.DiagnosticController"> <top>
+    <VBox spacing="10" style="-fx-background-color: #f0f4f0; -fx-padding: 25 35 45 35;">
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <Button style="-fx-background-radius: 20; -fx-background-color: rgba(255,255,255,0.2); -fx-font-weight: bold;" text="←" />
+            <Label style="-fx-font-size: 14px;" text="Outil de Diagnostic" />
+        </HBox>
+        <Label fx:id="lblCulture" style="-fx-font-size: 30px; -fx-font-weight: bold;" text="🌿 Diagnostic Intelligent" />
+    </VBox>
+</top>
+
+    <center>
+        <HBox spacing="30" style="-fx-padding: 0 35 30 35; -fx-translate-y: -25;">
+
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
+                <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+
+                    <VBox spacing="15">
+                        <Label style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 12px; -fx-letter-spacing: 1px;" text="📝 OBSERVATIONS DE TERRAIN" />
+
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #F8FAFC; -fx-padding: 10; -fx-background-radius: 12; -fx-border-color: #EDF2F7; -fx-border-radius: 12;">
+                            <Label style="-fx-font-size: 16px;" text="📋" />
+                            <TextField fx:id="txtEtat" promptText="État global de la culture..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #F8FAFC; -fx-padding: 10; -fx-background-radius: 12; -fx-border-color: #EDF2F7; -fx-border-radius: 12;">
+                            <Label style="-fx-font-size: 16px;" text="🔍" />
+                            <TextField fx:id="txtSymptomes" promptText="Symptômes (ex: taches, flétrissement...)" style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+
+                    <Separator />
+
+                    <VBox spacing="15">
+                        <Label style="-fx-text-fill: #3E6B27; -fx-font-weight: bold; -fx-font-size: 12px;" text="🤖 PARAMÈTRES POUR L'ANALYSE IA" />
+
+                        <GridPane hgap="15" vgap="15">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                            </columnConstraints>
+
+                            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label style="-fx-text-fill: #A0AEC0; -fx-font-size: 11px;" text="Type de plante" />
+                                <TextField fx:id="txtPlantType" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 10;" />
+                            </VBox>
+
+                            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label style="-fx-text-fill: #A0AEC0; -fx-font-size: 11px;" text="Couleur des feuilles" />
+                                <TextField fx:id="txtLeafColor" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 10;" />
+                            </VBox>
+
+                            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label style="-fx-text-fill: #A0AEC0; -fx-font-size: 11px;" text="Humidité (%)" />
+                                <TextField fx:id="txtHumidity" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 10;" />
+                            </VBox>
+
+                            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <Label style="-fx-text-fill: #A0AEC0; -fx-font-size: 11px;" text="Température (°C)" />
+                                <TextField fx:id="txtTemperature" style="-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 10;" />
+                            </VBox>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
+                    </VBox>
+
+                    <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 10 0 0 0;">
+                        <Button onAction="#imprimerDiagnostic" style="-fx-background-color: #F1F3F5; -fx-text-fill: #4A5568; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 12;" text="🖨 Imprimer" />
+                        <Button onAction="#sauvegarderDiagnostic" style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(230,126,34,0.3), 10, 0, 0, 4);" text="💾 Sauvegarder le Diagnostic" />
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+
+            <VBox maxWidth="450" minWidth="350" spacing="20" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane style="-fx-background-color: #F3F0FF; -fx-padding: 8; -fx-background-radius: 10;">
+                        <Label style="-fx-font-size: 16px;" text="📊" />
+                    </StackPane>
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2D3436;" text="HISTORIQUE" />
+                </HBox>
+
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                    <FlowPane fx:id="flowHistorique" hgap="10" vgap="10" />
+                </ScrollPane>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>

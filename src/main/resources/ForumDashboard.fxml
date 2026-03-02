@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="900" prefWidth="1440" styleClass="root-pane" stylesheets="@Dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ForumDashboardController">
+
+    <!-- ═══════════════════════════════════════════════════════
+         LEFT SIDEBAR
+         ═══════════════════════════════════════════════════════ -->
+    <left>
+        <VBox fx:id="sidebar" prefWidth="260" spacing="0" style="-fx-background-color: #f0f4f0;">
+
+            <!-- ── LOGO ───────────────────────────────────────── -->
+            <VBox fx:id="sidebarLogoArea" alignment="CENTER" spacing="8" style="-fx-background-color: #f0f4f0;">
+                <padding><Insets bottom="24" left="20" right="20" top="28" /></padding>
+            </VBox>
+
+            <Separator styleClass="sidebar-sep" />
+
+            <!-- ── USER CARD (dark black top section) ────────── -->
+            <VBox fx:id="sidebarUserCard" spacing="6">
+                <padding><Insets bottom="22" left="16" right="16" top="22" /></padding>
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+      
+                      <StackPane maxWidth="105.0" prefHeight="66.0" prefWidth="66.0" styleClass="sidebar-avatar">
+                          <Label styleClass="sidebar-avatar-icon" text="👤" />
+                      </StackPane>
+               </children>
+            </HBox>
+
+                <Label fx:id="userNameLabel" alignment="CENTER" maxWidth="Infinity" text="— —" />
+
+                <Label fx:id="userStatusLabel" alignment="CENTER" maxWidth="Infinity" text="⬤ En ligne" textFill="#388e3c" />
+
+                <Label fx:id="sidebarRoleLabel" alignment="CENTER" maxWidth="Infinity" text="🌱 Agriculteur">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font></Label>
+            </VBox>
+
+            <Separator styleClass="sidebar-sep" />
+
+            <!-- ── NAVIGATION BUTTONS ─────────────────────────── -->
+            <VBox fx:id="sidebarNav" spacing="12" styleClass="sidebar-nav">
+                <padding><Insets bottom="20" left="16" right="16" top="24" /></padding>
+
+                <Label styleClass="sidebar-nav-section-title" text="NAVIGATION" />
+
+                <Button fx:id="mesSujetsBtn" maxWidth="Infinity" onAction="#handleMesSujets" style="-fx-background-color: #000000;" styleClass="sidebar-nav-btn sidebar-btn-active" text="📋   Mes Sujets" textFill="WHITE" />
+
+                <Button fx:id="tousLesSujetsBtn" maxWidth="Infinity" onAction="#handleTousLesSujets" text="📚   Tous les Sujets" />
+            </VBox>
+
+            <!-- Push everything else to the bottom -->
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- ── VERSION FOOTER ─────────────────────────────── -->
+            <Label fx:id="sidebarFooter" alignment="CENTER" maxWidth="Infinity" styleClass="sidebar-footer" text="v 1.0 — 2025 / 2026">
+                <padding><Insets bottom="16" /></padding>
+            </Label>
+
+        </VBox>
+    </left>
+
+    <!-- ═══════════════════════════════════════════════════════
+         RIGHT MAIN AREA
+         ═══════════════════════════════════════════════════════ -->
+    <center>
+        <VBox spacing="0" styleClass="main-area">
+
+            <!-- ── TOP BAR ───────────────────────────────────── -->
+            <HBox alignment="CENTER_LEFT" spacing="16" styleClass="topbar">
+                <padding><Insets bottom="18" left="28" right="28" top="18" /></padding>
+
+                <!-- Page title -->
+                <Label styleClass="topbar-title" text="🌿 Forum" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- Language selector -->
+                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="filter-group">
+                    <Label styleClass="filter-icon" text="🌐" />
+                    <ComboBox fx:id="languageComboBox" prefWidth="150" promptText="Langue" styleClass="filter-combo" />
+                </HBox>
+
+                <!-- Category filter -->
+                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="filter-group">
+                    <Label styleClass="filter-icon" text="🏷" />
+                    <ComboBox fx:id="filterComboBox" prefWidth="200" promptText="Toutes les catégories" styleClass="filter-combo" />
+                </HBox>
+
+                <!-- Search -->
+                <HBox alignment="CENTER_LEFT" spacing="8" styleClass="search-wrapper">
+                    <Label styleClass="search-icon-small" text="🔍" />
+                    <TextField fx:id="searchField" prefWidth="240" promptText="Rechercher..." styleClass="search-field" />
+                </HBox>
+
+                <!-- Add Thread -->
+                <Button fx:id="addThreadBtn" onAction="#handleAddThread" styleClass="add-btn" text="＋" />
+
+                <!-- Notification bell -->
+                <StackPane styleClass="topbar-notif-wrap">
+                    <Label styleClass="topbar-notif-icon" text="🔔" />
+                    <Label styleClass="topbar-notif-count" text="3" StackPane.alignment="TOP_RIGHT" />
+                </StackPane>
+            </HBox>
+
+            <Separator styleClass="topbar-sep" />
+
+            <!-- ── THREADS LIST ───────────────────────────────── -->
+            <ScrollPane fx:id="threadsScrollPane" fitToWidth="true" styleClass="threads-scroll" VBox.vgrow="ALWAYS">
+
+                <VBox fx:id="threadsContainer" spacing="14" styleClass="threads-container">
+                    <padding>
+                        <Insets bottom="26" left="28" right="28" top="22" />
+                    </padding>
+                </VBox>
+
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

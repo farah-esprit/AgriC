@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<ScrollPane xmlns="http://javafx.com/fxml/"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ForumEditThreadController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            styleClass="root-background"
+            stylesheets="@agro-style.css">
+
+    <!-- PAGE WRAPPER -->
+    <VBox alignment="TOP_CENTER" spacing="0"
+          style="-fx-padding: 36 48 48 48; -fx-background-color: #F0F2F5;">
+
+        <!-- ══ TOPBAR STRIP ══ -->
+        <Region styleClass="form-topbar" maxWidth="Infinity"/>
+
+        <!-- ══ FORM CARD ══ -->
+        <VBox spacing="24"
+              styleClass="form-card">
+
+            <!-- ── HEADER ─────────────────────────── -->
+            <VBox spacing="10">
+                <Label text="✏ Modifier le Sujet" styleClass="header-title"/>
+                <Region styleClass="header-accent" maxWidth="Infinity"/>
+            </VBox>
+
+            <Separator styleClass="section-sep"/>
+
+            <!-- ── CATEGORY ──────────────────────── -->
+            <VBox spacing="8">
+                <Label text="📂 Catégorie" styleClass="section-label"/>
+                <ComboBox fx:id="categorieComboBox"
+                          maxWidth="Infinity"
+                          styleClass="input-field">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="🌾 Cultures &amp; Récoltes"/>
+                            <String fx:value="🐄 Élevage &amp; Animaux"/>
+                            <String fx:value="🚜 Matériel &amp; Équipement"/>
+                            <String fx:value="🌱 Semences &amp; Plantation"/>
+                            <String fx:value="💧 Irrigation &amp; Eau"/>
+                            <String fx:value="🧪 Engrais &amp; Traitements"/>
+                            <String fx:value="📊 Agroéconomie &amp; Marché"/>
+                            <String fx:value="🌍 Agroécologie &amp; Bio"/>
+                            <String fx:value="🔧 Réparations &amp; Astuces"/>
+                            <String fx:value="❓ Questions Générales"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+
+            <!-- ── TAGS ───────────────────────────── -->
+            <VBox spacing="8">
+                <Label text="🏷️ Tags" styleClass="section-label"/>
+                <TextField fx:id="tagsField"
+                           promptText="Ex: tomates, arrosage, bio..."
+                           styleClass="input-field"/>
+            </VBox>
+
+            <!-- ── TITLE ──────────────────────────── -->
+            <VBox spacing="8">
+                <Label text="🌱 Titre du sujet" styleClass="section-label"/>
+                <TextField fx:id="TitreAjoutThread"
+                           styleClass="input-field"/>
+            </VBox>
+
+            <!-- ── CONTENT ────────────────────────── -->
+            <VBox spacing="8">
+                <Label text="📝 Contenu" styleClass="section-label"/>
+                <TextArea fx:id="contenuAjoutThread"
+                          prefHeight="200"
+                          wrapText="true"
+                          styleClass="input-field"/>
+            </VBox>
+
+            <Separator styleClass="section-sep"/>
+
+            <!-- ── IMAGE SECTION ──────────────────── -->
+            <VBox spacing="14">
+                <Label text="🖼️ Image principale" styleClass="section-label"/>
+
+                <HBox spacing="12">
+                    <Button text="📁 Choisir une image"
+                            onAction="#importImage"
+                            styleClass="image-button"/>
+                    <Button text="🗑️ Supprimer"
+                            onAction="#AnnulerLimageImporterAjTh"
+                            styleClass="cancel-button"/>
+                </HBox>
+
+                <StackPane fx:id="threadImageContainer"
+                           minHeight="220"
+                           styleClass="image-container">
+                    <ImageView fx:id="imagePreview"
+                               fitWidth="320"
+                               fitHeight="280"
+                               preserveRatio="true"
+                               visible="false"
+                               onMouseClicked="#openImageModal"/>
+                    <Label fx:id="noImageLabel"
+                           text="⫸ Aucune image sélectionnée ⫷"
+                           styleClass="section-label"/>
+                </StackPane>
+            </VBox>
+
+            <Separator styleClass="section-sep"/>
+
+            <!-- ── ACTIONS ────────────────────────── -->
+            <HBox spacing="14" alignment="CENTER_RIGHT">
+                <Button text="✖ Annuler"
+                        onAction="#closeWindow"
+                        styleClass="cancel-button"/>
+                <Button text="💾 Enregistrer les modifications"
+                        onAction="#modifierThread"
+                        defaultButton="true"
+                        styleClass="primary-button"/>
+            </HBox>
+
+            <!-- ── FOOTER ─────────────────────────── -->
+            <Label text="🌱 Ensemble, cultivons nos connaissances !"
+                   styleClass="footer-text"
+                   maxWidth="Infinity"
+                   style="-fx-alignment:center;-fx-text-alignment:center;"/>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="579.0" prefWidth="477.0" style="-fx-background-color: #f0f4f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfilAdminController">
+    <children>
+
+        <!-- HEADER -->
+        <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="25.0" spacing="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="25.0">
+            <children>
+
+                <!-- Titre -->
+                <VBox HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="👤 Mon Profil" textFill="#1e293b">
+                            <font><Font name="System Bold" size="28.0" /></font>
+                        </Label>
+                        <Label text="Gérez vos informations personnelles" textFill="#64748b">
+                            <font><Font size="13.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <!-- ✅ Bouton Settings DropDown -->
+                <MenuButton style="-fx-background-color: white;                                 -fx-background-radius: 50%;                                    -fx-min-width: 45;                                    -fx-min-height: 45;                                    -fx-cursor: hand;                                    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" text="⚙">
+                    <font><Font name="System Bold" size="20.0" /></font>
+                    <items>
+                        <MenuItem onAction="#handleModifierProfil" text="Modifier le profil" />
+                        <MenuItem onAction="#handleChangePassword" text="Changer mot de passe" />
+                        <SeparatorMenuItem />
+                        <MenuItem onAction="#handleSupprimerCompte" style="-fx-text-fill: #dc2626;" text="Supprimer le compte" />
+                    </items>
+                </MenuButton>
+
+            </children>
+        </HBox>
+
+        <!-- MESSAGE LABEL -->
+        <Label fx:id="messageLabel" layoutX="30.0" layoutY="115.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="115.0">
+            <font><Font name="System Bold" size="13.0" /></font>
+        </Label>
+
+        <!-- CARTE PROFIL PRINCIPALE -->
+        <VBox layoutX="30.0" layoutY="101.0" prefHeight="461.0" prefWidth="416.0" spacing="25.0" style="-fx-background-color: white;                      -fx-background-radius: 20;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.799999999999955" AnchorPane.topAnchor="101.0">
+            <children>
+
+                <!-- EN-TÊTE AVEC AVATAR -->
+                <HBox alignment="CENTER_LEFT" spacing="25.0">
+                    <children>
+                        <VBox alignment="CENTER">
+                            <children>
+                                <Circle fx:id="profileCircle" fill="#10b981" radius="50.0" stroke="#e2e8f0" strokeWidth="4.0" />
+                                <Label prefHeight="50.0" prefWidth="50.0" style="-fx-translate-y: -55;" text="👤" textFill="WHITE">
+                                    <font><Font size="50.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="nomLabel" text="Admin Principal" textFill="#1e293b">
+                                    <font><Font name="System Bold" size="26.0" /></font>
+                                </Label>
+                                <Label fx:id="emailLabel" text="admin@test.com" textFill="#64748b">
+                                    <font><Font size="14.0" /></font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label fx:id="etatLabel" style="-fx-background-color: #d1fae5;                                                       -fx-padding: 5 15;                                                       -fx-background-radius: 15;" text="✓ ACTIF" textFill="#10b981">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                        <Label fx:id="roleLabel" style="-fx-background-color: #e0e7ff;                                                       -fx-padding: 5 15;                                                       -fx-background-radius: 15;" text="ADMINISTRATEUR" textFill="#6366f1">
+                                            <font><Font name="System Bold" size="11.0" /></font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- SEPARATEUR -->
+                <VBox style="-fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;" />
+
+                <!-- INFORMATIONS DÉTAILLÉES -->
+                <VBox spacing="20.0">
+                    <children>
+                        <Label text="📋 Informations du compte" textFill="#1e293b">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+
+                        <HBox spacing="40.0">
+                            <children>
+                                <!-- Colonne 1 -->
+                                <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="📅 Membre depuis" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label fx:id="dateCreationLabel" text="09 Février 2026" textFill="#1e293b">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="🕐 Dernière connexion" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label text="Aujourd'hui à 14:30" textFill="#1e293b">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Colonne 2 -->
+                                <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="🔐 Niveau d'accès" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label text="Accès complet" textFill="#1e293b">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Label text="🛡 Sécurité du compte" textFill="#64748b">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <Label text="Protection activée" textFill="#10b981">
+                                                    <font><Font size="16.0" /></font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+            </children>
+            <padding><Insets bottom="35.0" left="35.0" right="35.0" top="35.0" /></padding>
+        </VBox>
+
+    </children>
+</AnchorPane>

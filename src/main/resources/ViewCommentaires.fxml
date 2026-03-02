@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/fxml/"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ViewCommentairesController"
+            styleClass="view-root"
+            stylesheets="@CommentaireStyle.css"
+            prefWidth="1080" prefHeight="720">
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    HEADER SECTION                        -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox styleClass="header-wrapper">
+            <HBox styleClass="view-header" alignment="CENTER_LEFT" spacing="16">
+                <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+
+                <!-- Header Icon -->
+                <StackPane styleClass="header-icon-container">
+                    <Label text="💬" styleClass="header-icon"/>
+                </StackPane>
+
+                <!-- Title Section -->
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Commentaires" styleClass="view-header-title"/>
+                    <Label fx:id="threadTitleLabel" text="" styleClass="view-header-sub"/>
+                </VBox>
+
+                <!-- Comment Counter Badge -->
+                <HBox styleClass="count-badge-container" alignment="CENTER" spacing="8">
+                    <Label text="💬" style="-fx-font-size: 15px;"/>
+                    <Label fx:id="commentCountLabel" text="0 réponses" styleClass="count-badge"/>
+                </HBox>
+
+                <!-- Action Buttons -->
+                <Button text="➕ Commenter" styleClass="btn-add-top" onAction="#openAddComment"/>
+                <Button text="✕" styleClass="close-btn" onAction="#closeWindow"/>
+            </HBox>
+
+            <!-- Elegant separator -->
+            <Separator styleClass="header-separator"/>
+        </VBox>
+    </top>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--              CENTER - THREAD & COMMENTS                  -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <center>
+        <VBox spacing="0" styleClass="content-wrapper">
+
+            <!-- ─────────────────────────────────────────────────── -->
+            <!--            THREAD PREVIEW CARD                      -->
+            <!-- ─────────────────────────────────────────────────── -->
+            <VBox fx:id="threadPreviewBox" styleClass="thread-preview-card">
+                <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+                
+                <!-- Thread Meta Info -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="pin-icon-badge">
+                        <Label text="📌" style="-fx-font-size: 16px;"/>
+                    </StackPane>
+                    
+                    <Label fx:id="threadAuthorLabel" text="" styleClass="preview-author"/>
+                    
+                    <Region HBox.hgrow="ALWAYS"/>
+                    
+                    <Label fx:id="threadDateLabel" text="" styleClass="preview-date"/>
+                </HBox>
+
+                <!-- Thread Content -->
+                <Label fx:id="threadContentLabel" text="" 
+                       styleClass="preview-content" 
+                       wrapText="true" 
+                       maxHeight="100">
+                    <VBox.margin><Insets top="12"/></VBox.margin>
+                </Label>
+            </VBox>
+
+            <!-- ─────────────────────────────────────────────────── -->
+            <!--              SECTION DIVIDER                        -->
+            <!-- ─────────────────────────────────────────────────── -->
+            <HBox styleClass="section-divider" alignment="CENTER" spacing="12">
+                <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+                
+                <Separator HBox.hgrow="ALWAYS" styleClass="divider-line"/>
+                <Label fx:id="dividerLabel" text="Réponses" styleClass="divider-label"/>
+                <Separator HBox.hgrow="ALWAYS" styleClass="divider-line"/>
+            </HBox>
+
+            <!-- ─────────────────────────────────────────────────── -->
+            <!--         COMMENTS SCROLL AREA (MAIN SECTION)         -->
+            <!-- ─────────────────────────────────────────────────── -->
+            <ScrollPane fx:id="commentsScrollPane" 
+                        fitToWidth="true"
+                        styleClass="comments-scroll" 
+                        VBox.vgrow="ALWAYS">
+                
+                <!-- Comments Container - Cards are injected here by controller -->
+                <VBox fx:id="commentsContainer" 
+                      spacing="16" 
+                      styleClass="comments-container">
+                    <padding><Insets top="16" right="28" bottom="24" left="28"/></padding>
+                    
+                    <!-- 
+                    ═══════════════════════════════════════════════════
+                    COMMENT CARDS DYNAMICALLY INJECTED HERE
+                    
+                    Each card will contain:
+                    - Media section (image/video) if present
+                    - User avatar & name
+                    - Comment content
+                    - Action buttons (edit/delete) for owner
+                    ═══════════════════════════════════════════════════
+                    -->
+                    
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--                    FOOTER ACTIONS                        -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <bottom>
+        <VBox styleClass="footer-wrapper">
+            <Separator styleClass="footer-separator"/>
+            
+            <HBox styleClass="view-footer" alignment="CENTER_RIGHT" spacing="14">
+                <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+                
+                <Button text="➕ Ajouter un commentaire" 
+                        styleClass="btn-submit" 
+                        onAction="#openAddComment"/>
+                        
+                <Button text="Fermer" 
+                        styleClass="btn-cancel" 
+                        onAction="#closeWindow"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>
