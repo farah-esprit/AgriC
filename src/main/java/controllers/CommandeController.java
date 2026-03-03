@@ -353,7 +353,11 @@ public class CommandeController {
             Desktop.getDesktop().browse(new URI(checkoutUrl));
 
             // ✅ Statut PAYEE
-
+            Commande c = new Commande();
+            c.setQuantiteCommandee(qte);
+            c.setIdProduit(p.getIdProduit());
+            c.setStatut("PAYEE");
+            commandeService.ajouter(c);
 
             // ✅ Email confirmation paiement
             BrevoEmailService.envoyerConfirmationCommande(
