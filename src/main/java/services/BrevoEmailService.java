@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 public class BrevoEmailService {
 
-    private static final String API_KEY = "";
+    private static final String API_KEY = "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";
     private static final String API_URL = "https://api.brevo.com/v3/smtp/email";
     private static final String SENDER_EMAIL = "bahaeddine.cherif@isimg.tn";
     private static final String SENDER_NAME = "AgriConnect";

@@ -7,7 +7,7 @@ import com.twilio.type.PhoneNumber;
 public class WhatsAppService {
 
     private static final String ACCOUNT_SID = "AC4c0a9f4ad765c48a91de3638a437efa7";
-    private static final String AUTH_TOKEN   = "";
+    private static final String AUTH_TOKEN   = "95da7e44094b5667ccc5980d45fac649";
     private static final String FROM         = "whatsapp:+14155238886";
     private static final String TO           = "whatsapp:+21652137911";
 
