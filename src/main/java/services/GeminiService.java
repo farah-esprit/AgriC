@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class GeminiService {
 
-    private static final String API_KEY = "yYbnVW7bHyipR89SavHdqV14rl05Z1JFhsktr54Y";
+    private static final String API_KEY = "";
     private static final String API_URL = "https://api.cohere.com/v2/chat";
 
     public static String poserQuestion(String question) {
