@@ -477,9 +477,7 @@ public class CommandeController {
         if (lblStatus   != null) lblStatus.setText("Chargé : " + allCommandes.size() + " commande(s)");
     }
 
-    // ═══════════════════════════════════════════════════════
-    // UTILITAIRES
-    // ═══════════════════════════════════════════════════════
+
 
     private void clearInputs() {
         tfQuantite.clear();
