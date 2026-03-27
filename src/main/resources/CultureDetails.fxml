@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<ScrollPane fitToWidth="true" prefHeight="902.0" prefWidth="701.0" style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="controller.CultureDetailsController">
+    <VBox spacing="0" style="-fx-background-color: white;">
+
+        <VBox prefHeight="121.0" prefWidth="686.0" spacing="15" style="-fx-background-color: #3E6B27; -fx-padding: 20 20 45 20;">
+
+            <Label fx:id="lblNom" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;" text="Blé tendre d'hiver" />
+
+            <HBox spacing="10">
+                <HBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(255,255,255,0.2); -fx-padding: 5 12; -fx-background-radius: 20;">
+                    <Label style="-fx-font-size: 12px;" text="🌾" />
+                    <Label fx:id="lblTypeBadge" style="-fx-text-fill: white; -fx-font-weight: bold;" text="Céréale" />
+                </HBox>
+                <HBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(255,255,255,0.2); -fx-padding: 5 12; -fx-background-radius: 20;">
+                    <Circle fill="#64DC50" radius="4" />
+                    <Label fx:id="lblStatutBadge" style="-fx-text-fill: white; -fx-font-weight: bold;" text="Active" />
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <StackPane style="-fx-translate-y: -25;">
+            <VBox prefHeight="222.0" prefWidth="686.0" spacing="20" style="-fx-background-color: white; -fx-background-radius: 30 30 0 0; -fx-padding: 20;">
+
+                <StackPane prefHeight="163.0" prefWidth="646.0">
+                    <ImageView fx:id="imgCulture" fitHeight="200" fitWidth="410" preserveRatio="false">
+                        <clip>
+                            <Rectangle arcHeight="30" arcWidth="30" height="200" width="410" />
+                        </clip>
+                    </ImageView>
+                    <Rectangle arcHeight="30" arcWidth="30" height="200" mouseTransparent="true" width="410">
+                        <fill>
+                            <javafx.scene.paint.LinearGradient endX="0.5" endY="0.0" startX="0.5" startY="1.0">
+                                <stops>
+                                    <javafx.scene.paint.Stop color="#00000077" offset="0.0" />
+                                    <javafx.scene.paint.Stop color="transparent" offset="0.4" />
+                                </stops>
+                            </javafx.scene.paint.LinearGradient>
+                        </fill>
+                    </Rectangle>
+                </StackPane>
+
+                <VBox prefHeight="244.0" prefWidth="646.0" spacing="0" style="-fx-background-color: white; -fx-border-color: #F0F0F0; -fx-border-radius: 15; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                    <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                    </padding>
+
+                    <Label style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 0 0 10 0;" text="INFORMATIONS" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+                        <StackPane style="-fx-background-color: #F1F4F0; -fx-background-radius: 12; -fx-min-width: 45; -fx-min-height: 45;">
+                            <Label style="-fx-font-size: 18px;" text="📐" />
+                        </StackPane>
+                        <VBox>
+                            <Label style="-fx-text-fill: #B0B7C3; -fx-font-size: 10px; -fx-font-weight: bold;" text="SUPERFICIE" />
+                            <Label fx:id="lblSuperficie" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2D3436;" text="14.5 ha" />
+                        </VBox>
+                    </HBox>
+                    <Separator style="-fx-opacity: 0.4;" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+                        <StackPane style="-fx-background-color: #EDF2F7; -fx-background-radius: 12; -fx-min-width: 45; -fx-min-height: 45;">
+                            <Label style="-fx-font-size: 18px;" text="📍" />
+                        </StackPane>
+                        <VBox>
+                            <Label style="-fx-text-fill: #B0B7C3; -fx-font-size: 10px; -fx-font-weight: bold;" text="LOCALISATION" />
+                            <Label fx:id="lblLocalisation" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2D3436;" text="Parcelle Nord — Hammamet" />
+                        </VBox>
+                    </HBox>
+                    <Separator style="-fx-opacity: 0.4;" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+                        <StackPane style="-fx-background-color: #FFF9F0; -fx-background-radius: 12; -fx-min-width: 45; -fx-min-height: 45;">
+                            <Label style="-fx-font-size: 18px;" text="📅" />
+                        </StackPane>
+                        <VBox>
+                            <Label style="-fx-text-fill: #B0B7C3; -fx-font-size: 10px; -fx-font-weight: bold;" text="DATE DE PLANTATION" />
+                            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2D3436;" text="15 Octobre 2024" />
+                        </VBox>
+                    </HBox>
+                    <Separator style="-fx-opacity: 0.4;" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+                        <StackPane style="-fx-background-color: #F3F0FF; -fx-background-radius: 12; -fx-min-width: 45; -fx-min-height: 45;">
+                            <Label style="-fx-font-size: 18px;" text="📈" />
+                        </StackPane>
+                        <VBox>
+                            <Label style="-fx-text-fill: #B0B7C3; -fx-font-size: 10px; -fx-font-weight: bold;" text="RENDEMENT ESTIMÉ" />
+                            <Label style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2D3436;" text="6.2 t/ha" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="8" style="-fx-background-color: #F8FAFC; -fx-background-radius: 15; -fx-padding: 15;">
+                    <Label style="-fx-text-fill: #8E9AAF; -fx-font-weight: bold; -fx-font-size: 11px;" text="NOTES" />
+                    <Label style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-line-spacing: 3;" text="Sol argileux bien drainé. Dernière irrigation le 10/02. Traitement fongicide prévu début mars avant montaison." wrapText="true" />
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="15" style="-fx-padding: 10 0 20 0;">
+                    <Button maxWidth="Infinity" style="-fx-background-color: #F1F3F5; -fx-text-fill: #4A5568; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 12;" text="✕ Fermer" HBox.hgrow="ALWAYS" />
+
+                    <Button fx:id="btnFaireDiagnostic" maxWidth="Infinity" style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(230,126,34,0.3), 10, 0, 0, 4);" text="🩺 Faire un diagnostic" HBox.hgrow="ALWAYS" />
+                </HBox>
+
+            </VBox>
+        </StackPane>
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700" prefWidth="1200" style="-fx-background-color: #f0f4f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CultureController">
+
+    <!-- CONTENU PRINCIPAL -->
+    <center>
+        <StackPane fx:id="mainStackPane" style="-fx-padding: 40;">
+
+            <VBox alignment="TOP_CENTER" maxWidth="850" spacing="30" style="-fx-background-color: white;                          -fx-background-radius: 20;                          -fx-padding: 40;                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20,0,0,5);">
+
+                <!-- HEADER PREMIUM -->
+                <Label style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #2E8B57;" text="🌱 Ajouter une Culture" />
+                <Separator />
+
+                <!-- FORMULAIRE -->
+                <HBox spacing="40">
+
+                    <!-- COLONNE GAUCHE -->
+                    <GridPane hgap="15" vgap="20">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="120" />
+                            <ColumnConstraints prefWidth="280" />
+                        </columnConstraints>
+
+                        <Label text="Nom * :" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtNom" promptText="Nom de la culture" style="-fx-background-radius:12;                                           -fx-border-radius:12;                                           -fx-border-color:#d0d0d0;                                           -fx-padding:8;                                           -fx-focus-color:#2E8B57;                                           -fx-faint-focus-color:transparent;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label text="Type :" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtType" style="-fx-background-radius:12;                                           -fx-border-radius:12;                                           -fx-border-color:#d0d0d0;                                           -fx-padding:8;                                           -fx-focus-color:#2E8B57;                                           -fx-faint-focus-color:transparent;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label text="Superficie * :" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtSuperficie" style="-fx-background-radius:12;                                           -fx-border-radius:12;                                           -fx-border-color:#d0d0d0;                                           -fx-padding:8;                                           -fx-focus-color:#2E8B57;                                           -fx-faint-focus-color:transparent;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label text="Localisation :" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtLocalisation" style="-fx-background-radius:12;                                           -fx-border-radius:12;                                           -fx-border-color:#d0d0d0;                                           -fx-padding:8;                                           -fx-focus-color:#2E8B57;                                           -fx-faint-focus-color:transparent;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <rowConstraints>
+                     <RowConstraints />
+                     <RowConstraints />
+                     <RowConstraints />
+                     <RowConstraints />
+                  </rowConstraints>
+                    </GridPane>
+
+                    <!-- COLONNE DROITE IMAGE -->
+                    <VBox alignment="CENTER" spacing="15" style="-fx-background-color:#f9fafb;                                  -fx-padding:20;                                  -fx-background-radius:15;                                  -fx-border-color:#dfe6e9;                                  -fx-border-radius:15;                                  -fx-border-width:1;                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10,0,0,2);">
+
+                        <ImageView fx:id="imageView" fitHeight="160" fitWidth="220" preserveRatio="true" style="-fx-border-color:#ccc; -fx-border-radius:12;" />
+
+                        <Button fx:id="btnImage" onAction="#choisirImage" style="-fx-background-color:#2E8B57;                                        -fx-text-fill:white;                                        -fx-font-weight:bold;                                        -fx-background-radius:12;                                        -fx-pref-width:180;                                        -fx-pref-height:38;" text="📷 Choisir Image" />
+
+                        <Label fx:id="lblImage" style="-fx-font-size:12px; -fx-text-fill:#777;" />
+                    </VBox>
+
+                </HBox>
+
+                <Separator />
+
+                <!-- BOUTONS ACTION PREMIUM -->
+                <HBox alignment="CENTER_RIGHT" spacing="20">
+                    <Button onAction="#fermerFenetre" style="-fx-background-color:#f44336;                                    -fx-text-fill:white;                                    -fx-font-weight:bold;                                    -fx-background-radius:12;                                    -fx-pref-width:120;                                    -fx-pref-height:38;" text="❌ Annuler" />
+                    <Button fx:id="btnAction" onAction="#handleAction" style="-fx-background-color:#2E8B57;                                    -fx-text-fill:white;                                    -fx-font-weight:bold;                                    -fx-background-radius:12;                                    -fx-pref-width:120;                                    -fx-pref-height:38;" text="Ajouter" />
+                </HBox>
+
+                <!-- MESSAGE DYNAMIQUE -->
+                <Label fx:id="lblMessage" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill: #2E8B57;" />
+
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

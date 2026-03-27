@@ -1,0 +1,25 @@
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="25"
+      style="-fx-padding:30;">
+
+    <Label text="🌿 Tableau de Bord"
+           style="-fx-font-size:26px;
+                  -fx-font-weight:bold;
+                  -fx-text-fill:#2E8B57;"/>
+
+    <HBox spacing="20">
+
+        <VBox styleClass="stat-card">
+            <Label text="🌱 Cultures Actives"/>
+            <Label text="12"/>
+        </VBox>
+
+        <VBox styleClass="stat-card">
+            <Label text="💧 Irrigations"/>
+            <Label text="5 Aujourd'hui"/>
+        </VBox>
+
+    </HBox>
+
+</VBox>
